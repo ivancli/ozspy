@@ -26,7 +26,7 @@
 
     @yield('head_scripts')
 </head>
-<body>
+<body class="layout-h">
 
 @yield('body')
 

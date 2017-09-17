@@ -12,15 +12,11 @@
 
 @section('body')
     <div id="ozspy">
-        <default-template v-cloak>
-            <default-header slot="default-header"></default-header>
-            <default-content slot="default-content">
-                <content-header slot="content-header">
-                    <span slot="content-header-title">Account Settings</span>
-                </content-header>
-                <content-body slot="content-body"></content-body>
-            </default-content>
-        </default-template>
+        <angle v-cloak>
+            <header slot="header"></header>
+            <sidebar slot="sidebar"></sidebar>
+            <index slot="content"></index>
+        </angle>
     </div>
 @stop
 

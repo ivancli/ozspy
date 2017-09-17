@@ -15,8 +15,9 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import header from 'components/layouts/Header.vue';
-import sidebar from 'components/layouts/Sidebar.vue';
+import angle from 'components/layouts/Angle.vue';
+import header from 'components/partials/Header.vue';
+import sidebar from 'components/partials/Sidebar.vue';
 
 
 import index from 'components/app/Index.vue';
@@ -24,6 +25,7 @@ import index from 'components/app/Index.vue';
 const ozspy = new Vue({
     el: '#ozspy',
     components: {
+        angle,
         header,
         sidebar,
         index
