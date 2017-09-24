@@ -1,4 +1,4 @@
-@extends('layouts.angle')
+@extends('layouts.angle_center')
 
 @section('title', 'OzSpy')
 
@@ -12,14 +12,10 @@
 
 @section('body')
     <div id="ozspy" class="wrapper" v-cloak>
-        <angle-header></angle-header>
-        <angle-sidebar></angle-sidebar>
-        <angle-content>
-            <index slot="page-content"></index>
-        </angle-content>
+        <register></register>
     </div>
 @stop
 
 @section('body_scripts')
-    <script src="{{mix('/js/app.js')}}"></script>
+    <script src="{{mix('/js/auth/register.js')}}"></script>
 @stop

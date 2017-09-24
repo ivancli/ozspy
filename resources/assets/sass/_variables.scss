@@ -1,4 +1,3 @@
-
 // Body
 $body-bg: #f5f8fa;
 
@@ -36,3 +35,7 @@ $input-color-placeholder: lighten($text-color, 30%);
 
 // Panels
 $panel-default-heading-bg: #fff;
+
+/*override bootstrap default variables*/
+$navbar-padding-vertical: 17px;
+$nav-link-hover-bg: transparent;

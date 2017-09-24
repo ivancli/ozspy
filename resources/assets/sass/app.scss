@@ -1,9 +1,13 @@
-
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
-
 // Variables
 @import "variables";
-
+// Font Awesome icons
+@import "~font-awesome/scss/font-awesome";
 // Bootstrap
 @import "~bootstrap-sass/assets/stylesheets/bootstrap";
+// template
+@import "resources/assets/sass/angle/angle";
+@import "resources/assets/sass/angle/theme-purple";
+// Animate
+@import "~vue2-animate/dist/vue2-animate.css";

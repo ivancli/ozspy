@@ -4,10 +4,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-require('./bootstrap');
-
-window.Vue = require('vue');
-
+require('../../bootstrap');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -15,19 +12,11 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-import angle from 'components/layouts/Angle.vue';
-import header from 'components/partials/Header.vue';
-import sidebar from 'components/partials/Sidebar.vue';
-
-
-import index from 'components/app/Index.vue';
+import reset from '../../components/auth/Reset.vue';
 
 const ozspy = new Vue({
     el: '#ozspy',
     components: {
-        angle,
-        header,
-        sidebar,
-        index
+        reset,
     }
 });
