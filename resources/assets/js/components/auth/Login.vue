@@ -2,12 +2,17 @@
     <div class="abs-center wd-xl">
         <!-- START panel-->
         <div class="p">
-            <img src="img/user/02.jpg" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle center-block">
+            <logo></logo>
         </div>
         <div class="panel widget b0">
             <div class="panel-body">
-                <p class="text-center">Please login to unlock your screen.</p>
+                <p class="text-center"><strong>Welcome to OzSpy</strong></p>
+                <p class="text-center">Please login for better experience</p>
                 <form role="form">
+                    <div class="form-group has-feedback">
+                        <input id="email" type="email" placeholder="Email" class="form-control">
+                        <span class="fa fa-envelope-o form-control-feedback text-muted"></span>
+                    </div>
                     <div class="form-group has-feedback">
                         <input id="exampleInputPassword1" type="password" placeholder="Password" class="form-control">
                         <span class="fa fa-lock form-control-feedback text-muted"></span>
@@ -27,23 +32,37 @@
                             </a>
                         </div>
                     </div>
+                    <hr>
+                    <div class="clearfix">
+                        <a href="/auth/facebook" class="btn btn-block btn-primary btn-facebook">
+                            <i class="fa fa-facebook-square"></i>
+                            &nbsp;
+                            Login with Facebook
+                        </a>
+                        <a href="/auth/twitter" class="btn btn-block btn-info btn-twitter">
+                            <i class="fa fa-twitter-square"></i>
+                            &nbsp;
+                            Login with Twitter
+                        </a>
+                        <a href="/auth/google" class="btn btn-block btn-danger btn-google-plus">
+                            <i class="fa fa-google-plus-square"></i>
+                            &nbsp;
+                            Login with Google +
+                        </a>
+                    </div>
                 </form>
             </div>
-        </div>
-        <!-- END panel-->
-        <div class="p-lg text-center">
-            <span>&copy;</span>
-            <span>2017</span>
-            <span>-</span>
-            <span>Angle</span>
-            <br>
-            <span>Bootstrap Admin Template</span>
         </div>
     </div>
 </template>
 
 <script>
+    import logo from '../partials/branding/Logo.vue';
+
     export default {
+        components: {
+            logo
+        },
         mounted() {
             console.info('Index component mounted.');
         }

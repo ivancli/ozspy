@@ -1,17 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head>
-    {{--redirect if js not available--}}
-    <noscript>
-        <meta http-equiv="refresh" content="0; url={{ route('errors.javascript-disabled') }}"/>
-    </noscript>
+    @component('components.javascript_detection')
+    @endcomponent
 
-    {{--redirect if cookie not available, unable to store login session anyway without cookie--}}
-    <script type="text/javascript">
-        if (navigator.cookieEnabled === false) {
-            window.location = "{{ route('errors.cookie-disabled') }}";
-        }
-    </script>
+    @component('components.cookie_detection')
+    @endcomponent
+
+    @component('components.facebook_hash_removal')
+    @endcomponent
 
     @component('components.csrf_token_meta')
     @endcomponent
@@ -21,6 +18,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <title>@yield('title', 'OzSpy')</title>
+
+    @component('components.variables_setter')
+    @endcomponent
 
     @yield('links')
 

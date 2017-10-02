@@ -2,7 +2,7 @@
     <div class="abs-center wd-xl">
         <!-- START panel-->
         <div class="p">
-            <img src="img/user/02.jpg" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle center-block">
+            <logo></logo>
         </div>
         <div class="panel widget b0">
             <div class="panel-body">
@@ -38,7 +38,12 @@
 </template>
 
 <script>
+    import logo from '../partials/branding/Logo.vue';
+
     export default {
+        components:{
+            logo
+        },
         mounted() {
             console.info('Index component mounted.');
         }
