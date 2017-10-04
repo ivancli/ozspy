@@ -8,17 +8,17 @@
             <div class="panel-body">
                 <p class="text-center"><strong>Welcome to OzSpy</strong></p>
                 <p class="text-center">Please login for better experience</p>
-                <form role="form">
+                <form role="form" @submit.prevent="onSubmit">
                     <div class="form-group has-feedback">
-                        <input id="email" type="email" placeholder="Email" class="form-control">
+                        <input id="email" type="email" placeholder="Email" class="form-control" v-model="form.email">
                         <span class="fa fa-envelope-o form-control-feedback text-muted"></span>
                     </div>
                     <div class="form-group has-feedback">
-                        <input id="exampleInputPassword1" type="password" placeholder="Password" class="form-control">
+                        <input id="exampleInputPassword1" type="password" placeholder="Password" class="form-control" v-model="form.password">
                         <span class="fa fa-lock form-control-feedback text-muted"></span>
                     </div>
                     <div class=clearfix>
-                        <a href="dashboard.html" class="btn btn-block btn-sm btn-primary">Login</a>
+                        <button href="dashboard.html" class="btn btn-block btn-sm btn-primary">Login</button>
                     </div>
                     <div class="clearfix">
                         <div class="pull-left mt-sm">
@@ -58,6 +58,7 @@
 
 <script>
     import logo from '../partials/branding/Logo.vue';
+    import loginForm from '../../classes/forms/auth/login';
 
     export default {
         components: {
@@ -65,7 +66,21 @@
         },
         mounted() {
             console.info('Index component mounted.');
-        }
+        },
+        data() {
+            return {
+                form: new loginForm({
+                    email: null,
+                    password: null,
+                })
+            };
+        },
+        methods: {
+            onSubmit() {
+                this.form.submit('post', '/auth/login');
+            },
+        },
+        computed: {}
     }
 </script>
 

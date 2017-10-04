@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\SocialAuthExceptions\UnauthorisedException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Auth\AuthenticationException;
@@ -53,6 +54,10 @@ class Handler extends ExceptionHandler
         $e = $this->prepareException($exception);
         if ($e instanceof ClientException) {
             return $e->getMessage();
+        }
+        if ($e instanceof UnauthorisedException) {
+            $error = $exception->getMessage();
+            return redirect()->route('auth.login.get')->withErrors(compact(['error']));
         }
 
         if (config('app.debug') === true) {
