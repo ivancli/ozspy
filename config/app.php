@@ -181,6 +181,8 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         App\Providers\RepositoryServiceProvider::class,
+
+        \IvanCLI\UM\UMServiceProvider::class,
     ],
 
     /*
@@ -230,7 +232,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+
+        'UM' => \IvanCLI\UM\UMFacade::class,
     ],
 
 ];

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bed74b42cb323cebcb4fd45edd09e1e",
+    "content-hash": "cdde20020ec3df4f4dbd2356ae432b5f",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -496,6 +496,51 @@
                 "url"
             ],
             "time": "2017-03-20T17:10:46+00:00"
+        },
+        {
+            "name": "ivancli/um",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ketchol/um.git",
+                "reference": "b58ce6f40efc61142c3a06e869f2097a2c20aa32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ketchol/um/zipball/b58ce6f40efc61142c3a06e869f2097a2c20aa32",
+                "reference": "b58ce6f40efc61142c3a06e869f2097a2c20aa32",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "~5.0",
+                "illuminate/console": "~5.0",
+                "illuminate/support": "~5.0",
+                "php": ">=5.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/commands"
+                ],
+                "psr-4": {
+                    "IvanCLI\\UM\\": "src/UM/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Li",
+                    "email": "ivan.li@hotmail.com"
+                }
+            ],
+            "description": "User management package",
+            "support": {
+                "source": "https://github.com/ketchol/um/tree/1.0.1",
+                "issues": "https://github.com/ketchol/um/issues"
+            },
+            "time": "2017-10-08T12:49:33+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",

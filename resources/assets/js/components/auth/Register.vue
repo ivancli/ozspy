@@ -85,7 +85,9 @@
             onSubmit() {
                 this.form.post('/auth/register')
                     .then(data => {
-                        console.info('data', data);
+                        if (data.redirect_path) {
+                            window.location.href = data.redirect_path;
+                        }
                     })
                     .catch(errors => {
                         console.info('errors', errors);
