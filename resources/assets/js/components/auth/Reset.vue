@@ -1,5 +1,5 @@
 <template>
-    <div class="abs-center wd-xl">
+    <div class="abs-center wd-xl mx-wd-100">
         <!-- START panel-->
         <div class="p">
             <img src="img/user/02.jpg" alt="Avatar" width="60" height="60" class="img-thumbnail img-circle center-block">
@@ -38,9 +38,15 @@
 </template>
 
 <script>
+    import Form from '../../classes/form';
+
     export default {
         mounted() {
             console.info('Reset component mounted.');
+        },
+        data() {
+            return {
+            };
         }
     }
 </script>

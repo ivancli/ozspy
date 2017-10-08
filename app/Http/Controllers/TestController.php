@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
@@ -13,6 +14,8 @@ class TestController extends Controller
      */
     public function index()
     {
+        throw new NullEmailException;
+
         return view('app.index');
     }
 

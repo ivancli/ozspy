@@ -20,15 +20,6 @@ Route::group(['prefix' => 'auth'], function () {
     });
 
     Route::group(['middleware' => ['guest']], function () {
-        #region login
-        Route::get('login', 'Auth\LoginController@showLoginForm')->name('auth.login.get');
-        Route::post('login', 'Auth\LoginController@login')->name('auth.login.post');
-
-        /*third party login*/
-        Route::get('{provider}', 'Auth\SocialAuthController@redirectToProvider')->name('auth.provider.redirect');
-        Route::get('{provider}/callback', 'Auth\SocialAuthController@handleProviderCallback')->name('auth.provider.handle');
-
-        #endregion
 
         #region register
         Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('auth.register.get');
@@ -41,6 +32,17 @@ Route::group(['prefix' => 'auth'], function () {
 
         #region reset password
         Route::get('reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('auth.password.reset.get');
+        #endregion
+
+
+        #region login
+        Route::get('login', 'Auth\LoginController@showLoginForm')->name('auth.login.get');
+        Route::post('login', 'Auth\LoginController@login')->name('auth.login.post');
+
+        /*third party login*/
+        Route::get('{provider}', 'Auth\SocialAuthController@redirectToProvider')->name('auth.provider.redirect');
+        Route::get('{provider}/callback', 'Auth\SocialAuthController@handleProviderCallback')->name('auth.provider.handle');
+
         #endregion
     });
 });
@@ -59,3 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
 });
+
+
+
+Route::get('test', 'TestController@index');

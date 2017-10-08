@@ -1,5 +1,5 @@
 <template>
-    <div class="abs-center wd-xl">
+    <div class="abs-center wd-xl mx-wd-100">
         <!-- START panel-->
         <div class="p">
             <logo></logo>
@@ -8,14 +8,16 @@
             <div class="panel-body">
                 <p class="text-center"><strong>Welcome to OzSpy</strong></p>
                 <p class="text-center">Please login for better experience</p>
-                <form role="form" @submit.prevent="onSubmit">
-                    <div class="form-group has-feedback">
-                        <input id="email" type="email" placeholder="Email" class="form-control" v-model="form.email">
+                <form role="form" @submit.prevent="onSubmit" @input="form.errors.clear($event.target.name)" novalidate>
+                    <div class="form-group has-feedback" :class="errorClass('email')">
+                        <input id="email" type="email" name="email" placeholder="Email" class="form-control" v-model="form.email">
                         <span class="fa fa-envelope-o form-control-feedback text-muted"></span>
+                        <span class="help text-danger" v-if="form.errors.has('email')" v-text="form.errors.getError('email')"></span>
                     </div>
-                    <div class="form-group has-feedback">
-                        <input id="exampleInputPassword1" type="password" placeholder="Password" class="form-control" v-model="form.password">
+                    <div class="form-group has-feedback" :class="errorClass('password')">
+                        <input id="exampleInputPassword1" name="password" type="password" placeholder="Password" class="form-control" v-model="form.password">
                         <span class="fa fa-lock form-control-feedback text-muted"></span>
+                        <span class="help text-danger" v-if="form.errors.has('password')" v-text="form.errors.getError('password')"></span>
                     </div>
                     <div class=clearfix>
                         <button href="dashboard.html" class="btn btn-block btn-sm btn-primary">Login</button>
@@ -58,7 +60,7 @@
 
 <script>
     import logo from '../partials/branding/Logo.vue';
-    import loginForm from '../../classes/forms/auth/login';
+    import loginForm from '../../classes/form';
 
     export default {
         components: {
@@ -77,8 +79,20 @@
         },
         methods: {
             onSubmit() {
-                this.form.submit('post', '/auth/login');
+                this.form.post('/auth/login')
+                    .then(data => {
+                        console.info('data', data);
+                    })
+                    .catch(errors => {
+                        console.info('errors', errors);
+                    });
             },
+            errorClass(field) {
+                if (this.form.errors.has(field)) {
+                    return 'has-error';
+                }
+                return null;
+            }
         },
         computed: {}
     }

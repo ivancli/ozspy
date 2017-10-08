@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\SocialAuthExceptions\NullEmailException;
 use App\Exceptions\SocialAuthExceptions\UnauthorisedException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
@@ -55,21 +56,11 @@ class Handler extends ExceptionHandler
         if ($e instanceof ClientException) {
             return $e->getMessage();
         }
-        if ($e instanceof UnauthorisedException) {
-            $error = $exception->getMessage();
-            return redirect()->route('auth.login.get')->withErrors(compact(['error']));
+        if ($e instanceof UnauthorisedException || $e instanceof NullEmailException) {
+            return redirect()->route('auth.login.get')->withErrors($e->getMessage());
         }
 
-        if (config('app.debug') === true) {
-            return parent::render($request, $exception);
-        } else {
-            if ($request->expectsJson()) {
-                $error = $exception->getMessage();
-                return compact(['error']);
-            } else {
-                return redirect()->back()->withErrors(compact(['error']));
-            }
-        }
+        return parent::render($request, $exception);
     }
 
     public function unauthenticated($request, AuthenticationException $exception)

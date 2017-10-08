@@ -12,4 +12,6 @@ namespace App\Exceptions\SocialAuthExceptions;
 class NullEmailException extends \Exception
 {
     protected $message = 'Unable to retrieve email address from social networking profile.';
+
+    protected $code = 401;
 }

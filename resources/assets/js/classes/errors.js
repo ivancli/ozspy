@@ -1,6 +1,7 @@
 export default class Errors {
     constructor() {
         this.errors = {};
+        this.message = null;
     }
 
     has(field) {
@@ -11,22 +12,32 @@ export default class Errors {
         return Object.keys(this.errors).length > 0;
     }
 
-    get(field) {
+    getError(field) {
         if (this.errors[field]) {
             return this.errors[field][0];
         }
     }
 
-    set(errors) {
+    setError(errors) {
         this.errors = errors;
+    }
+
+    setMessage(message) {
+        this.message = message;
+    }
+
+    getMessage() {
+        if (this.message) {
+            return this.message;
+        }
     }
 
     clear(field) {
         if (field) {
             delete this.errors[field];
-        } else {
-            this.errors = {};
+            return;
         }
 
+        this.errors = {};
     }
 }

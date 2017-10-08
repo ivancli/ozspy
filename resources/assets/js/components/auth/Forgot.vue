@@ -1,5 +1,5 @@
 <template>
-    <div class="abs-center wd-xl">
+    <div class="abs-center wd-xl mx-wd-100">
         <!-- START panel-->
         <div class="p">
             <logo></logo>
