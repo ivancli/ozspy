@@ -499,16 +499,16 @@
         },
         {
             "name": "ivancli/um",
-            "version": "1.0.1",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ketchol/um.git",
-                "reference": "b58ce6f40efc61142c3a06e869f2097a2c20aa32"
+                "reference": "c1db281f4bb3e7b35ec29b904df2c05221af869e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ketchol/um/zipball/b58ce6f40efc61142c3a06e869f2097a2c20aa32",
-                "reference": "b58ce6f40efc61142c3a06e869f2097a2c20aa32",
+                "url": "https://api.github.com/repos/ketchol/um/zipball/c1db281f4bb3e7b35ec29b904df2c05221af869e",
+                "reference": "c1db281f4bb3e7b35ec29b904df2c05221af869e",
                 "shasum": ""
             },
             "require": {
@@ -537,10 +537,10 @@
             ],
             "description": "User management package",
             "support": {
-                "source": "https://github.com/ketchol/um/tree/1.0.1",
+                "source": "https://github.com/ketchol/um/tree/1.1.0",
                 "issues": "https://github.com/ketchol/um/issues"
             },
-            "time": "2017-10-08T12:49:33+00:00"
+            "time": "2017-10-08T13:09:49+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",

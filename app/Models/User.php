@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use IvanCLI\UM\Traits\UMUserTrait;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, UMUserTrait;
 
     /**
      * The attributes that are mass assignable.
