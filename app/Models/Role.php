@@ -7,5 +7,13 @@ use IvanCLI\UM\UMRole;
 
 class Role extends UMRole
 {
-    //
+    public static function getAdminRole()
+    {
+        return self::where('name', 'admin')->first();
+    }
+
+    public static function getClientRole()
+    {
+        return self::where('name', 'client')->first();
+    }
 }

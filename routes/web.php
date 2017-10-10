@@ -52,14 +52,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/', function () {
         return view('app.index');
-    });
+    })->name('home');
 
     Route::group(['prefix' => 'errors'], function () {
         Route::get('javascript-disabled', 'ErrorController@javascript')->name('errors.javascript-disabled');
         Route::get('cookie-disabled', 'ErrorController@cookie')->name('errors.cookie-disabled');
     });
-
-    Route::get('/home', 'HomeController@index')->name('home');
 });
 
 
