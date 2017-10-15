@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use IvanCLI\UM\Traits\UMUserTrait;
@@ -27,4 +28,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 }

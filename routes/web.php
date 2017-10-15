@@ -28,10 +28,12 @@ Route::group(['prefix' => 'auth'], function () {
 
         #region forgot password
         Route::get('forgot', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('auth.password.email.get');
+        Route::post('forgot', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('auth.password.email.post');
         #endregion
 
         #region reset password
         Route::get('reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('auth.password.reset.get');
+        Route::post('reset', 'Auth\ResetPasswordController@reset')->name('auth.password.reset.post');
         #endregion
 
 
