@@ -172,15 +172,15 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\HelperServiceProvider::class,
+        OzSpy\Providers\HelperServiceProvider::class,
 
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        OzSpy\Providers\AppServiceProvider::class,
+        OzSpy\Providers\AuthServiceProvider::class,
+        // OzSpy\Providers\BroadcastServiceProvider::class,
+        OzSpy\Providers\EventServiceProvider::class,
+        OzSpy\Providers\RouteServiceProvider::class,
 
-        App\Providers\RepositoryServiceProvider::class,
+        OzSpy\Providers\RepositoryServiceProvider::class,
 
         \IvanCLI\UM\UMServiceProvider::class,
     ],

@@ -1,9 +1,11 @@
 <template>
-    <div v-if="promise > 0">
-        <div class="dollar-loading-backdrop"></div>
-        <div class="dollar-loading-spinner"></div>
-        <div class="dollar-loading-text" v-if="text" v-text="text"></div>
-    </div>
+    <transition name="fade">
+        <div v-if="promise > 0">
+            <div class="dollar-loading-backdrop"></div>
+            <div class="dollar-loading-spinner"></div>
+            <div class="dollar-loading-text" v-if="text" v-text="text"></div>
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -82,5 +84,13 @@
         100% {
             background-position-x: -2100px;
         }
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .3s
+    }
+
+    .fade-enter, .fade-leave-to {
+        opacity: 0
     }
 </style>

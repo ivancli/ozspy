@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace OzSpy\Models\Auth;
 
-use App\Notifications\ResetPassword as ResetPasswordNotification;
+use Laravel\Passport\HasApiTokens;
+use OzSpy\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use IvanCLI\UM\Traits\UMUserTrait;
 
 class User extends Authenticatable
 {
-    use Notifiable, UMUserTrait;
+    use HasApiTokens, Notifiable, UMUserTrait;
 
     /**
      * The attributes that are mass assignable.

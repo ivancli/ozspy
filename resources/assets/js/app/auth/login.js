@@ -13,10 +13,12 @@ require('../../bootstrap');
  */
 
 import login from '../../components/auth/Login.vue';
+import store from '../../stores/auth/login';
 
 const ozspy = new Vue({
     el: '#ozspy',
     components: {
         login,
-    }
+    },
+    store,
 });

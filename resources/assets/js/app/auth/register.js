@@ -13,10 +13,12 @@ require('../../bootstrap');
  */
 
 import register from '../../components/auth/Register.vue';
+import store from '../../stores/auth/register';
 
 const ozspy = new Vue({
     el: '#ozspy',
     components: {
         register,
-    }
+    },
+    store,
 });

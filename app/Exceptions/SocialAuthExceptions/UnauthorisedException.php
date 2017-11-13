@@ -6,7 +6,7 @@
  * Time: 11:36 PM
  */
 
-namespace App\Exceptions\SocialAuthExceptions;
+namespace OzSpy\Exceptions\SocialAuthExceptions;
 
 
 class UnauthorisedException extends \Exception

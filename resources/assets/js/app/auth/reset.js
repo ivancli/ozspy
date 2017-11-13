@@ -13,10 +13,12 @@ require('../../bootstrap');
  */
 
 import reset from '../../components/auth/Reset.vue';
+import store from '../../stores/auth/reset';
 
 const ozspy = new Vue({
     el: '#ozspy',
     components: {
         reset,
-    }
+    },
+    store,
 });

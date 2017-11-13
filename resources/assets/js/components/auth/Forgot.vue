@@ -26,15 +26,6 @@
                 </form>
             </div>
         </div>
-        <!-- END panel-->
-        <div class="p-lg text-center">
-            <span>&copy;</span>
-            <span>2017</span>
-            <span>-</span>
-            <span>Angle</span>
-            <br>
-            <span>Bootstrap Admin Template</span>
-        </div>
         <alert-modal></alert-modal>
         <loading></loading>
     </div>

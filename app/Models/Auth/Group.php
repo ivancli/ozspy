@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace OzSpy\Models\Auth;
 
 use Illuminate\Database\Eloquent\Model;
 use IvanCLI\UM\UMGroup;

@@ -55,37 +55,46 @@
                 </form>
             </div>
         </div>
+        <loading></loading>
     </div>
 </template>
 
 <script>
     import logo from '../partials/branding/Logo.vue';
-    import loginForm from '../../classes/form';
+    import loading from '../partials/loadings/Dollar.vue';
+
+    import Form from '../../classes/form';
+    import Loading from '../../classes/loadings/loading';
 
     export default {
         components: {
-            logo
+            logo,
+            loading
         },
         mounted() {
             console.info('Index component mounted.');
         },
         data() {
             return {
-                form: new loginForm({
+                form: new Form({
                     email: null,
                     password: null,
-                })
+                }),
+                loading: new Loading(this.$store),
             };
         },
         methods: {
             onSubmit() {
+                this.loading.setLoadingPromise();
                 this.form.post('/auth/login')
                     .then(data => {
+                        this.loading.unsetLoadingPromise();
                         if(data.redirect_path){
                             window.location.href = data.redirect_path;
                         }
                     })
                     .catch(errors => {
+                        this.loading.unsetLoadingPromise();
                         console.info('errors', errors);
                     });
             },

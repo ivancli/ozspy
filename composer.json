@@ -7,14 +7,25 @@
     "repositories": [
         {
             "type": "vcs",
+            "url": "git@github.com:ketchol/crawler.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:ketchol/parser.git"
+        },
+        {
+            "type": "vcs",
             "url": "git@github.com:ketchol/um.git"
         }
     ],
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
+        "ivancli/crawler": "^1.0",
+        "ivancli/parser": "^1.0",
         "ivancli/um": "^1.0",
         "laravel/framework": "5.5.*",
+        "laravel/passport": "^4.0",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0"
     },
@@ -31,7 +42,7 @@
             "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "OzSpy\\": "app/"
         }
     },
     "autoload-dev": {

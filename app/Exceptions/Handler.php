@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Exceptions;
+namespace OzSpy\Exceptions;
 
-use App\Exceptions\SocialAuthExceptions\NullEmailException;
-use App\Exceptions\SocialAuthExceptions\UnauthorisedException;
+use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
+use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Auth\AuthenticationException;

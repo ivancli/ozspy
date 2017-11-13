@@ -6,10 +6,10 @@
  * Time: 12:15 AM
  */
 
-namespace App\Contracts\Models;
+namespace OzSpy\Contracts\Models\Auth;
 
 
-use App\Models\User;
+use OzSpy\Models\Auth\User;
 use Illuminate\Support\Collection;
 
 interface UserContract

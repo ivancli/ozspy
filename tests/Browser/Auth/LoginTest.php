@@ -2,7 +2,7 @@
 
 namespace Tests\Browser\Auth;
 
-use App\Models\User;
+use OzSpy\Models\Auth\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Unit\Models;
 
-use App\Models\User;
+use OzSpy\Models\Auth\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

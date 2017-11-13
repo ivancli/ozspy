@@ -6,7 +6,7 @@
  * Time: 9:43 PM
  */
 
-namespace App\Providers;
+namespace OzSpy\Providers;
 
 
 use Illuminate\Support\ServiceProvider;

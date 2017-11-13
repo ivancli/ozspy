@@ -6,11 +6,11 @@
  * Time: 10:15 PM
  */
 
-namespace App\Observers;
+namespace OzSpy\Observers;
 
 
-use App\Models\Role;
-use App\Models\User;
+use OzSpy\Models\Auth\Role;
+use OzSpy\Models\Auth\User;
 
 class UserObserver
 {

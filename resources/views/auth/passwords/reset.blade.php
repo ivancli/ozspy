@@ -8,6 +8,10 @@
 
 @section('head_scripts')
     {{--<script src='https://www.google.com/recaptcha/api.js'></script>--}}
+    <script>
+        var token = "{!! isset($token) ? $token : null !!}";
+        var email = "{!! isset($email) ? $email : null !!}";
+    </script>
 @stop
 
 @section('body')

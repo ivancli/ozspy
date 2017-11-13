@@ -6,11 +6,11 @@
  * Time: 12:17 AM
  */
 
-namespace App\Repositories\Models;
+namespace OzSpy\Repositories\Models\Auth;
 
 
-use App\Contracts\Models\UserContract;
-use App\Models\User;
+use OzSpy\Contracts\Models\Auth\UserContract;
+use OzSpy\Models\Auth\User;
 use Illuminate\Support\Collection;
 
 class UserRepository implements UserContract

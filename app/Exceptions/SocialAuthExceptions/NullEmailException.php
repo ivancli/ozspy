@@ -6,7 +6,7 @@
  * Time: 3:25 PM
  */
 
-namespace App\Exceptions\SocialAuthExceptions;
+namespace OzSpy\Exceptions\SocialAuthExceptions;
 
 
 class NullEmailException extends \Exception

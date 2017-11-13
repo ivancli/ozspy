@@ -6,7 +6,7 @@ class RoleSeeder extends Seeder
 {
     protected $roleModel;
 
-    public function __construct(\App\Models\Role $roleModel)
+    public function __construct(\App\Models\Auth\Role $roleModel)
     {
         $this->roleModel = $roleModel;
     }

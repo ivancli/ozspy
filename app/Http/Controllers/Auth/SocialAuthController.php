@@ -6,13 +6,13 @@
  * Time: 9:54 PM
  */
 
-namespace App\Http\Controllers\Auth;
+namespace OzSpy\Http\Controllers\Auth;
 
 
-use App\Contracts\Models\UserContract;
-use App\Exceptions\SocialAuthExceptions\NullEmailException;
-use App\Exceptions\SocialAuthExceptions\UnauthorisedException;
-use App\Http\Controllers\Controller;
+use OzSpy\Contracts\Models\UserContract;
+use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
+use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
+use OzSpy\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;

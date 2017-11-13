@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace OzSpy\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -6,12 +6,14 @@
  * Time: 12:20 AM
  */
 
-namespace App\Providers;
+namespace OzSpy\Providers;
 
 
-use App\Contracts\Models\UserContract;
-use App\Repositories\Models\UserRepository;
+use OzSpy\Contracts\Models\Auth\UserContract;
+use OzSpy\Contracts\Models\Crawl\ProxyContract;
+use OzSpy\Repositories\Models\Auth\UserRepository;
 use Illuminate\Support\ServiceProvider;
+use OzSpy\Repositories\Models\Crawl\ProxyRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -33,5 +35,7 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(UserContract::class, UserRepository::class);
+
+        $this->app->bind(ProxyContract::class, ProxyRepository::class);
     }
 }

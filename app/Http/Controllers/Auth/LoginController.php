@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace OzSpy\Http\Controllers\Auth;
 
-use App\Contracts\Models\UserContract;
-use App\Http\Controllers\Controller;
+use OzSpy\Contracts\Models\UserContract;
+use OzSpy\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;

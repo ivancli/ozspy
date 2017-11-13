@@ -1,22 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace OzSpy\Http\Controllers;
 
-use App\Exceptions\SocialAuthExceptions\NullEmailException;
+use OzSpy\Contracts\Models\Crawl\ProxyContract;
+use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(ProxyContract $proxyContract)
     {
-        throw new NullEmailException;
-
-        return view('app.index');
+        $proxy = $proxyContract->get(1);
+        dd($proxyContract->update($proxyContract->get(1), [
+            'ip' => '123123',
+            'port' => 123
+        ]));
     }
 
     /**
