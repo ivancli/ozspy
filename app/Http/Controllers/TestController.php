@@ -5,16 +5,15 @@ namespace OzSpy\Http\Controllers;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
+use OzSpy\Repositories\Scrapers\Proxies\ProxyNova;
 
 class TestController extends Controller
 {
-    public function index(ProxyContract $proxyContract)
+    public function index()
     {
-        $proxy = $proxyContract->get(1);
-        dd($proxyContract->update($proxyContract->get(1), [
-            'ip' => '123123',
-            'port' => 123
-        ]));
+        $proxyNova = new ProxyNova();
+        $proxies = $proxyNova->getProxies();
+        dd($proxies);
     }
 
     /**

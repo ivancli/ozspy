@@ -15,13 +15,13 @@ class UserTest extends TestCase
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
-        $this->userRepo = $this->app->make(UserContract::class);
-
         parent::__construct($name, $data, $dataName);
     }
 
     public function testAll()
     {
+        $this->userRepo = $this->app->make(UserContract::class);
+
         $createdUsers = factory(User::class, 3)->make();
 
         $fetchedUsers = $this->userRepo->all();
