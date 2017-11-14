@@ -60,7 +60,7 @@ class ProxyNova extends ProxyScraper
                 }
                 $portNode = $node->filterXPath('//td[2]/a')->first();
                 if (!is_null($portNode)) {
-                    $port = $portNode->text();
+                    $port = $portNode->first()->text();
                 }
 
                 if (!is_null($ip) && !is_null($port)) {

@@ -4,6 +4,7 @@ namespace OzSpy\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use OzSpy\Console\Commands\Crawl\Proxy;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,7 +14,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Proxy::class
     ];
 
     /**
