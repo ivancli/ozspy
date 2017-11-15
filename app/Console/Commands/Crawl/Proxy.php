@@ -19,7 +19,7 @@ class Proxy extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Scrape proxies from websites';
 
     /**
      * Create a new command instance.

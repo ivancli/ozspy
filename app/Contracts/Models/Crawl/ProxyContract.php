@@ -28,10 +28,18 @@ interface ProxyContract
     public function get($id, $throw = true);
 
     /**
-     * get random proxy
-     * @return Proxy|null
+     * @param $ip
+     * @param $port
+     * @return bool
      */
-    public function random();
+    public function exist($ip, $port);
+
+    /**
+     * get random proxy
+     * @param bool $only_active
+     * @return null|Proxy
+     */
+    public function random($only_active = true);
 
     /**
      * create a new proxy
@@ -54,4 +62,11 @@ interface ProxyContract
      * @return bool
      */
     public function delete(Proxy $proxy);
+
+    /**
+     * test validity of a proxy
+     * @param Proxy $proxy
+     * @return bool
+     */
+    public function test(Proxy $proxy);
 }

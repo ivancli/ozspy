@@ -17,12 +17,6 @@ class ProxyNova extends ProxyScraper
 {
     const URL = 'https://www.proxynova.com/proxy-server-list/country-au/';
 
-    public function __construct()
-    {
-        $this->crawl();
-        $this->parser();
-    }
-
     /**
      * fetch content from URL
      * @return void
@@ -39,7 +33,7 @@ class ProxyNova extends ProxyScraper
 
     /**
      * extract IPs and Ports from content
-     * @return mixed
+     * @return void
      */
     protected function parser()
     {
@@ -58,15 +52,15 @@ class ProxyNova extends ProxyScraper
                     $firstPart = substr($firstPartMatch, 2);
                     $ip = $firstPart . $lastPartMatch;
                 }
-                $portNode = $node->filterXPath('//td[2]/a')->first();
-                if (!is_null($portNode)) {
-                    $port = $portNode->first()->text();
+                $portNodes = $node->filterXPath('//td[2]');
+                if ($portNodes->count() > 0) {
+                    $port = $portNodes->first()->text();
                 }
 
                 if (!is_null($ip) && !is_null($port)) {
                     $this->proxies[] = [
-                        'ip' => $ip,
-                        'port' => $port,
+                        'ip' => trim($ip),
+                        'port' => trim($port),
                     ];
                 }
             });

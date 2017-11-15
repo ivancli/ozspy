@@ -15,6 +15,12 @@ abstract class ProxyScraper
 
     protected $proxies = [];
 
+    public function __construct()
+    {
+        $this->crawl();
+        $this->parser();
+    }
+
     /**
      * fetch all scraped proxies
      * @return array
@@ -22,11 +28,6 @@ abstract class ProxyScraper
     public function getProxies()
     {
         return $this->proxies;
-    }
-
-    protected function test()
-    {
-
     }
 
     /**
@@ -37,7 +38,7 @@ abstract class ProxyScraper
 
     /**
      * extract IPs and Ports from content
-     * @return mixed
+     * @return void
      */
     abstract protected function parser();
 }

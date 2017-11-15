@@ -1,6 +1,6 @@
 <?php
 
-namespace OzSpy\Jobs\Crawl;
+namespace OzSpy\Jobs\Clean;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -8,22 +8,22 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
-use OzSpy\Contracts\Scrapers\Proxies\ProxyScraper;
+use OzSpy\Models\Crawl\Proxy as ProxyModel;
 
 class Proxy implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $proxyScraper;
+    protected $proxy;
 
     /**
      * Create a new job instance.
      *
-     * @param ProxyScraper $proxyScraper
+     * @param ProxyModel $proxy
      */
-    public function __construct(ProxyScraper $proxyScraper)
+    public function __construct(ProxyModel $proxy)
     {
-        $this->proxyScraper = $proxyScraper;
+        $this->proxy = $proxy;
     }
 
     /**
@@ -34,12 +34,10 @@ class Proxy implements ShouldQueue
      */
     public function handle(ProxyContract $proxyRepo)
     {
-        $proxies = $this->proxyScraper->getProxies();
-        foreach ($proxies as $proxy) {
-            $proxy = $proxyRepo->store($proxy);
-            if (!is_null($proxy)) {
-                $proxyRepo->test($proxy);
-            }
+        $proxyRepo->test($this->proxy);
+        $this->proxy->refresh();
+        if ($this->proxy->is_active === false) {
+            $proxyRepo->delete($this->proxy);
         }
     }
 }

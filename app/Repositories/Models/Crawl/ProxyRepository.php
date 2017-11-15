@@ -46,23 +46,45 @@ class ProxyRepository implements ProxyContract
     }
 
     /**
-     * get random proxy
-     * @return Proxy|null
+     * @param $ip
+     * @param $port
+     * @return bool
      */
-    public function random()
+    public function exist($ip, $port)
     {
-        return $this->proxy->inRandomOrder()->first();
+        return $this->proxy
+                ->where('ip', $ip)
+                ->where('port', $port)
+                ->count() > 0;
+    }
+
+    /**
+     * get random proxy
+     * @param bool $only_active
+     * @return null|Proxy
+     */
+    public function random($only_active = true)
+    {
+        if ($only_active === true) {
+            return $this->proxy->where('is_active', 1)->inRandomOrder()->first();
+        } else {
+            return $this->proxy->inRandomOrder()->first();
+        }
     }
 
     /**
      * create a new proxy
      * @param array $data
-     * @return Proxy
+     * @return Proxy|null
      */
     public function store(array $data)
     {
         $data = $this->__getData($data);
-        return $this->proxy->create($data);
+        $exist = $this->exist(array_get($data, 'ip'), array_get($data, 'port'));
+        if ($exist === false) {
+            return $this->proxy->create($data);
+        }
+        return null;
     }
 
     /**
@@ -95,5 +117,23 @@ class ProxyRepository implements ProxyContract
     private function __getData(array $data)
     {
         return array_only($data, $this->proxy->getFillable());
+    }
+
+    /**
+     * test validity of a proxy
+     * @param Proxy $proxy
+     * @return bool
+     */
+    public function test(Proxy $proxy)
+    {
+        $timeout = 10;
+
+        $result = @fsockopen($proxy->ip, $proxy->port, $errCode, $errStr, $timeout);
+        if ($result === false) {
+            $proxy->setActive(false);
+        } else {
+            fclose($result);
+            $proxy->setActive();
+        }
     }
 }
