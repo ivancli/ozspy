@@ -20,10 +20,11 @@ class CreateWebCategoriesTable extends Migration
                 ->onUpdate('cascade')->onDelete('set null');
             $table->integer('category_id')->unsigned()->nullable();
             $table->string('name');
+            $table->string('url', 2083);
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unique(['retailer_id', 'name']);
+            $table->unique(['retailer_id', 'category_id', 'name']);
         });
 
         Schema::table('categories', function (Blueprint $table) {
