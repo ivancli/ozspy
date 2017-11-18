@@ -17,7 +17,8 @@ class CreateProxiesTable extends Migration
             $table->increments('id');
             $table->string('ip');
             $table->integer('port')->default(80)->unsigned();
-            $table->tinyInteger('is_active')->default(1);
+            $table->string('provider')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->unique(['ip', 'port']);
         });

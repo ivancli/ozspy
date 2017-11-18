@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCrawlCategoriesTable extends Migration
+class CreateCountriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreateCrawlCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('crawl_categories', function (Blueprint $table) {
+        Schema::create('countries', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->integer('category_id')->unsigned()->nullable();
+            $table->string('official_name');
+            $table->string('cca2')->nullable();
+            $table->string('cca3')->nullable();
+            $table->string('ccn3')->nullable();
+            $table->string('region')->nullable();
+            $table->string('subregion')->nullable();
             $table->softDeletes();
             $table->timestamps();
-        });
-
-        Schema::table('crawl_categories',function(Blueprint $table){
-            $table->foreign('category_id')->references('id')->on('crawl_categories')
-                ->onUpdate('cascade')->onDelete('set null');
         });
     }
 
@@ -34,6 +34,6 @@ class CreateCrawlCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crawl_categories');
+        Schema::dropIfExists('countries');
     }
 }

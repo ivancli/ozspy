@@ -17,11 +17,13 @@ class IdCloak extends ProxyScraper
 {
     const URL = 'http://www.idcloak.com/proxylist/australia-proxy-list.html';
 
+    protected $provider = 'IdCloak';
+
     /**
      * fetch content from URL
      * @return void
      */
-    protected function crawl()
+    public function crawl()
     {
         $crawler = new CurlCrawler();
         $crawler->setURL(self::URL);
@@ -35,7 +37,7 @@ class IdCloak extends ProxyScraper
      * extract IPs and Ports from content
      * @return void
      */
-    protected function parser()
+    public function parser()
     {
         $crawler = new Crawler($this->content);
         $rowNodes = $crawler->filterXPath('//*[@id="sort"]//tr[td]');

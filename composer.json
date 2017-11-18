@@ -27,7 +27,8 @@
         "laravel/framework": "5.5.*",
         "laravel/passport": "^4.0",
         "laravel/socialite": "^3.0",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "mledoze/countries": "^1.8"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

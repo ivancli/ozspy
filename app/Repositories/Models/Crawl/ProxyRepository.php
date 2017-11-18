@@ -23,11 +23,16 @@ class ProxyRepository implements ProxyContract
 
     /**
      * get all proxies
+     * @param bool $trashed
      * @return \Illuminate\Database\Eloquent\Collection|Proxy[]
      */
-    public function all()
+    public function all($trashed = false)
     {
-        return $this->proxy->all();
+        if ($trashed === true) {
+            return $this->proxy->withTrashed()->get();
+        } else {
+            return $this->proxy->all();
+        }
     }
 
     /**
@@ -39,37 +44,41 @@ class ProxyRepository implements ProxyContract
     public function get($id, $throw = true)
     {
         if ($throw === true) {
-            return $this->proxy->findOrFail($id);
+            return $this->proxy->withTrashed()->findOrFail($id);
         } else {
-            return $this->proxy->find($id);
+            return $this->proxy->withTrashed()->find($id);
         }
     }
 
     /**
      * @param $ip
      * @param $port
+     * @param bool $trashed
      * @return bool
      */
-    public function exist($ip, $port)
+    public function exist($ip, $port, $trashed = false)
     {
-        return $this->proxy
-                ->where('ip', $ip)
+        $builder = $this->proxy;
+        if ($trashed === true) {
+            $builder = $builder->withTrashed();
+        }
+        return $builder->where('ip', $ip)
                 ->where('port', $port)
                 ->count() > 0;
     }
 
     /**
      * get random proxy
-     * @param bool $only_active
+     * @param bool $trashed
      * @return null|Proxy
      */
-    public function random($only_active = true)
+    public function random($trashed = false)
     {
-        if ($only_active === true) {
-            return $this->proxy->where('is_active', 1)->inRandomOrder()->first();
-        } else {
-            return $this->proxy->inRandomOrder()->first();
+        $builder = $this->proxy;
+        if ($trashed === true) {
+            $builder = $builder->withTrashed();
         }
+        return $builder->inRandomOrder()->first();
     }
 
     /**
@@ -80,7 +89,7 @@ class ProxyRepository implements ProxyContract
     public function store(array $data)
     {
         $data = $this->__getData($data);
-        $exist = $this->exist(array_get($data, 'ip'), array_get($data, 'port'));
+        $exist = $this->exist(array_get($data, 'ip'), array_get($data, 'port'), true);
         if ($exist === false) {
             return $this->proxy->create($data);
         }
@@ -102,21 +111,26 @@ class ProxyRepository implements ProxyContract
     /**
      * delete a proxy
      * @param Proxy $proxy
+     * @param bool $force
      * @return bool
      */
-    public function delete(Proxy $proxy)
+    public function delete(Proxy $proxy, $force = false)
     {
-        return $proxy->delete();
+        if ($force === true) {
+            return $proxy->forceDelete();
+        } else {
+            return $proxy->delete();
+        }
     }
 
     /**
-     * filter parameters
-     * @param array $data
-     * @return array
+     * restore a proxy
+     * @param Proxy $proxy
+     * @return bool
      */
-    private function __getData(array $data)
+    public function restore(Proxy $proxy)
     {
-        return array_only($data, $this->proxy->getFillable());
+        return $proxy->restore();
     }
 
     /**
@@ -130,10 +144,25 @@ class ProxyRepository implements ProxyContract
 
         $result = @fsockopen($proxy->ip, $proxy->port, $errCode, $errStr, $timeout);
         if ($result === false) {
-            $proxy->setActive(false);
+            if (!$proxy->trashed()) {
+                $this->delete($proxy);
+            }
         } else {
             fclose($result);
-            $proxy->setActive();
+            if ($proxy->trashed()) {
+                $this->restore($proxy);
+            }
         }
+        return $result !== false;
+    }
+
+    /**
+     * filter parameters
+     * @param array $data
+     * @return array
+     */
+    private function __getData(array $data)
+    {
+        return array_only($data, $this->proxy->getFillable());
     }
 }

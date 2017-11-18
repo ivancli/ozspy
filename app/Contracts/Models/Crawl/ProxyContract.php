@@ -15,9 +15,10 @@ interface ProxyContract
 {
     /**
      * get all proxies
+     * @param bool $trashed
      * @return \Illuminate\Database\Eloquent\Collection|Proxy[]
      */
-    public function all();
+    public function all($trashed = false);
 
     /**
      * get proxy by id
@@ -30,16 +31,17 @@ interface ProxyContract
     /**
      * @param $ip
      * @param $port
+     * @param bool $trashed
      * @return bool
      */
-    public function exist($ip, $port);
+    public function exist($ip, $port, $trashed = false);
 
     /**
      * get random proxy
-     * @param bool $only_active
+     * @param bool $trashed
      * @return null|Proxy
      */
-    public function random($only_active = true);
+    public function random($trashed = false);
 
     /**
      * create a new proxy
@@ -59,9 +61,17 @@ interface ProxyContract
     /**
      * delete a proxy
      * @param Proxy $proxy
+     * @param bool $force
      * @return bool
      */
-    public function delete(Proxy $proxy);
+    public function delete(Proxy $proxy, $force = false);
+
+    /**
+     * restore a proxy
+     * @param Proxy $proxy
+     * @return bool
+     */
+    public function restore(Proxy $proxy);
 
     /**
      * test validity of a proxy

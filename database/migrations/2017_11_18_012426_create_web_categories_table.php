@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCrawlProductsTable extends Migration
+class CreateWebCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,24 +13,22 @@ class CreateCrawlProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('crawl_products', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('brand_id')->unsigned()->nullable();
-            $table->foreign('brand_id')->references('id')->on('brands')
-                ->onUpdate('cascade')->onDelete('set null');
             $table->integer('retailer_id')->unsigned()->nullable();
             $table->foreign('retailer_id')->references('id')->on('retailers')
                 ->onUpdate('cascade')->onDelete('set null');
-            $table->string('retailer_product_id')->nullable();
+            $table->integer('category_id')->unsigned()->nullable();
             $table->string('name');
-            $table->float('price')->nullable();
-            $table->string('model_number')->nullable();
-            $table->string('sku')->nullable();
-            $table->string('gtin')->nullable();
-            $table->string('vpn')->nullable();
-            $table->string('ean')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(['retailer_id', 'name']);
+        });
+
+        Schema::table('categories', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('categories')
+                ->onUpdate('cascade')->onDelete('set null');
         });
     }
 
@@ -41,6 +39,6 @@ class CreateCrawlProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crawl_products');
+        Schema::dropIfExists('categories');
     }
 }

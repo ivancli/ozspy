@@ -34,15 +34,19 @@ class Proxy extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
     public function handle()
     {
         $proxyScrapersPath = app_path('Repositories/Scrapers/Proxies');
         $proxyScrapers = list_files_with_directories($proxyScrapersPath, true);
+        $this->output->createProgressBar(count($proxyScrapers));
         foreach ($proxyScrapers as $proxyScraper) {
             $proxyScraperInstance = app()->make("OzSpy\Repositories\Scrapers\Proxies\\$proxyScraper");
             dispatch((new CrawlProxy($proxyScraperInstance))->onQueue('crawl-proxy')->onConnection('sync'));
+            $this->output->progressAdvance();
         }
+        $this->output->progressFinish();
+        $this->output->success("crawl:proxy has dispatched all jobs");
     }
 }

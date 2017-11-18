@@ -1,15 +1,15 @@
 <?php
 
-namespace OzSpy\Models\Crawl;
+namespace OzSpy\Models\Common;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Proxy extends Model
+class Country extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['ip', 'port', 'provider'];
+    protected $fillable = ['name', 'official_name', 'cca2', 'cca3', 'ccn3', 'region', 'subregion'];
 
     protected $dates = ['deleted_at'];
 }

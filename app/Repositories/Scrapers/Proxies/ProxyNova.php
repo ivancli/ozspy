@@ -17,11 +17,13 @@ class ProxyNova extends ProxyScraper
 {
     const URL = 'https://www.proxynova.com/proxy-server-list/country-au/';
 
+    protected $provider = 'Proxy Nova';
+
     /**
      * fetch content from URL
      * @return void
      */
-    protected function crawl()
+    public function crawl()
     {
         $crawler = new CurlCrawler();
         $crawler->setURL(self::URL);
@@ -35,7 +37,7 @@ class ProxyNova extends ProxyScraper
      * extract IPs and Ports from content
      * @return void
      */
-    protected function parser()
+    public function parser()
     {
         if (!is_null($this->content)) {
             $domCrawler = new Crawler($this->content);

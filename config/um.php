@@ -17,7 +17,7 @@ return [
     | the role if it is in a different namespace.
     |
     */
-    'role' => 'App\Models\Auth\Role',
+    'role' => 'OzSpy\Models\Auth\Role',
     /*
     |--------------------------------------------------------------------------
     | UM Roles Table
@@ -56,7 +56,7 @@ return [
     | Update the permission if it is in a different namespace.
     |
     */
-    'permission' => 'App\Models\Auth\Permission',
+    'permission' => 'OzSpy\Models\Auth\Permission',
     /*
     |--------------------------------------------------------------------------
     | UM Permissions Table
@@ -96,7 +96,7 @@ return [
     | Update the group if it is in a different namespace.
     |
     */
-    'group' => 'App\Models\Auth\Group',
+    'group' => 'OzSpy\Models\Auth\Group',
     /*
     |--------------------------------------------------------------------------
     | UM Groups Table

@@ -5,15 +5,17 @@ namespace OzSpy\Http\Controllers;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
+use OzSpy\Models\Crawl\Proxy;
 use OzSpy\Repositories\Scrapers\Proxies\ProxyNova;
 
 class TestController extends Controller
 {
-    public function index()
+    public function index(ProxyContract $proxyRepo)
     {
-        $proxyNova = new ProxyNova();
-        $proxies = $proxyNova->getProxies();
-        dd($proxies);
+        $content = file_get_contents(base_path('vendor/mledoze/countries/dist/countries.json'));
+        $jsonObject = json_decode($content);
+        dd(($jsonObject));
+
     }
 
     /**

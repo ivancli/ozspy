@@ -17,11 +17,13 @@ class GatherProxy extends ProxyScraper
 {
     const URL = 'http://www.gatherproxy.com/proxylist/country/?c=Australia';
 
+    protected $provider = 'Gather Proxy';
+
     /**
      * fetch content from URL
      * @return void
      */
-    protected function crawl()
+    public function crawl()
     {
         $crawler = new CurlCrawler();
         $crawler->setURL(self::URL);
@@ -35,7 +37,7 @@ class GatherProxy extends ProxyScraper
      * extract IPs and Ports from content
      * @return void
      */
-    protected function parser()
+    public function parser()
     {
         $crawler = new Crawler($this->content);
         $scriptNodes = $crawler->filterXPath('//*[@id="tblproxy"]/script');

@@ -15,8 +15,14 @@ class CreateRetailersTable extends Migration
     {
         Schema::create('retailers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->unique();
-            $table->string('url')->unique();
+            $table->integer('country_id')->unsigned()->nullable();
+            $table->foreign('country_id')->references('id')->on('countries')
+                ->onUpdate('cascade')->onDelete('set null');
+            $table->string('name');
+            $table->string('abbreviation');
+            $table->string('domain', 2083);
+            $table->string('ecommerce_url');
+            $table->binary('logo')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -41,7 +41,7 @@ class Proxy extends Command
      */
     public function handle(ProxyContract $proxyRepo)
     {
-        $proxies = $proxyRepo->all();
+        $proxies = $proxyRepo->all(true);
         $this->output->createProgressBar($proxies->count());
         $this->output->progressStart();
         $proxies->each(function (ProxyModel $proxy) {

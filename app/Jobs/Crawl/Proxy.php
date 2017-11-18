@@ -34,9 +34,13 @@ class Proxy implements ShouldQueue
      */
     public function handle(ProxyContract $proxyRepo)
     {
+        $this->proxyScraper->crawl();
+        $this->proxyScraper->parser();
         $proxies = $this->proxyScraper->getProxies();
+        $provider = $this->proxyScraper->getProvider();
         foreach ($proxies as $proxy) {
-            $proxy = $proxyRepo->store($proxy);
+            $data = array_merge($proxy, ['provider' => $provider]);
+            $proxy = $proxyRepo->store($data);
             if (!is_null($proxy)) {
                 $proxyRepo->test($proxy);
             }
