@@ -19,6 +19,6 @@ class Retailer extends Model
      */
     public function categories()
     {
-        return $this->hasMany(Category::class, 'retailer_id', 'id');
+        return $this->hasMany(WebCategory::class, 'retailer_id', 'id');
     }
 }

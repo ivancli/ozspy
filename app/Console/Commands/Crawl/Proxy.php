@@ -40,7 +40,7 @@ class Proxy extends Command
     {
         $proxyScrapersPath = app_path('Repositories/Scrapers/Proxies');
         $proxyScrapers = list_files_with_directories($proxyScrapersPath, true);
-        $this->output->createProgressBar(count($proxyScrapers));
+        $this->output->progressStart(count($proxyScrapers));
         foreach ($proxyScrapers as $proxyScraper) {
             $proxyScraperInstance = app()->make("OzSpy\Repositories\Scrapers\Proxies\\$proxyScraper");
             dispatch((new CrawlProxy($proxyScraperInstance))->onQueue('crawl-proxy')->onConnection('sync'));

@@ -35,7 +35,7 @@ class Proxy implements ShouldQueue
     public function handle(ProxyContract $proxyRepo)
     {
         $proxyRepo->test($this->proxy);
-        $this->proxy->fresh();
+        $this->proxy = $this->proxy->fresh();
         if ($this->proxy->trashed()) {
             $proxyRepo->delete($this->proxy, true);
         }

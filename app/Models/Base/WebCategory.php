@@ -5,11 +5,11 @@ namespace OzSpy\Models\Base;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class WebCategory extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'url'];
+    protected $fillable = ['name', 'slug', 'url'];
 
     protected $dates = ['deleted_at'];
 
@@ -24,10 +24,19 @@ class Category extends Model
 
     /**
      * relationship with category
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function childCategories()
+    {
+        return $this->hasMany(self::class, 'web_category_id', 'id');
+    }
+
+    /**
+     * relationship with category
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function parentCategory()
     {
-        return $this->belongsTo(self::class, 'category_id', 'id');
+        return $this->belongsTo(self::class, 'web_category_id', 'id');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWebCategoriesTable extends Migration
+class CreateWebProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,24 +13,21 @@ class CreateWebCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('web_categories', function (Blueprint $table) {
+        Schema::create('web_products', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('retailer_id')->unsigned()->nullable();
+            $table->integer('retailer_id')->unsigned();
             $table->foreign('retailer_id')->references('id')->on('retailers')
                 ->onUpdate('cascade')->onDelete('set null');
-            $table->integer('web_category_id')->unsigned()->nullable();
+            $table->string('retailer_product_id')->nullable();
             $table->string('name');
             $table->string('slug')->nullable();
             $table->string('url', 2083)->nullable();
+            $table->string('model_number')->nullable();
+            $table->string('sku')->nullable();
+            $table->string('gtin')->nullable();
+            $table->string('upc')->nullable();
             $table->softDeletes();
             $table->timestamps();
-
-            $table->unique(['retailer_id', 'web_category_id', 'name']);
-        });
-
-        Schema::table('web_categories', function (Blueprint $table) {
-            $table->foreign('web_category_id')->references('id')->on('web_categories')
-                ->onUpdate('cascade')->onDelete('set null');
         });
     }
 
@@ -41,6 +38,6 @@ class CreateWebCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('web_categories');
+        Schema::dropIfExists('web_products');
     }
 }

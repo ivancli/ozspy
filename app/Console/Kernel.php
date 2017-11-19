@@ -4,6 +4,7 @@ namespace OzSpy\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use OzSpy\Console\Commands\Crawl\WebCategory as CrawlWebCategory;
 use OzSpy\Console\Commands\Crawl\Proxy as CrawlProxy;
 use OzSpy\Console\Commands\Clean\Proxy as CleanProxy;
 
@@ -17,6 +18,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         CrawlProxy::class,
         CleanProxy::class,
+        CrawlWebCategory::class
     ];
 
     /**
@@ -36,6 +38,7 @@ class Kernel extends ConsoleKernel
 
         $this->__scheduleCrawlProxy();
         $this->__scheduleCleanProxy();
+        $this->__scheduleCrawlWebCategory();
     }
 
     /**
@@ -56,6 +59,12 @@ class Kernel extends ConsoleKernel
     {
         $this->schedule->command('clean:proxy')
             ->everyMinute();
+    }
+
+    private function __scheduleCrawlWebCategory()
+    {
+        $this->schedule->command('crawl:web-category')
+            ->twiceDaily();
     }
 
     /**

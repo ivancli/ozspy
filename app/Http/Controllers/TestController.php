@@ -2,20 +2,24 @@
 
 namespace OzSpy\Http\Controllers;
 
+use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
 use OzSpy\Models\Crawl\Proxy;
 use OzSpy\Repositories\Scrapers\Proxies\ProxyNova;
+use OzSpy\Repositories\Scrapers\Web\Kogan\WebCategoryScraper;
 
 class TestController extends Controller
 {
-    public function index(ProxyContract $proxyRepo)
+    public function index(RetailerContract $retailerContract)
     {
-        $content = file_get_contents(base_path('vendor/mledoze/countries/dist/countries.json'));
-        $jsonObject = json_decode($content);
-        dd(($jsonObject));
+        $retailer = $retailerContract->get(1);
+        $categoryScraper = new WebCategoryScraper($retailer);
 
+        $categoryScraper->scrape();
+        $categories = $categoryScraper->getCategories();
+        dd($categories);
     }
 
     /**
