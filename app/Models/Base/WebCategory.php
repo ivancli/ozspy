@@ -39,4 +39,13 @@ class WebCategory extends Model
     {
         return $this->belongsTo(self::class, 'web_category_id', 'id');
     }
+
+    /**
+     * relationship with WebProduct
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function webProducts()
+    {
+        return $this->belongsToMany(WebProduct::class, 'web_product_web_category', 'web_category_id', 'web_product_id')->withTimestamps();
+    }
 }

@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateMapBrandsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('map_brands', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('retailer_id')->unsigned();
+            $table->foreign('retailer_id')->references('id')->on('retailers')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('brand_id')->unsigned();
+            $table->foreign('brand_id')->references('id')->on('brands')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->string('name');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('map_brands');
+    }
+}
