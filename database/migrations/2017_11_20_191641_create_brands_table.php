@@ -17,6 +17,7 @@ class CreateBrandsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('url', 2083)->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

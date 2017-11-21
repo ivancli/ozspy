@@ -103,7 +103,7 @@ class WebCategory implements ShouldQueue
         }
         if (!isset($storedCategory)) {
             $storedCategory = $this->categoryRepo->store($categoryData);
-            $this->retailer->categories()->save($storedCategory);
+            $this->retailer->webCategories()->save($storedCategory);
         }
         if (!is_null($parentCategory)) {
             $parentCategory->childCategories()->save($storedCategory);
@@ -137,10 +137,10 @@ class WebCategory implements ShouldQueue
      */
     protected function deleteCategories()
     {
-        $categories = $this->retailer->categories;
+        $categories = $this->retailer->webCategories;
         $notFoundCategories = $categories->diff($this->storedCategories);
         $notFoundCategoryIds = $notFoundCategories->pluck('id');
-        $this->retailer->categories()->whereIn('id', $notFoundCategoryIds)->delete();
+        $this->retailer->webCategories()->whereIn('id', $notFoundCategoryIds)->delete();
     }
 
     /**

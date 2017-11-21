@@ -28,6 +28,15 @@ class WebProduct extends Model
     }
 
     /**
+     * relationship with WebBrand
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function webBrands()
+    {
+        return $this->hasMany(WebBrand::class, 'web_product_id', 'id');
+    }
+
+    /**
      * relationship with WebCategory
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
