@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper;
+use OzSpy\Exceptions\ScraperNotFoundException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory as WebCategoryModel;
 
@@ -57,6 +58,7 @@ class WebCategory implements ShouldQueue
      * @param WebCategoryContract $categoryRepo
      * @param WebCategoryModel $categoryModel
      * @return void
+     * @throws ScraperNotFoundException
      */
     public function handle(WebCategoryContract $categoryRepo, WebCategoryModel $categoryModel)
     {
@@ -65,6 +67,10 @@ class WebCategory implements ShouldQueue
         $this->categoryModel = $categoryModel;
 
         $className = 'OzSpy\Repositories\Scrapers\Web\\' . $this->retailer->name . '\WebCategoryScraper';
+
+        if (!class_exists($className)) {
+            throw new ScraperNotFoundException;
+        }
 
         $this->categoryScraper = new $className($this->retailer);
 
