@@ -30,6 +30,11 @@ abstract class WebProductListScraper
      */
     protected $retailer;
 
+    /**
+     * @var bool
+     */
+    protected $available = true;
+
     public function __construct(WebCategory $webCategory)
     {
         $this->webCategory = $webCategory;
@@ -48,5 +53,10 @@ abstract class WebProductListScraper
     public function getProducts()
     {
         return $this->products;
+    }
+
+    public function isAvailable()
+    {
+        return $this->available;
     }
 }

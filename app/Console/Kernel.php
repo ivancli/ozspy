@@ -39,6 +39,7 @@ class Kernel extends ConsoleKernel
         $this->__scheduleCrawlProxy();
         $this->__scheduleCleanProxy();
         $this->__scheduleCrawlWebCategory();
+        $this->__scheduleCrawlWebProductList();
     }
 
     /**
@@ -48,7 +49,7 @@ class Kernel extends ConsoleKernel
     private function __scheduleCrawlProxy()
     {
         $this->schedule->command('crawl:proxy')
-            ->daily();
+            ->everyMinute();
     }
 
     /**
@@ -64,6 +65,12 @@ class Kernel extends ConsoleKernel
     private function __scheduleCrawlWebCategory()
     {
         $this->schedule->command('crawl:web-category')
+            ->hourly();
+    }
+
+    private function __scheduleCrawlWebProductList()
+    {
+        $this->schedule->command('crawl:web-product-list')
             ->twiceDaily();
     }
 

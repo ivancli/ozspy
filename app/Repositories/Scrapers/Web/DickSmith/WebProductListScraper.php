@@ -6,9 +6,8 @@
  * Time: 12:12 AM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\Kogan;
+namespace OzSpy\Repositories\Scrapers\Web\DickSmith;
 
-use Illuminate\Support\Facades\Log;
 use IvanCLI\Crawler\Repositories\CurlCrawler;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Contracts\Scrapers\Webs\WebProductListScraper as WebProductListScraperContract;
@@ -16,7 +15,7 @@ use OzSpy\Models\Base\WebCategory;
 
 class WebProductListScraper extends WebProductListScraperContract
 {
-    const URL = 'https://www.kogan.com/api/v1/products';
+    const URL = 'https://www.dicksmith.com.au/api/v1/products';
     /*?group_variants=false
     &department=phones
     &store=au
@@ -68,6 +67,7 @@ class WebProductListScraper extends WebProductListScraperContract
     {
         $this->setUrl();
         $this->crawler->setJsonResponse();
+        dump($this->apiUrl);
         if (!is_null($this->apiUrl)) {
             $response = $this->crawler->fetch();
             if ($response->status == 200 && !is_null($response->content)) {
@@ -104,7 +104,7 @@ class WebProductListScraper extends WebProductListScraperContract
         if (!is_null($this->department)) {
             $this->apiUrl = self::URL . '?' .
                 'group_variants=false&' .
-                'store=au&' .
+                'store=da&' .
                 (!is_null($this->department) ? "department={$this->department}&" : null) .
                 (!is_null($this->filterFieldName) && !is_null($this->filterFieldValue) ? "{$this->filterFieldName}={$this->filterFieldValue}&" : null) .
                 "offset={$this->offset}";

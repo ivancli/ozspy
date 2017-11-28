@@ -9,7 +9,7 @@ class WebCategory extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'slug', 'url'];
+    protected $fillable = ['name', 'slug', 'field', 'url'];
 
     protected $dates = ['deleted_at'];
 

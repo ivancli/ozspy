@@ -140,7 +140,7 @@ class ProxyRepository implements ProxyContract
      */
     public function test(Proxy $proxy)
     {
-        $timeout = 5;
+        $timeout = 2;
 
         $result = @fsockopen($proxy->ip, $proxy->port, $errCode, $errStr, $timeout);
         if ($result === false) {

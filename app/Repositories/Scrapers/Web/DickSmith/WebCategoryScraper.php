@@ -6,7 +6,7 @@
  * Time: 12:32 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\Kogan;
+namespace OzSpy\Repositories\Scrapers\Web\DickSmith;
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;

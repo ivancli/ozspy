@@ -17,6 +17,8 @@ class CreateWebProductWebCategoryTable extends Migration
             $table->integer('web_product_id')->unsigned();
             $table->integer('web_category_id')->unsigned();
             $table->timestamps();
+
+            $table->primary(['web_product_id', 'web_category_id']);
         });
     }
 

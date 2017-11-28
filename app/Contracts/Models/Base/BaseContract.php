@@ -94,10 +94,7 @@ class BaseContract
      */
     public function restore(Model $model)
     {
-        if (method_exists($model, 'restore')) {
-            return $model->restore();
-        }
-        return false;
+        return $model->restore();
     }
 
     private function __getData(array $data)

@@ -43,7 +43,8 @@ class Proxy extends Command
         $this->output->progressStart(count($proxyScrapers));
         foreach ($proxyScrapers as $proxyScraper) {
             $proxyScraperInstance = app()->make("OzSpy\Repositories\Scrapers\Proxies\\$proxyScraper");
-            dispatch((new CrawlProxy($proxyScraperInstance))->onQueue('crawl-proxy')->onConnection('sync'));
+//            dispatch((new CrawlProxy($proxyScraperInstance))->onQueue('crawl-proxy')->onConnection('sync'));
+            dispatch((new CrawlProxy($proxyScraperInstance))->onQueue('crawl-proxy'));
             $this->output->progressAdvance();
         }
         $this->output->progressFinish();

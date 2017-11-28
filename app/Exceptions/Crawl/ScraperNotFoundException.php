@@ -6,7 +6,7 @@
  * Time: 10:26 PM
  */
 
-namespace OzSpy\Exceptions;
+namespace OzSpy\Exceptions\Crawl;
 
 
 class ScraperNotFoundException extends \Exception

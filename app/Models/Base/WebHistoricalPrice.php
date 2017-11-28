@@ -4,9 +4,9 @@ namespace OzSpy\Models\Base;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WebBrand extends Model
+class WebHistoricalPrice extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['amount'];
 
     /**
      * relationship with WebProduct

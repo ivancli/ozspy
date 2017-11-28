@@ -15,16 +15,14 @@ class CreateWebProductsTable extends Migration
     {
         Schema::create('web_products', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('retailer_id')->unsigned();
+            $table->integer('retailer_id')->unsigned()->nullable();
             $table->foreign('retailer_id')->references('id')->on('retailers')
                 ->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('brand_id')->unsigned()->nullable();
-            $table->foreign('brand_id')->references('id')->on('brands')
-                ->onUpdate('cascade')->onDelete('set null');
             $table->string('retailer_product_id')->nullable();
             $table->string('name');
             $table->string('slug')->nullable();
             $table->string('url', 2083)->nullable();
+            $table->string('brand')->nullable();
             $table->string('model')->nullable();
             $table->string('sku')->nullable();
             $table->string('gtin8', 8)->nullable();
@@ -34,6 +32,8 @@ class CreateWebProductsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        DB::statement('ALTER TABLE web_products ADD FULLTEXT full(name)');
     }
 
     /**

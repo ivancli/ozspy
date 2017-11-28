@@ -21,6 +21,7 @@ class CreateWebCategoriesTable extends Migration
             $table->integer('web_category_id')->unsigned()->nullable();
             $table->string('name');
             $table->string('slug')->nullable();
+            $table->string('field')->nullable();
             $table->string('url', 2083)->nullable();
             $table->softDeletes();
             $table->timestamps();

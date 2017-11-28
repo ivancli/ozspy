@@ -9,7 +9,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper;
-use OzSpy\Exceptions\ScraperNotFoundException;
+use OzSpy\Exceptions\Crawl\CategoriesNotFoundException;
+use OzSpy\Exceptions\Crawl\ScraperNotFoundException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory as WebCategoryModel;
 
@@ -58,6 +59,7 @@ class WebCategory implements ShouldQueue
      * @param WebCategoryContract $categoryRepo
      * @param WebCategoryModel $categoryModel
      * @return void
+     * @throws CategoriesNotFoundException
      * @throws ScraperNotFoundException
      */
     public function handle(WebCategoryContract $categoryRepo, WebCategoryModel $categoryModel)
@@ -66,7 +68,7 @@ class WebCategory implements ShouldQueue
 
         $this->categoryModel = $categoryModel;
 
-        $className = 'OzSpy\Repositories\Scrapers\Web\\' . $this->retailer->name . '\WebCategoryScraper';
+        $className = 'OzSpy\Repositories\Scrapers\Web\\' . studly_case($this->retailer->name) . '\WebCategoryScraper';
 
         if (!class_exists($className)) {
             throw new ScraperNotFoundException;
@@ -77,6 +79,9 @@ class WebCategory implements ShouldQueue
         $this->categoryScraper->scrape();
 
         $categories = $this->categoryScraper->getCategories();
+        if (count($categories) == 0) {
+            throw new CategoriesNotFoundException;
+        }
 
         foreach ($categories as $category) {
             $this->processSingleCategory($category);
@@ -97,14 +102,17 @@ class WebCategory implements ShouldQueue
     {
         $categoryData = (array)$category;
         $categoryData = $this->__getData($categoryData);
-
         if (!is_null($parentCategory)) {
             if ($this->categoryRepo->exist($this->retailer, $category->name, $parentCategory, true)) {
                 $storedCategory = $this->categoryRepo->findByName($this->retailer, $category->name, $parentCategory, true);
+                $this->categoryRepo->update($storedCategory, $categoryData);
+                $storedCategory = $storedCategory->fresh();
             }
         } else {
             if ($this->categoryRepo->exist($this->retailer, $category->name, null, true)) {
                 $storedCategory = $this->categoryRepo->findByName($this->retailer, $category->name, null, true);
+                $this->categoryRepo->update($storedCategory, $categoryData);
+                $storedCategory = $storedCategory->fresh();
             }
         }
         if (!isset($storedCategory)) {
@@ -119,6 +127,7 @@ class WebCategory implements ShouldQueue
                 $this->processSingleCategory($childCategory, $storedCategory);
             }
         }
+
         $this->__signCategory($storedCategory);
 
         return $storedCategory;

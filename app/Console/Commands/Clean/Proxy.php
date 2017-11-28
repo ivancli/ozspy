@@ -45,7 +45,7 @@ class Proxy extends Command
         $this->output->createProgressBar($proxies->count());
         $this->output->progressStart();
         $proxies->each(function (ProxyModel $proxy) {
-            dispatch((new ProxyJob($proxy))->onQueue('clean-proxy')->onConnection('sync'));
+            dispatch((new ProxyJob($proxy))->onQueue('clean-proxy'));
             $this->output->progressAdvance();
         });
         $this->output->progressFinish();
