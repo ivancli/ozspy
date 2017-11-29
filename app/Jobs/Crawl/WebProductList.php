@@ -120,11 +120,11 @@ class WebProductList implements ShouldQueue
 
         if (!isset($storedProduct)) {
             $storedProduct = $this->webProductRepo->store($productData);
-            $this->retailer->webProducts()->save($storedProduct);
         } else {
             $this->webProductRepo->update($storedProduct, $productData);
             $storedProduct = $storedProduct->fresh();
         }
+        $this->retailer->webProducts()->save($storedProduct);
 
         /*TODO store price*/
         if (isset($product->price) && !is_null($product->price)) {

@@ -17,6 +17,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WebCategoryScraper extends WebCategoryScraperContract
 {
+    const SITE_MAP_URL = 'https://www.jbhifi.com.au/General/Sitemap/';
+
     /**
      * @var ProxyContract
      */
@@ -48,40 +50,45 @@ class WebCategoryScraper extends WebCategoryScraperContract
     {
         $this->crawlEcommerceURL();
         if (!is_null($this->content)) {
-            $crawler = new Crawler($this->content);
-            $departmentNodes = $crawler->filterXPath('//*[@class="brands"]');
-            $departmentNodes->each(function (Crawler $departmentNode) {
-                $departmentInfoNodes = $departmentNode->filterXPath('//h3/a');
-                if ($departmentInfoNodes->count() > 0) {
-                    $departmentInfoNode = $departmentInfoNodes->first();
-
-                    $category = new \stdClass();
-                    $category->name = $departmentInfoNode->text();
-                    $category->slug = array_last(explode('/', $departmentInfoNode->attr('href')));
-                    $category->url = $this->retailer->domain . $departmentInfoNode->attr('href');
-                    $category->categories = [];
-
-                    $this->crawler->setURL($category->url);
-                    $subCategoryResponse = $this->crawler->fetch();
-                    if ($subCategoryResponse->status == 200 && !is_null($subCategoryResponse->content)) {
-                        $subCategoryCrawler = new Crawler($subCategoryResponse->content);
-                        $subCategoryNodes = $subCategoryCrawler->filterXPath('//*[contains(@class, "category-menu")]/li[not(@class)]');
-                        $subCategoryNodes->each(function (Crawler $subCategoryNode) use (&$category) {
-                            $subCategoryLinkNodes = $subCategoryNode->filterXPath('//a');
-                            if ($subCategoryLinkNodes->count() > 0) {
-                                $subCategoryLinkNode = $subCategoryLinkNodes->first();
-                                $subCategory = new \stdClass();
-                                $subCategory->name = $subCategoryLinkNode->children()->first()->text();
-                                $subCategory->url = $this->retailer->domain . $subCategoryLinkNode->attr('href');
-                                $category->categories[] = $subCategory;
-                            }
-                        });
-                    }
-                    $this->categories[] = $category;
-                }
+            $crawler = new Crawler(ltrim(utf8_decode($this->content), '?'));
+            $categoryListNodes = $crawler->filterXPath('//*[@class="cms-content"]');
+            $categoryListNodes->each(function (Crawler $categoryListNode) {
+                $this->categories = $this->recursiveFilter($categoryListNode);
             });
         }
     }
+
+    protected function recursiveFilter(Crawler $rootNode)
+    {
+        $categories = [];
+        $categoryULListNodes = $rootNode->children();
+        $categoryULListNodes->each(function (Crawler $categoryULListNode) use (&$categories) {
+            if ($categoryULListNode->nodeName() == 'ul') {
+                $categoryListNodes = $categoryULListNode->children();
+                $categoryListNodes->each(function (Crawler $categoryListNode) use (&$categories) {
+                    if ($categoryListNode->nodeName() == 'li') {
+                        $categoryLinkNodes = $categoryListNode->children();
+                        $category = new \stdClass();
+                        $categoryLinkNodes->each(function (Crawler $categoryLinkNode) use (&$category, &$categories, $categoryListNode) {
+                            if ($categoryLinkNode->nodeName() == 'a') {
+                                $category->name = $categoryLinkNode->text();
+                                $category->url = $this->retailer->domain . $categoryLinkNode->attr('href');
+                                $category->slug = array_last(array_filter(explode('/', $categoryLinkNode->attr('href'))));
+                            } elseif ($categoryLinkNode->nodeName() == 'span') {
+                                $category->name = $categoryLinkNode->text();
+                            } elseif ($categoryLinkNode->nodeName() == 'ul') {
+                                $category->categories = $this->recursiveFilter($categoryListNode);
+                            }
+                        });
+                        $categories[] = $category;
+                    }
+                });
+
+            }
+        });
+        return $categories;
+    }
+
 
     /**
      * fetch eCommerce home page
@@ -90,7 +97,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-//        $this->setProxy();
+        $this->setProxy();
 
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
@@ -104,7 +111,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
      */
     protected function setUrl()
     {
-        $this->crawler->setURL($this->retailer->ecommerce_url);
+        $this->crawler->setURL(self::SITE_MAP_URL);
     }
 
     /**
