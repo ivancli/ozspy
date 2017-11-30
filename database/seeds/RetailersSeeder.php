@@ -25,5 +25,12 @@ class RetailersSeeder extends Seeder
             'ecommerce_url' => 'https://www.dicksmith.com.au/da/',
             'logo' => NULL,
         ])->save();
+        $jbhifi = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'JB Hi-Fi',
+            'abbreviation' => 'jbhifi',
+            'domain' => 'https://www.jbhifi.com.au',
+            'ecommerce_url' => 'https://www.jbhifi.com.au/',
+            'logo' => NULL,
+        ])->save();
     }
 }

@@ -31,6 +31,17 @@ class CreateWebProductsTable extends Migration
             $table->string('gtin14', 14)->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index(['name', 'retailer_id']);
+            $table->index('slug');
+            $table->index(['slug', 'retailer_id']);
+            $table->index('brand');
+            $table->index(['brand', 'retailer_id']);
+            $table->index('model');
+            $table->index(['model', 'retailer_id']);
+            $table->index('sku');
+            $table->index(['sku', 'retailer_id']);
         });
 
         DB::statement('ALTER TABLE web_products ADD FULLTEXT full(name)');

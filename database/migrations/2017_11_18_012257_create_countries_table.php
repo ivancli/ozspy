@@ -24,6 +24,11 @@ class CreateCountriesTable extends Migration
             $table->string('subregion')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index('official_name');
+            $table->index('region');
+            $table->index('subregion');
         });
     }
 

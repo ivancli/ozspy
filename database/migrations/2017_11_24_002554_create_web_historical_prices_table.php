@@ -20,6 +20,9 @@ class CreateWebHistoricalPricesTable extends Migration
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->float('amount');
             $table->timestamps();
+
+            $table->index('created_at');
+            $table->index(['web_product_id', 'created_at']);
         });
     }
 

@@ -27,6 +27,10 @@ class CreateWebCategoriesTable extends Migration
             $table->timestamps();
 
             $table->unique(['retailer_id', 'web_category_id', 'name']);
+            $table->index('name');
+            $table->index(['retailer_id', 'name']);
+            $table->index('slug');
+            $table->index(['retailer_id', 'slug']);
         });
 
         Schema::table('web_categories', function (Blueprint $table) {

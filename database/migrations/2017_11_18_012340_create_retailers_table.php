@@ -21,10 +21,13 @@ class CreateRetailersTable extends Migration
             $table->string('name');
             $table->string('abbreviation');
             $table->string('domain', 2083);
-            $table->string('ecommerce_url');
+            $table->string('ecommerce_url', 2083);
             $table->binary('logo')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index('abbreviation');
         });
     }
 

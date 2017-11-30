@@ -23,6 +23,11 @@ class CreateUsersTable extends Migration
             $table->string('provider_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->index('email');
+            $table->index('first_name');
+            $table->index('last_name');
+            $table->index(['provider', 'email']);
         });
     }
 

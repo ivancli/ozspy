@@ -67,7 +67,6 @@ class WebProductListScraper extends WebProductListScraperContract
     {
         $this->setUrl();
         $this->crawler->setJsonResponse();
-        dump($this->apiUrl);
         if (!is_null($this->apiUrl)) {
             $response = $this->crawler->fetch();
             if ($response->status == 200 && !is_null($response->content)) {

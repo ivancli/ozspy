@@ -96,7 +96,8 @@ class WebProductListScraper extends WebProductListScraperContract
             $this->crawler->setURL($nextPage);
             $response = $this->crawler->fetch();
             if ($response->status == 200 && !is_null($response->content)) {
-                $crawler = new Crawler($response->content);
+                $content = ltrim(utf8_decode($response->content), '?');
+                $crawler = new Crawler($content);
 
                 $productNodes = $crawler->filterXPath('//*[@data-productid!="{{ hit.Id }}"]');
                 $productNodes->each(function (Crawler $productNode) {
