@@ -57,7 +57,7 @@ class WebProductListScraper extends WebProductListScraperContract
     public function scrape()
     {
         $this->setupSlugs();
-        $this->setProxy();
+//        $this->setProxy();
         while ($this->hasNext === true) {
             $this->fetchFromAPI();
         }

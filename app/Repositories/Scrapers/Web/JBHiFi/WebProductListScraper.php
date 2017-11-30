@@ -70,7 +70,7 @@ class WebProductListScraper extends WebProductListScraperContract
      */
     public function scrape()
     {
-        $this->setProxy();
+//        $this->setProxy();
         $this->fetchProductIds();
         $this->fetchProductInfo();
         foreach ($this->productInfo as $key => $productInfo) {
