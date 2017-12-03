@@ -23,6 +23,9 @@ class CreateWebCategoriesTable extends Migration
             $table->string('slug')->nullable();
             $table->string('field')->nullable();
             $table->string('url', 2083)->nullable();
+            $table->tinyInteger('active')->default(1);
+            $table->integer('last_crawled_products_count')->nullable();
+            $table->timestamp('last_crawled_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

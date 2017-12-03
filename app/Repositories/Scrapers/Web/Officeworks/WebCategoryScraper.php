@@ -55,11 +55,63 @@ class WebCategoryScraper extends WebCategoryScraperContract
 
             if (!is_null($listInArray) && json_last_error() === JSON_ERROR_NONE && isset($listInArray->url)) {
                 $urls = $listInArray->url;
-                foreach ($urls as $url) {
-                    
+
+                $categoriesGroupedByLevels = [];
+
+                $level = 0;
+                while (true) {
+                    $categoriesGroupedByLevels[$level] = [];
+                    foreach ($urls as $url) {
+                        $loc = $url->loc;
+                        if (str_contains($loc, '/c/')) {
+                            $paths = array_filter(explode('/', $loc));
+                            if (count($paths) - array_first(array_keys($paths, 'c')) == $level + 1) {
+                                $category = new \stdClass();
+                                $slug = array_last($paths);
+                                $category->name = str_replace('-', ' ', title_case($slug));
+                                $category->slug = $slug;
+                                $category->url = $loc;
+                                $category->categories = [];
+                                array_push($categoriesGroupedByLevels[$level], $category);
+                            }
+                        }
+                    }
+                    if (empty($categoriesGroupedByLevels[$level])) {
+                        break;
+                    }
+                    $level++;
                 }
+
+                $categories = [];
+
+                foreach ($categoriesGroupedByLevels as $level) {
+                    foreach ($level as $category) {
+                        $url = $category->url;
+                        $paths = array_filter(explode('/', $url));
+                        $index = array_first(array_keys($paths, 'c'));
+                        array_splice($paths, 0, $index);
+                        $tempCategories = &$categories;
+                        foreach ($paths as $path) {
+                            if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
+                                $newCategory = new \stdClass();
+                                $newCategory->name = str_replace('-', ' ', title_case($path));
+                                $newCategory->slug = $path;
+                                $newCategory->url = $url;
+                                $newCategory->categories = [];
+                                array_set($tempCategories, $path, $newCategory);
+                            }
+                            $tempCategories = &$tempCategories[$path]->categories;
+                        }
+                    }
+                }
+                $this->categories = $categories;
             }
         }
+    }
+
+    protected function constructCategory($path, $parentCategory = null)
+    {
+
     }
 
     /**

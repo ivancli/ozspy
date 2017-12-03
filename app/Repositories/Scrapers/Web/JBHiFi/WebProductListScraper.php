@@ -112,9 +112,11 @@ class WebProductListScraper extends WebProductListScraperContract
                     $this->productLinks[$productId] = $productLink;
                 });
 
-                if ($productNodes->count() > 0) {
-                    $pageNumber++;
-                    $nextPage = $this->webCategory->url . "?p={$pageNumber}";
+                $paginationNodes = $crawler->filterXPath('(//*[@class="currentPage"]/following-sibling::a)|(//*[@class="nextFive"])');
+
+                if ($paginationNodes->count() > 0) {
+                    $nextPage = $paginationNodes->first()->attr('href');
+                    dump($nextPage);
                 } else {
                     $nextPage = null;
                 }

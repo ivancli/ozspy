@@ -32,5 +32,12 @@ class RetailersSeeder extends Seeder
             'ecommerce_url' => 'https://www.jbhifi.com.au/',
             'logo' => NULL,
         ])->save();
+        $officeworks = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Officeworks',
+            'abbreviation' => 'ow',
+            'domain' => 'https://www.officeworks.com.au',
+            'ecommerce_url' => 'https://www.officeworks.com.au/',
+            'logo' => NULL,
+        ])->save();
     }
 }

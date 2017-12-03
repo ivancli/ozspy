@@ -19,9 +19,9 @@ class TestController extends Controller
 {
     public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
     {
-        $retailer = Retailer::findOrFail(4);
-        dispatch((new WebCategory($retailer))->onConnection('sync'));
-//        dispatch((new WebProductList($webCategory))->onQueue('crawl-web-product-list')->onConnection('sync'));
+        $webCategory = $webCategoryRepo->get(1);
+//        dispatch((new WebCategory($retailer))->onConnection('sync'));
+        dispatch((new WebProductList($webCategory))->onConnection('sync'));
 
     }
 

@@ -9,7 +9,7 @@ class WebCategory extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'slug', 'field', 'url'];
+    protected $fillable = ['name', 'slug', 'field', 'url', 'last_crawled_products_count', 'active', 'last_crawled_at'];
 
     protected $dates = ['deleted_at'];
 
@@ -20,6 +20,25 @@ class WebCategory extends Model
     public function retailer()
     {
         return $this->belongsTo(Retailer::class, 'retailer_id', 'id');
+    }
+
+    /**
+     * Accessor - active
+     * @param $value
+     * @return bool
+     */
+    public function getActiveAttribute($value)
+    {
+        return $value === 1;
+    }
+
+    /**
+     * Mutation - active
+     * @param $value
+     */
+    public function setActiveAttribute($value)
+    {
+        array_set($this->attributes, 'active', $value === true ? 1 : 0);
     }
 
     /**

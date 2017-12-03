@@ -43,7 +43,6 @@ class WebCategory extends Command
         $retailers = $retailerRepo->all();
         $this->output->progressStart($retailers->count());
         foreach ($retailers as $retailer) {
-//            dispatch((new WebCategoryJob($retailer))->onQueue('crawl-web-category')->onConnection('sync'));
             dispatch((new WebCategoryJob($retailer))->onQueue('crawl-web-category'));
             $this->output->progressAdvance();
         }

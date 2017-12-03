@@ -2,6 +2,7 @@
 
 namespace OzSpy\Jobs\Crawl;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -77,17 +78,13 @@ class WebProductList implements ShouldQueue
         $this->webProductRepo = $webProductRepo;
         $this->webHistoricalPriceRepo = $webHistoricalPriceRepo;
         $this->webProductModel = $webProductModel;
-
         $className = 'OzSpy\Repositories\Scrapers\Web\\' . studly_case($this->retailer->name) . '\WebProductListScraper';
 
         if (!class_exists($className)) {
             throw new ScraperNotFoundException;
         }
-
         $this->webProductListScraper = new $className($this->webCategory);
-
         $this->webProductListScraper->scrape();
-
         $products = $this->webProductListScraper->getProducts();
         if ($this->webProductListScraper->isAvailable()) {
             if (count($products) == 0) {
@@ -97,8 +94,13 @@ class WebProductList implements ShouldQueue
             foreach ($products as $product) {
                 $this->processSingleProduct($product);
             }
+
             $this->retailer = $this->retailer->fresh();
             $this->webCategory = $this->webCategory->fresh();
+
+            $this->webCategory->last_crawled_products_count = count($products);
+            $this->webCategory->last_crawled_at = Carbon::now();
+            $this->webCategory->save();
         }
     }
 
@@ -132,7 +134,6 @@ class WebProductList implements ShouldQueue
                 'amount' => $product->price
             ]);
         }
-
 
         $this->webCategory->webProducts()->syncWithoutDetaching($storedProduct->getKey());
 

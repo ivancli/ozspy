@@ -51,7 +51,6 @@ class WebProductList extends Command
         }
         $this->output->progressStart($webCategories->count());
         foreach ($webCategories as $webCategory) {
-//            dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list')->onConnection('sync'));
             dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list'));
             $this->output->progressAdvance();
         }

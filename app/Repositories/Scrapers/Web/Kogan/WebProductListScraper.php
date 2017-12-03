@@ -109,6 +109,7 @@ class WebProductListScraper extends WebProductListScraperContract
                 (!is_null($this->filterFieldName) && !is_null($this->filterFieldValue) ? "{$this->filterFieldName}={$this->filterFieldValue}&" : null) .
                 "offset={$this->offset}";
             $this->crawler->setURL($this->apiUrl);
+            //https://www.kogan.com/api/v1/products?group_variants=false&store=au&department=televisions&brands=kogan&offset=0
         }
     }
 
