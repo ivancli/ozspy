@@ -17,7 +17,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WebCategoryScraper extends WebCategoryScraperContract
 {
-    const SITE_MAP_URL = 'https://www.jbhifi.com.au/General/Sitemap/';
+    const CATEGORIES_XML_URL = 'https://www.jbhifi.com.au/sitemap.xml';
 
     /**
      * @var ProxyContract
@@ -38,9 +38,10 @@ class WebCategoryScraper extends WebCategoryScraperContract
     {
         parent::__construct($retailer);
 
-        $this->crawler = app()->make(EntranceCrawler::class);
+        $this->crawler = app()->make(CurlCrawler::class);
         $this->proxyRepo = app()->make(ProxyContract::class);
     }
+
 
     /**
      * Scrape categories and set to categories attribute
@@ -50,45 +51,62 @@ class WebCategoryScraper extends WebCategoryScraperContract
     {
         $this->crawlEcommerceURL();
         if (!is_null($this->content)) {
-            $crawler = new Crawler(ltrim(utf8_decode($this->content), '?'));
-            $categoryListNodes = $crawler->filterXPath('//*[@class="cms-content"]');
-            $categoryListNodes->each(function (Crawler $categoryListNode) {
-                $this->categories = $this->recursiveFilter($categoryListNode);
-            });
+            $content = simplexml_load_string($this->content);
+            $listInString = json_encode($content);
+            $listInArray = json_decode($listInString);
+
+            if (!is_null($listInArray) && json_last_error() === JSON_ERROR_NONE && isset($listInArray->url)) {
+                $urls = $listInArray->url;
+
+                $categoriesGroupedByLevels = [];
+
+                $level = 0;
+                while (true) {
+                    $categoriesGroupedByLevels[$level] = [];
+                    foreach ($urls as $url) {
+                        $loc = $url->loc;
+                        $paths = array_filter(explode('/', array_get(parse_url($loc), 'path')));
+                        if (count($paths) == $level + 1) {
+                            $category = new \stdClass();
+                            $slug = array_last($paths);
+                            $category->name = str_replace('-', ' ', title_case($slug));
+                            $category->slug = $slug;
+                            $category->url = $loc;
+                            $category->categories = [];
+                            array_push($categoriesGroupedByLevels[$level], $category);
+                        }
+                    }
+                    if (empty($categoriesGroupedByLevels[$level])) {
+                        break;
+                    }
+                    $level++;
+                }
+
+                $categories = [];
+                foreach ($categoriesGroupedByLevels as $level) {
+                    foreach ($level as $category) {
+                        $url = $category->url;
+                        $paths = array_filter(explode('/', array_get(parse_url($url), 'path')));
+                        $index = array_first(array_keys($paths, 'c'));
+                        array_splice($paths, 0, $index);
+                        $tempCategories = &$categories;
+                        foreach ($paths as $path) {
+                            if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
+                                $newCategory = new \stdClass();
+                                $newCategory->name = str_replace('-', ' ', title_case($path));
+                                $newCategory->slug = $path;
+                                $newCategory->url = $url;
+                                $newCategory->categories = [];
+                                array_set($tempCategories, $path, $newCategory);
+                            }
+                            $tempCategories = &$tempCategories[$path]->categories;
+                        }
+                    }
+                }
+                $this->categories = $categories;
+            }
         }
     }
-
-    protected function recursiveFilter(Crawler $rootNode)
-    {
-        $categories = [];
-        $categoryULListNodes = $rootNode->children();
-        $categoryULListNodes->each(function (Crawler $categoryULListNode) use (&$categories) {
-            if ($categoryULListNode->nodeName() == 'ul') {
-                $categoryListNodes = $categoryULListNode->children();
-                $categoryListNodes->each(function (Crawler $categoryListNode) use (&$categories) {
-                    if ($categoryListNode->nodeName() == 'li') {
-                        $categoryLinkNodes = $categoryListNode->children();
-                        $category = new \stdClass();
-                        $categoryLinkNodes->each(function (Crawler $categoryLinkNode) use (&$category, &$categories, $categoryListNode) {
-                            if ($categoryLinkNode->nodeName() == 'a') {
-                                $category->name = $categoryLinkNode->text();
-                                $category->url = $this->retailer->domain . $categoryLinkNode->attr('href');
-                                $category->slug = array_last(array_filter(explode('/', $categoryLinkNode->attr('href'))));
-                            } elseif ($categoryLinkNode->nodeName() == 'span') {
-                                $category->name = $categoryLinkNode->text();
-                            } elseif ($categoryLinkNode->nodeName() == 'ul') {
-                                $category->categories = $this->recursiveFilter($categoryListNode);
-                            }
-                        });
-                        $categories[] = $category;
-                    }
-                });
-
-            }
-        });
-        return $categories;
-    }
-
 
     /**
      * fetch eCommerce home page
@@ -98,7 +116,6 @@ class WebCategoryScraper extends WebCategoryScraperContract
     {
         $this->setUrl();
 //        $this->setProxy();
-
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;
@@ -111,7 +128,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
      */
     protected function setUrl()
     {
-        $this->crawler->setURL(self::SITE_MAP_URL);
+        $this->crawler->setURL(self::CATEGORIES_XML_URL);
     }
 
     /**

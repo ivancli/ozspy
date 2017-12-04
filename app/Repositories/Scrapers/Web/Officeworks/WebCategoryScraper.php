@@ -109,11 +109,6 @@ class WebCategoryScraper extends WebCategoryScraperContract
         }
     }
 
-    protected function constructCategory($path, $parentCategory = null)
-    {
-
-    }
-
     /**
      * fetch eCommerce home page
      * @return void

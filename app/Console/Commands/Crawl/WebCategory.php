@@ -13,7 +13,7 @@ class WebCategory extends Command
      *
      * @var string
      */
-    protected $signature = 'crawl:web-category';
+    protected $signature = 'crawl:web-category {--R|retailer=}';
 
     /**
      * The console command description.
