@@ -33,8 +33,9 @@ class WebCategory extends Model
     }
 
     /**
-     * Mutation - active
+     * Mutator - active
      * @param $value
+     * @return void
      */
     public function setActiveAttribute($value)
     {
