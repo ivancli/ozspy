@@ -2,6 +2,7 @@
 
 namespace OzSpy\Http\Controllers;
 
+use Ixudra\Curl\Facades\Curl;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
@@ -19,12 +20,68 @@ class TestController extends Controller
 {
     public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
     {
-        $retailer = Retailer::findOrFail(3);
+//        $content = simplexml_load_string(file_get_contents('https://www.officeworks.com.au/sitemap-products.xml'));
+//        $listInString = json_encode($content);
+//        $listInArray = json_decode($listInString);
+//        dd($listInArray, count($listInArray->url));
 
-        dispatch((new WebCategory($retailer))->onConnection('sync'));
 
+//        $response = Curl::to('https://www.thegoodguys.com.au/televisions/tv-cables-and-accessories')
+//            ->withHeaders([
+//                'Accept-Language: en-us',
+//                'User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15',
+//                'Connection: Keep-Alive',
+//                'Cache-Control: no-cache',
+//            ])
+//            ->setCookieFile(storage_path('cookie/test'))
+//            ->setCookieJar(storage_path('cookie/test'))
+//            ->get();
+//
+//        if (!is_null($response)) {
+//            preg_match('#SearchBasedNavigationDisplayJS.init\(\'(?:.*?)\',\'(.*?)\'\)#', $response, $matches);
+//            $url = array_last($matches);
+//            if (!is_null($url)) {
+//                $parts = parse_url($url);
+//                parse_str(array_get($parts, 'query'), $query);
+//                $newResponse = Curl::to($url)
+//                    ->withHeaders([
+//                        'Accept-Language: en-us',
+//                        'User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15',
+//                        'Connection: Keep-Alive',
+//                        'Cache-Control: no-cache',
+//                    ])
+//                    ->setCookieFile(storage_path('cookie/test'))
+//                    ->setCookieJar(storage_path('cookie/test'))
+//                    ->withData([
+//                        "contentBeginIndex" => "0",
+//                        "productBeginIndex" => "60",
+//                        "beginIndex" => "60",
+//                        "orderBy" => "",
+//                        "facetId" => "",
+//                        "pageView" => "grid",
+//                        "resultType" => "products",
+//                        "orderByContent" => "",
+//                        "searchTerm" => "",
+//                        "facet" => "",
+//                        "facetLimit" => "",
+//                        "minPrice" => "",
+//                        "maxPrice" => "",
+//                        "pageSize" => "",
+//                        "storeId" => "900",
+//                        "catalogId" => "30000",
+//                        "langId" => "-1",
+//                        "objectId" => str_replace('ProductListingView', '', array_get($query, 'ddkey')),
+//                        "requesttype" => "ajax",
+//                    ])
+//                    ->post();
+//                echo ($newResponse);exit();
+//            }
+//        }
+//        $retailer = Retailer::findOrFail(8);
+//        dispatch((new WebCategory($retailer))->onConnection('sync'));
+//        return;
 
-        $webCategory = $webCategoryRepo->get(1);
+        $webCategory = $webCategoryRepo->get(10328);
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
         dispatch((new WebProductList($webCategory))->onConnection('sync'));
 

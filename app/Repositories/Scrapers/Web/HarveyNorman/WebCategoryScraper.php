@@ -2,22 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 28/11/2017
- * Time: 9:22 PM
+ * Date: 8/12/2017
+ * Time: 9:05 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\JBHiFi;
+namespace OzSpy\Repositories\Scrapers\Web\HarveyNorman;
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
-use IvanCLI\Crawler\Repositories\EntranceCrawler;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper as WebCategoryScraperContract;
 use OzSpy\Models\Base\Retailer;
-use Symfony\Component\DomCrawler\Crawler;
 
 class WebCategoryScraper extends WebCategoryScraperContract
 {
-    const CATEGORIES_XML_URL = 'https://www.jbhifi.com.au/sitemap.xml';
+
+    const CATEGORIES_XML_URL = 'https://www.harveynorman.com.au/sitemap.xml';
 
     /**
      * @var ProxyContract
@@ -58,6 +57,10 @@ class WebCategoryScraper extends WebCategoryScraperContract
             if (!is_null($listInArray) && json_last_error() === JSON_ERROR_NONE && isset($listInArray->url)) {
                 $urls = $listInArray->url;
 
+                $urls = array_filter($urls, function ($url) {
+                    return $url->priority == "0.5";
+                });
+
                 $categoriesGroupedByLevels = [];
 
                 $level = 0;
@@ -87,8 +90,6 @@ class WebCategoryScraper extends WebCategoryScraperContract
                     foreach ($level as $category) {
                         $url = $category->url;
                         $paths = array_filter(explode('/', array_get(parse_url($url), 'path')));
-                        $index = array_first(array_keys($paths, 'c'));
-                        array_splice($paths, 0, $index);
                         $tempCategories = &$categories;
                         foreach ($paths as $path) {
                             if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
@@ -115,7 +116,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-        $this->setProxy();
+//        $this->setProxy();
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;

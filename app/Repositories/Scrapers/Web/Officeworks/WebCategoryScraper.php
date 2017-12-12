@@ -68,7 +68,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
                             if (count($paths) - array_first(array_keys($paths, 'c')) == $level + 1) {
                                 $category = new \stdClass();
                                 $slug = array_last($paths);
-                                $category->name = str_replace('-', ' ', title_case($slug));
+                                $category->name = html_entity_decode(str_replace('-', ' ', title_case($slug)), ENT_QUOTES);
                                 $category->slug = $slug;
                                 $category->url = $loc;
                                 $category->categories = [];
@@ -94,7 +94,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
                         foreach ($paths as $path) {
                             if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
                                 $newCategory = new \stdClass();
-                                $newCategory->name = str_replace('-', ' ', title_case($path));
+                                $newCategory->name = html_entity_decode(str_replace('-', ' ', title_case($path)), ENT_QUOTES);
                                 $newCategory->slug = $path;
                                 $newCategory->url = $url;
                                 $newCategory->categories = [];
@@ -116,7 +116,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-//        $this->setProxy();
+        $this->setProxy();
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;

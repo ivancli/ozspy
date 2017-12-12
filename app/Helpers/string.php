@@ -35,3 +35,15 @@ if (!function_exists('last_word')) {
     }
 }
 
+if (!function_exists('sanitise_non_utf8')) {
+    /**
+     * Remove non utf-8 characters from string.
+     *
+     * @param $str
+     * @return mixed
+     */
+    function sanitise_non_utf8($str)
+    {
+        return preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $str);
+    }
+}

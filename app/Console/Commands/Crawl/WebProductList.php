@@ -14,7 +14,7 @@ class WebProductList extends Command
      *
      * @var string
      */
-    protected $signature = 'crawl:web-product-list {--R|retailer=}';
+    protected $signature = 'crawl:web-product-list {--R|retailer=} {--active}';
 
     /**
      * The console command description.
@@ -38,7 +38,7 @@ class WebProductList extends Command
      *
      * @param WebCategoryContract $webCategoryRepo
      * @param RetailerContract $retailerRepo
-     * @return mixed
+     * @return void
      */
     public function handle(WebCategoryContract $webCategoryRepo, RetailerContract $retailerRepo)
     {
@@ -49,6 +49,12 @@ class WebProductList extends Command
             $retailer = $retailerRepo->get($retailer_id);
             $webCategories = $retailer->webCategories;
         }
+        if ($this->option('active') === true) {
+            $webCategories = $webCategories->filter(function ($webCategory) {
+                return $webCategory->active === true;
+            });
+        }
+
         $this->output->progressStart($webCategories->count());
         foreach ($webCategories as $webCategory) {
             dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list'));

@@ -2,22 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 28/11/2017
- * Time: 9:22 PM
+ * Date: 9/12/2017
+ * Time: 6:06 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\JBHiFi;
+namespace OzSpy\Repositories\Scrapers\Web\TheGoodGuys;
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
-use IvanCLI\Crawler\Repositories\EntranceCrawler;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper as WebCategoryScraperContract;
 use OzSpy\Models\Base\Retailer;
-use Symfony\Component\DomCrawler\Crawler;
 
 class WebCategoryScraper extends WebCategoryScraperContract
 {
-    const CATEGORIES_XML_URL = 'https://www.jbhifi.com.au/sitemap.xml';
+
+    const CATEGORIES_XML_URL = 'https://www.thegoodguys.com.au/sitemap_category.xml';
 
     /**
      * @var ProxyContract
@@ -87,8 +86,6 @@ class WebCategoryScraper extends WebCategoryScraperContract
                     foreach ($level as $category) {
                         $url = $category->url;
                         $paths = array_filter(explode('/', array_get(parse_url($url), 'path')));
-                        $index = array_first(array_keys($paths, 'c'));
-                        array_splice($paths, 0, $index);
                         $tempCategories = &$categories;
                         foreach ($paths as $path) {
                             if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
@@ -115,7 +112,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-        $this->setProxy();
+//        $this->setProxy();
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;

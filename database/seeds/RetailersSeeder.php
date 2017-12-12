@@ -39,5 +39,33 @@ class RetailersSeeder extends Seeder
             'ecommerce_url' => 'https://www.officeworks.com.au/',
             'logo' => NULL,
         ])->save();
+        $harveyNoman = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Harvey Norman',
+            'abbreviation' => 'hn',
+            'domain' => 'https://www.harveynorman.com.au',
+            'ecommerce_url' => 'https://www.harveynorman.com.au/',
+            'logo' => NULL,
+        ])->save();
+        $theGoodGuys = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'The Good Guys',
+            'abbreviation' => 'tgg',
+            'domain' => 'https://www.thegoodguys.com.au',
+            'ecommerce_url' => 'https://www.thegoodguys.com.au/',
+            'logo' => NULL,
+        ])->save();
+        $appliancesOnline = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Appliances Online',
+            'abbreviation' => 'aol',
+            'domain' => 'https://www.appliancesonline.com.au',
+            'ecommerce_url' => 'https://www.appliancesonline.com.au/',
+            'logo' => NULL,
+        ])->save();
+        $winningAppliances = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Winning Appliances',
+            'abbreviation' => 'wa',
+            'domain' => 'https://www.winningappliances.com.au',
+            'ecommerce_url' => 'https://www.winningappliances.com.au/',
+            'logo' => NULL,
+        ])->save();
     }
 }

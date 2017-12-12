@@ -79,7 +79,7 @@ class WebProductListScraper extends WebProductListScraperContract
                 if (isset($response->content->objects) && is_array($response->content->objects)) {
                     foreach ($response->content->objects as $product) {
                         $webProduct = new \stdClass();
-                        $webProduct->name = $product->title;
+                        $webProduct->name = html_entity_decode($product->title, ENT_QUOTES);
                         $webProduct->slug = $product->slug;
                         $webProduct->url = $this->retailer->domain . $product->url;
                         $webProduct->price = !is_null($product->price) && floatval($product->price) > 0 ? $product->price : null;

@@ -2,22 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 28/11/2017
- * Time: 9:22 PM
+ * Date: 10/12/2017
+ * Time: 4:12 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\JBHiFi;
+namespace OzSpy\Repositories\Scrapers\Web\AppliancesOnline;
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
-use IvanCLI\Crawler\Repositories\EntranceCrawler;
 use OzSpy\Contracts\Models\Crawl\ProxyContract;
 use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper as WebCategoryScraperContract;
 use OzSpy\Models\Base\Retailer;
-use Symfony\Component\DomCrawler\Crawler;
 
 class WebCategoryScraper extends WebCategoryScraperContract
 {
-    const CATEGORIES_XML_URL = 'https://www.jbhifi.com.au/sitemap.xml';
+
+    const CATEGORIES_XML_URL = 'https://www.appliancesonline.com.au/sitemap-categories.xml';
 
     /**
      * @var ProxyContract
@@ -69,8 +68,9 @@ class WebCategoryScraper extends WebCategoryScraperContract
                         if (count($paths) == $level + 1) {
                             $category = new \stdClass();
                             $slug = array_last($paths);
-                            $category->name = html_entity_decode(str_replace('-', ' ', title_case($slug)), ENT_QUOTES);
-                            $category->slug = $slug;
+                            $categoryName = str_replace('.aspx', '', str_replace('-', ' ', title_case($slug)));
+                            $category->name = html_entity_decode($categoryName, ENT_QUOTES);
+                            $category->slug = str_replace('.aspx', '', $slug);
                             $category->url = $loc;
                             $category->categories = [];
                             array_push($categoriesGroupedByLevels[$level], $category);
@@ -87,19 +87,18 @@ class WebCategoryScraper extends WebCategoryScraperContract
                     foreach ($level as $category) {
                         $url = $category->url;
                         $paths = array_filter(explode('/', array_get(parse_url($url), 'path')));
-                        $index = array_first(array_keys($paths, 'c'));
-                        array_splice($paths, 0, $index);
                         $tempCategories = &$categories;
                         foreach ($paths as $path) {
-                            if (!array_has($tempCategories, $path) || !is_object(array_get($tempCategories, $path))) {
+                            if (!array_has($tempCategories, str_replace('.aspx', '', $path)) || !is_object(array_get($tempCategories, str_replace('.aspx', '', $path)))) {
                                 $newCategory = new \stdClass();
-                                $newCategory->name = html_entity_decode(str_replace('-', ' ', title_case($path)), ENT_QUOTES);
-                                $newCategory->slug = $path;
+                                $categoryName = str_replace('.aspx', '', str_replace('-', ' ', title_case($path)));
+                                $newCategory->name = html_entity_decode($categoryName, ENT_QUOTES);
+                                $newCategory->slug = str_replace('.aspx', '', $path);
                                 $newCategory->url = $url;
                                 $newCategory->categories = [];
-                                array_set($tempCategories, $path, $newCategory);
+                                array_set($tempCategories, str_replace('.aspx', '', $path), $newCategory);
                             }
-                            $tempCategories = &$tempCategories[$path]->categories;
+                            $tempCategories = &$tempCategories[str_replace('.aspx', '', $path)]->categories;
                         }
                     }
                 }
@@ -115,7 +114,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-        $this->setProxy();
+//        $this->setProxy();
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;

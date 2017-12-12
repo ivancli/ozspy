@@ -70,7 +70,7 @@ class Kernel extends ConsoleKernel
 
     private function __scheduleCrawlWebProductList()
     {
-        $this->schedule->command('crawl:web-product-list')
+        $this->schedule->command('crawl:web-product-list --active')
             ->twiceDaily();
     }
 

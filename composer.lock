@@ -608,16 +608,16 @@
         },
         {
             "name": "ivancli/crawler",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ketchol/crawler.git",
-                "reference": "73c6ac51f7421baed1acd8d751b9830b9f60d750"
+                "reference": "72ee40054ffa8526960809416e9f58cf03d36662"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ketchol/crawler/zipball/73c6ac51f7421baed1acd8d751b9830b9f60d750",
-                "reference": "73c6ac51f7421baed1acd8d751b9830b9f60d750",
+                "url": "https://api.github.com/repos/ketchol/crawler/zipball/72ee40054ffa8526960809416e9f58cf03d36662",
+                "reference": "72ee40054ffa8526960809416e9f58cf03d36662",
                 "shasum": ""
             },
             "require": {
@@ -647,10 +647,10 @@
                 "scrape"
             ],
             "support": {
-                "source": "https://github.com/ketchol/crawler/tree/1.1.0",
+                "source": "https://github.com/ketchol/crawler/tree/1.1.1",
                 "issues": "https://github.com/ketchol/crawler/issues"
             },
-            "time": "2017-11-23T12:09:51+00:00"
+            "time": "2017-12-11T09:35:29+00:00"
         },
         {
             "name": "ivancli/parser",

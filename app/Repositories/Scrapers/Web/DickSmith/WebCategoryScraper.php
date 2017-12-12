@@ -58,7 +58,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
                         if (isset($categories->departments) && is_array($categories->departments)) {
                             foreach ($categories->departments as $department) {
                                 $category = new \stdClass();
-                                $category->name = $department->title;
+                                $category->name = html_entity_decode($department->title, ENT_QUOTES);
                                 $category->slug = $department->slug;
                                 $category->url = $this->retailer->domain . $department->href;
 
@@ -66,19 +66,19 @@ class WebCategoryScraper extends WebCategoryScraperContract
                                 if (isset($department->categories) && is_array($department->categories)) {
                                     foreach ($department->categories as $childCategory) {
                                         $newChildCategory = new \stdClass();
-                                        $newChildCategory->name = $childCategory->title;
+                                        $newChildCategory->name = html_entity_decode($childCategory->title, ENT_QUOTES);
                                         $newChildCategory->slug = str_slug($childCategory->title);
                                         $newChildCategory->field = $childCategory->field;
                                         $newChildCategory->categories = [];
                                         if (isset($childCategory->items) && is_array($childCategory->items)) {
                                             foreach ($childCategory->items as $item) {
                                                 $newItem = new \stdClass();
-                                                $newItem->name = $item->title;
+                                                $newItem->name = html_entity_decode($item->title, ENT_QUOTES);
                                                 $newItem->url = $this->retailer->domain . $item->href;
                                                 if ($childCategory->field == 'category') {
                                                     $newItem->slug = array_last(array_filter(explode('/', $item->href)));
                                                 } else {
-                                                    $newItem->slug = str_slug($item->title);
+                                                    $newItem->slug = str_slug($newItem->name);
                                                 }
                                                 $newChildCategory->categories[] = $newItem;
                                             }
@@ -102,7 +102,7 @@ class WebCategoryScraper extends WebCategoryScraperContract
     protected function crawlEcommerceURL()
     {
         $this->setUrl();
-//        $this->setProxy();
+        $this->setProxy();
         $response = $this->crawler->fetch();
         if ($response->status == 200) {
             $this->content = $response->content;

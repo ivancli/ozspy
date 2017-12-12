@@ -2,11 +2,12 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 28/11/2017
- * Time: 11:41 PM
+ * Date: 9/12/2017
+ * Time: 1:05 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\JBHiFi;
+namespace OzSpy\Repositories\Scrapers\Web\HarveyNorman;
+
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
 use Ixudra\Curl\Facades\Curl;
@@ -69,23 +70,10 @@ class WebProductListScraper extends WebProductListScraperContract
     public function scrape()
     {
 //        $this->setProxy();
-        $this->fetchProductIds();
-        $this->fetchProductInfo();
-        foreach ($this->productInfo as $key => $productInfo) {
-            if (array_has($this->productLinks, $productInfo->ProductID)) {
-                $product = new \stdClass();
-                $product->retailer_product_id = $productInfo->ProductID;
-                $product->name = html_entity_decode($productInfo->DisplayName, ENT_QUOTES);
-                $product->sku = $productInfo->SKU;
-                $product->brand = $productInfo->Brand;
-                $product->url = $this->retailer->domain . array_get($this->productLinks, $productInfo->ProductID);
-                $product->price = $productInfo->PlacedPrice;
-                $this->products[] = $product;
-            }
-        }
+        $this->fetchProducts();
     }
 
-    protected function fetchProductIds()
+    protected function fetchProducts()
     {
         $nextPage = $this->webCategory->url;
         while (!is_null($nextPage)) {
@@ -95,20 +83,43 @@ class WebProductListScraper extends WebProductListScraperContract
                 $content = sanitise_non_utf8($response->content);
                 $crawler = new Crawler($content);
 
-                $productNodes = $crawler->filterXPath('//*[@data-productid!="{{ hit.Id }}"]');
+                $productNodes = $crawler->filterXPath('//*[@id="category-grid"]//*[contains(@class, "panel_product")]');
                 $productNodes->each(function (Crawler $productNode) {
-                    $productId = $productNode->attr('data-productid');
+                    $productId = $productNode->attr('data-pid');
                     if (intval($productId) == 0) {
                         return true;
                     }
-                    $this->productIds[] = $productId;
+                    $productName = null;
+                    $productUrl = null;
+                    $productPrice = null;
 
-                    $linkNode = $productNode->filterXPath('//a')->first();
-                    $productLink = $linkNode->attr('href');
-                    $this->productLinks[$productId] = $productLink;
+                    $productNameNodes = $productNode->filterXPath('//*[@class="info"]//*[contains(@class, "name")]');
+
+                    if ($productNameNodes->count() > 0) {
+                        $productNameNode = $productNameNodes->first();
+                        $productName = $productNameNode->text();
+                        $productUrl = $productNameNode->attr('href');
+                    }
+
+                    $productPriceNodes = $productNode->filterXPath('//*[@class="price-device"]//*[@class="price"]/text()');
+                    if ($productPriceNodes->count() > 0) {
+                        $productPriceNode = $productPriceNodes->first();
+                        $productPrice = $productPriceNode->text();
+                        $productPrice = floatval($productPrice) > 0 ? floatval($productPrice) : null;
+                    }
+
+                    if (!is_null($productName) && !is_null($productUrl)) {
+                        $product = new \stdClass();
+                        $product->retailer_product_id = $productId;
+                        $product->name = html_entity_decode($productName, ENT_QUOTES);
+                        $product->url = $productUrl;
+                        $product->price = $productPrice;
+                        $this->products[] = $product;
+                        unset($product);
+                    }
                 });
 
-                $paginationNodes = $crawler->filterXPath('(//*[@class="currentPage"]/following-sibling::a)|(//*[@class="nextFive"])');
+                $paginationNodes = $crawler->filterXPath('//*[@id="toolbar-btm"]//*[contains(@class, "icn-next-page")]');
 
                 if ($paginationNodes->count() > 0) {
                     $nextPage = $paginationNodes->first()->attr('href');
@@ -121,25 +132,6 @@ class WebProductListScraper extends WebProductListScraperContract
             unset($crawler);
             unset($response);
             unset($productNodes);
-        }
-    }
-
-    protected function fetchProductInfo()
-    {
-        $response = Curl::to(self::PRODUCT_INFO_URL)
-            ->withData([
-                'Ids' => $this->productIds
-            ])
-            ->returnResponseObject()
-            ->asJsonRequest()
-            ->post();
-        if ($response->status == 200 && !is_null($response->content)) {
-            $productInfo = json_decode(sanitise_non_utf8($response->content));
-            if (!is_null($productInfo) && json_last_error() == JSON_ERROR_NONE) {
-                if (isset($productInfo->Result) && isset($productInfo->Result->Products)) {
-                    $this->productInfo = $productInfo->Result->Products;
-                }
-            }
         }
     }
 
