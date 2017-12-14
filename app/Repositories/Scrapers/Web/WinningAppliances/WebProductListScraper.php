@@ -55,6 +55,7 @@ class WebProductListScraper extends WebProductListScraperContract
     protected function fetchFromAPI()
     {
         $this->setUrl();
+//        $this->setProxy();
         $this->crawler->setJsonResponse();
         if (!is_null($this->apiUrl)) {
             $response = $this->crawler->fetch();
