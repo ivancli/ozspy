@@ -2,12 +2,11 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 9/12/2017
- * Time: 1:05 PM
+ * Date: 14/12/2017
+ * Time: 10:53 PM
  */
 
-namespace OzSpy\Repositories\Scrapers\Web\HarveyNorman;
-
+namespace OzSpy\Repositories\Scrapers\Web\JoyceMayne;
 
 use IvanCLI\Crawler\Repositories\CurlCrawler;
 use Ixudra\Curl\Facades\Curl;
@@ -18,6 +17,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class WebProductListScraper extends WebProductListScraperContract
 {
+    protected $apiUrl;
+
     /**
      * @var ProxyContract
      */

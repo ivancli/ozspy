@@ -77,11 +77,11 @@ class TestController extends Controller
 //                echo ($newResponse);exit();
 //            }
 //        }
-//        $retailer = Retailer::findOrFail(8);
+//        $retailer = Retailer::findOrFail(9);
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
 //        return;
 
-        $webCategory = $webCategoryRepo->get(10328);
+        $webCategory = $webCategoryRepo->get(1);
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
         dispatch((new WebProductList($webCategory))->onConnection('sync'));
 

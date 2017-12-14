@@ -67,5 +67,12 @@ class RetailersSeeder extends Seeder
             'ecommerce_url' => 'https://www.winningappliances.com.au/',
             'logo' => NULL,
         ])->save();
+        $joyceMayne = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Joyce Mayne',
+            'abbreviation' => 'jm',
+            'domain' => 'https://www.joycemayne.com.au',
+            'ecommerce_url' => 'https://www.joycemayne.com.au/',
+            'logo' => NULL,
+        ])->save();
     }
 }
