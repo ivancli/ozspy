@@ -177,6 +177,7 @@ class WebProductList implements ShouldQueue
                     $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
                 }
             }
+            unset($webProduct);
         }
     }
 
