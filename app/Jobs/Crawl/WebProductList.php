@@ -173,7 +173,7 @@ class WebProductList implements ShouldQueue
                         $this->savePrice($webProduct, $toBeCreatedProduct->price);
                     }
                 }
-                if (isset($webProduct)) {
+                if (isset($webProduct) && !is_null($webProduct)) {
                     $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
                 }
             }
