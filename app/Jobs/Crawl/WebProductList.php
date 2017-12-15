@@ -139,16 +139,11 @@ class WebProductList implements ShouldQueue
         }
         $this->retailer->webProducts()->save($storedProduct);
 
-        /*TODO store price*/
         if (isset($product->price) && !is_null($product->price)) {
-            $this->webHistoricalPriceRepo->storeIfNull($storedProduct, [
-                'amount' => $product->price
-            ]);
+            $this->savePrice($storedProduct, $product->price);
         }
 
         $this->webCategory->webProducts()->syncWithoutDetaching($storedProduct->getKey());
-
-        /*TODO need to tidy up category product associations*/
 
         return $storedProduct;
     }
@@ -177,14 +172,10 @@ class WebProductList implements ShouldQueue
                     if (!is_null($webProduct)) {
                         $this->savePrice($webProduct, $toBeCreatedProduct->price);
                     }
-                }else{
-                    dump($toBeCreatedProduct);
                 }
                 if (isset($webProduct)) {
                     $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
                 }
-            } else {
-                dump($toBeCreatedProduct);
             }
         }
     }
