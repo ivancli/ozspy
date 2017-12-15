@@ -2,7 +2,7 @@
 
 namespace OzSpy\Models\Common;
 
-use Illuminate\Database\Eloquent\Model;
+use OzSpy\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Country extends Model

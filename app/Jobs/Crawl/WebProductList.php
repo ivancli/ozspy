@@ -16,6 +16,7 @@ use OzSpy\Exceptions\Crawl\ScraperNotFoundException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct as WebProductModel;
+use OzSpy\Models\Base\WebProduct;
 
 class WebProductList implements ShouldQueue
 {
@@ -50,6 +51,11 @@ class WebProductList implements ShouldQueue
      * @var WebProductListScraper
      */
     protected $webProductListScraper;
+
+    /**
+     * @var array
+     */
+    protected $toBeCreatedProducts = [];
 
     /**
      * Create a new job instance.
@@ -95,6 +101,8 @@ class WebProductList implements ShouldQueue
                 $this->processSingleProduct($product);
             }
 
+            $this->processBatchCreate();
+
             $this->retailer = $this->retailer->fresh();
             $this->webCategory = $this->webCategory->fresh();
 
@@ -121,7 +129,10 @@ class WebProductList implements ShouldQueue
         }
 
         if (!isset($storedProduct)) {
-            $storedProduct = $this->webProductRepo->store($productData);
+//            $storedProduct = $this->webProductRepo->store($productData);
+            /* leave the new products to be saved in batch process */
+            $this->toBeCreatedProducts[] = $product;
+            return false;
         } else {
             $this->webProductRepo->update($storedProduct, $productData);
             $storedProduct = $storedProduct->fresh();
@@ -140,6 +151,49 @@ class WebProductList implements ShouldQueue
         /*TODO need to tidy up category product associations*/
 
         return $storedProduct;
+    }
+
+    protected function processBatchCreate()
+    {
+        $data = array_map(function ($product) {
+            $productData = $this->__getData((array)$product);
+            array_set($productData, 'retailer_id', $this->retailer->getKey());
+            return $productData;
+        }, $this->toBeCreatedProducts);
+
+        $inserted = $this->webProductRepo->insertAll($data);
+
+        foreach ($this->toBeCreatedProducts as $toBeCreatedProduct) {
+            if (isset($toBeCreatedProduct->price)) {
+                if (isset($toBeCreatedProduct->retailer_product_id) && !is_null($toBeCreatedProduct->retailer_product_id)) {
+                    $webProduct = $this->webProductRepo->findBy($this->retailer, 'retailer_product_id', $toBeCreatedProduct->retailer_product_id);
+                    $webProduct = $webProduct->first();
+                    if (!is_null($webProduct)) {
+                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
+                    }
+                } elseif (isset($toBeCreatedProduct->slug) && !is_null($toBeCreatedProduct->slug)) {
+                    $webProduct = $this->webProductRepo->findBy($this->retailer, 'slug', $toBeCreatedProduct->slug);
+                    $webProduct = $webProduct->first();
+                    if (!is_null($webProduct)) {
+                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
+                    }
+                }else{
+                    dump($toBeCreatedProduct);
+                }
+                if (isset($webProduct)) {
+                    $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
+                }
+            } else {
+                dump($toBeCreatedProduct);
+            }
+        }
+    }
+
+    private function savePrice(WebProduct $webProduct, $price)
+    {
+        $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
+            'amount' => $price
+        ]);
     }
 
     private function __getData(array $data)

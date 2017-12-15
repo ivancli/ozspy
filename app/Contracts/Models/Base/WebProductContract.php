@@ -36,4 +36,10 @@ abstract class WebProductContract extends BaseContract
      * @return bool
      */
     abstract public function exist(Retailer $retailer, $element, $value, $trashed = false);
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    abstract public function insertAll(array $data);
 }

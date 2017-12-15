@@ -98,7 +98,7 @@ class WebProductListScraper extends WebProductListScraperContract
                         $productUrl = $productNameNode->attr('href');
                     }
 
-                    $productPriceNodes = $productNode->filterXPath('//*[@class="price-device"]//*[@class="price"]/text()');
+                    $productPriceNodes = $productNode->filterXPath('//*[@class="price-device"]//*[@class="price"]/text()[last()]');
                     if ($productPriceNodes->count() > 0) {
                         $productPriceNode = $productPriceNodes->first();
                         $productPrice = $productPriceNode->text();

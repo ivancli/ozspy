@@ -2,8 +2,8 @@
 
 namespace OzSpy\Models\Base;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OzSpy\Models\Model;
 
 class WebProduct extends Model
 {

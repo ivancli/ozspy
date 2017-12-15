@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use OzSpy\Jobs\Crawl\WebCategory;
 use OzSpy\Jobs\Crawl\WebProductList;
 use OzSpy\Models\Base\Retailer;
+use OzSpy\Models\Base\WebProduct;
 use OzSpy\Models\Crawl\Proxy;
 use OzSpy\Repositories\Scrapers\Proxies\ProxyNova;
 use OzSpy\Repositories\Scrapers\Web\Kogan\WebCategoryScraper;
@@ -20,6 +21,14 @@ class TestController extends Controller
 {
     public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
     {
+        $result = WebProduct::createAll([
+            ['name' => 'wtf'],
+            ['name' => 'ftw'],
+            ['name' => 'super'],
+            ['name' => 'duper'],
+        ]);
+        dd($result);
+
 //        $content = simplexml_load_string(file_get_contents('https://www.officeworks.com.au/sitemap-products.xml'));
 //        $listInString = json_encode($content);
 //        $listInArray = json_decode($listInString);

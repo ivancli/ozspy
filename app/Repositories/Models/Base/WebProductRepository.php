@@ -48,4 +48,13 @@ class WebProductRepository extends WebProductContract
         $queryBuilder->where($element, $value);
         return $queryBuilder->count() > 0;
     }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function insertAll(array $data)
+    {
+        return $this->model->createAll($data);
+    }
 }
