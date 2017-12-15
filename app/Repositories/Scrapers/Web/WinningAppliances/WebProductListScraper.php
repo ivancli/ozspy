@@ -66,7 +66,7 @@ class WebProductListScraper extends WebProductListScraperContract
                         $webProduct = new \stdClass();
                         $webProduct->name = html_entity_decode($product->title, ENT_QUOTES);
                         $webProduct->slug = $slug;
-                        $webProduct->url = $this->retailer->domain . $product->uri;
+                        $webProduct->url = $this->retailer->domain . '/p' . $product->uri;
                         $webProduct->price = !is_null($product->price) && floatval($product->price) > 0 ? $product->price : null;
                         $webProduct->brand = $product->brand;
                         $webProduct->sku = $product->sku;
