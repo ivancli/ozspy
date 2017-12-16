@@ -104,8 +104,8 @@ class WebProductList implements ShouldQueue
             }
 
 
-            $this->existingWebProducts = $this->webCategory->webProducts;
-            
+            $this->existingWebProducts = $this->retailer->webProducts;
+
             foreach ($products as $product) {
                 $this->processSingleProduct($product);
             }
