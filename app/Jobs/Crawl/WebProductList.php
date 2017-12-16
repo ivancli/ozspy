@@ -131,7 +131,20 @@ class WebProductList implements ShouldQueue
         if (!isset($storedProduct)) {
 //            $storedProduct = $this->webProductRepo->store($productData);
             /* leave the new products to be saved in batch process */
-            $this->toBeCreatedProducts[] = $product;
+            /*check existence */
+            $exist = true;
+            if (isset($product->retailer_product_id) && !is_null($product->retailer_product_id)) {
+                $exist = count(array_filter($this->toBeCreatedProducts, function ($toBeCreatedProduct) use ($product) {
+                        return $toBeCreatedProduct->retailer_product_id == $product->retailer_product_id;
+                    })) > 0;
+            } elseif (isset($product->slug) && !is_null($product->slug)) {
+                $exist = count(array_filter($this->toBeCreatedProducts, function ($toBeCreatedProduct) use ($product) {
+                        return $toBeCreatedProduct->slug == $product->slug;
+                    })) > 0;
+            }
+            if ($exist === false) {
+                $this->toBeCreatedProducts[] = $product;
+            }
             return false;
         } else {
             $this->webProductRepo->update($storedProduct, $productData);
