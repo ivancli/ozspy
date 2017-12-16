@@ -51,10 +51,10 @@ class WebProductRepository extends WebProductContract
 
     /**
      * @param array $data
-     * @return bool
+     * @return void
      */
     public function insertAll(array $data)
     {
-        return $this->model->createAll($data);
+        $this->model->createAll($data);
     }
 }

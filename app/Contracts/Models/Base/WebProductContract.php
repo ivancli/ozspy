@@ -39,7 +39,7 @@ abstract class WebProductContract extends BaseContract
 
     /**
      * @param array $data
-     * @return bool
+     * @return void
      */
     abstract public function insertAll(array $data);
 }

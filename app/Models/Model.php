@@ -25,7 +25,6 @@ abstract class Model extends BaseModel
                 'updated_at' => $now,
             ], $item) : $item;
         }, $items);
-
-        return \DB::table($model->getTable())->insert($items);
+        \DB::table($model->getTable())->insert($items);
     }
 }

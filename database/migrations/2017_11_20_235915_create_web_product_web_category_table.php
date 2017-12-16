@@ -19,6 +19,8 @@ class CreateWebProductWebCategoryTable extends Migration
             $table->timestamps();
 
             $table->primary(['web_product_id', 'web_category_id']);
+            $table->index(['web_product_id']);
+            $table->index(['web_category_id']);
         });
     }
 

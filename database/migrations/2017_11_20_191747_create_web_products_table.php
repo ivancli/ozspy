@@ -36,8 +36,10 @@ class CreateWebProductsTable extends Migration
             $table->index(['retailer_id', 'name']);
             $table->index('slug');
             $table->index(['retailer_id', 'slug']);
+            $table->index(['retailer_id', 'slug', 'deleted_at']);
             $table->index('retailer_product_id');
             $table->index(['retailer_id', 'retailer_product_id']);
+            $table->index(['retailer_id', 'retailer_product_id', 'deleted_at']);
             $table->index('brand');
             $table->index(['retailer_id', 'brand']);
             $table->index('model');

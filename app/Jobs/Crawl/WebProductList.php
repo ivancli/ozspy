@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Collection;
 use OzSpy\Contracts\Models\Base\WebHistoricalPriceContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
 use OzSpy\Contracts\Scrapers\Webs\WebProductListScraper;
@@ -48,6 +49,11 @@ class WebProductList implements ShouldQueue
     protected $retailer;
 
     /**
+     * @var Collection
+     */
+    protected $existingWebProducts;
+
+    /**
      * @var WebProductListScraper
      */
     protected $webProductListScraper;
@@ -67,6 +73,8 @@ class WebProductList implements ShouldQueue
         $this->webCategory = $webCategory;
 
         $this->retailer = $webCategory->retailer;
+
+        $this->existingWebProducts = $webCategory->webProducts;
     }
 
     /**
@@ -119,19 +127,18 @@ class WebProductList implements ShouldQueue
         $productData = $this->__getData($productData);
 
         if (isset($product->retailer_product_id) && !is_null($product->retailer_product_id)) {
-            if ($this->webProductRepo->exist($this->retailer, 'retailer_product_id', $product->retailer_product_id)) {
-                $storedProduct = $this->webProductRepo->findBy($this->retailer, 'retailer_product_id', $product->retailer_product_id)->first();
-            }
+            $storedProduct = $this->existingWebProducts->filter(function ($existingWebProduct) use ($product) {
+                return $existingWebProduct->retailer_product_id == $product->retailer_product_id;
+            })->first();
         } elseif (isset($product->slug) && !is_null($product->slug)) {
-            if ($this->webProductRepo->exist($this->retailer, 'slug', $product->slug)) {
-                $storedProduct = $this->webProductRepo->findBy($this->retailer, 'slug', $product->slug)->first();
-            }
+            $storedProduct = $this->existingWebProducts->filter(function ($existingWebProduct) use ($product) {
+                return $existingWebProduct->slug == $product->slug;
+            })->first();
         }
 
-        if (!isset($storedProduct)) {
-//            $storedProduct = $this->webProductRepo->store($productData);
+        if (!isset($storedProduct) || is_null($storedProduct)) {
             /* leave the new products to be saved in batch process */
-            /*check existence */
+            /* check array existence */
             $exist = true;
             if (isset($product->retailer_product_id) && !is_null($product->retailer_product_id)) {
                 $exist = count(array_filter($this->toBeCreatedProducts, function ($toBeCreatedProduct) use ($product) {
@@ -150,7 +157,6 @@ class WebProductList implements ShouldQueue
             $this->webProductRepo->update($storedProduct, $productData);
             $storedProduct = $storedProduct->fresh();
         }
-        $this->retailer->webProducts()->save($storedProduct);
 
         if (isset($product->price) && !is_null($product->price)) {
             $this->savePrice($storedProduct, $product->price);
@@ -170,17 +176,34 @@ class WebProductList implements ShouldQueue
         }, $this->toBeCreatedProducts);
 
         $this->webProductRepo->insertAll($data);
+        $retailerWebProducts = $this->retailer->webProducts;
+
+        $pluckedRetailerProductIds = array_unique(array_pluck($data, 'retailer_product_id'));
+        $pluckedSlugs = array_unique(array_pluck($data, 'slug'));
+
+        $insertedWebProducts = $retailerWebProducts->filter(function (WebProduct $retailerWebProduct) use ($pluckedRetailerProductIds, $pluckedSlugs) {
+            return
+                (!is_null($retailerWebProduct->retailer_product_id) && in_array($retailerWebProduct->retailer_product_id, $pluckedRetailerProductIds))
+                ||
+                (!is_null($retailerWebProduct->slug) && in_array($retailerWebProduct->slug, $pluckedSlugs));
+        });
+
+        $webProductIds = $insertedWebProducts->pluck('id');
+
+        $this->webCategory->webProducts()->syncWithoutDetaching($webProductIds);
 
         $toBeCreatedPrices = [];
 
         foreach ($this->toBeCreatedProducts as $toBeCreatedProduct) {
-            if (isset($toBeCreatedProduct->price)) {
+            if (isset($toBeCreatedProduct->price) && !is_null($toBeCreatedProduct->price)) {
                 if (isset($toBeCreatedProduct->retailer_product_id) && !is_null($toBeCreatedProduct->retailer_product_id)) {
-                    $webProduct = $this->webProductRepo->findBy($this->retailer, 'retailer_product_id', $toBeCreatedProduct->retailer_product_id);
-                    $webProduct = $webProduct->first();
+                    $webProduct = $insertedWebProducts->filter(function ($insertedWebProduct) use ($toBeCreatedProduct) {
+                        return $insertedWebProduct->retailer_product_id == $toBeCreatedProduct->retailer_product_id;
+                    })->first();
                 } elseif (isset($toBeCreatedProduct->slug) && !is_null($toBeCreatedProduct->slug)) {
-                    $webProduct = $this->webProductRepo->findBy($this->retailer, 'slug', $toBeCreatedProduct->slug);
-                    $webProduct = $webProduct->first();
+                    $webProduct = $insertedWebProducts->filter(function ($insertedWebProduct) use ($toBeCreatedProduct) {
+                        return $insertedWebProduct->slug == $toBeCreatedProduct->slug;
+                    })->first();
                 }
 
                 if (isset($webProduct) && !is_null($webProduct)) {
@@ -191,14 +214,8 @@ class WebProductList implements ShouldQueue
                         'updated_at' => Carbon::now(),
                     ];
                     $toBeCreatedPrices[] = $price;
-//                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
                 }
-
                 unset($price);
-
-                if (isset($webProduct) && !is_null($webProduct)) {
-                    $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
-                }
             }
             unset($webProduct);
         }

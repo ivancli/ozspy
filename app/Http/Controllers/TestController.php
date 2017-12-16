@@ -84,11 +84,11 @@ class TestController extends Controller
 //        return;
 
         measure('My long operation', function() use($webCategoryRepo){
-            $webCategory = $webCategoryRepo->get(5246);
-//        dispatch((new WebCategory($retailer))->onConnection('sync'));
+            $webCategory = $webCategoryRepo->get(612);
             dispatch((new WebProductList($webCategory))->onConnection('sync'));
         });
         return view('auth.login');
+
     }
 
     /**
