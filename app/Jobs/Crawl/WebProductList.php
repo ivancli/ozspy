@@ -177,6 +177,7 @@ class WebProductList implements ShouldQueue
         }, $this->toBeCreatedProducts);
 
         $this->webProductRepo->insertAll($data);
+        $this->retailer = $this->retailer->fresh('webProducts');
         $retailerWebProducts = $this->retailer->webProducts;
 
         $pluckedRetailerProductIds = array_unique(array_pluck($data, 'retailer_product_id'));
@@ -190,7 +191,6 @@ class WebProductList implements ShouldQueue
         });
 
         $webProductIds = $insertedWebProducts->pluck('id');
-
         $this->webCategory->webProducts()->syncWithoutDetaching($webProductIds);
 
         $toBeCreatedPrices = [];
