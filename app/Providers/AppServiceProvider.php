@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         \DB::listen(function ($query) {
-            if ($query->time > 10) {
+            if ($query->time > config('database.log.threshold')) {
                 $view_log = new Logger('Query Log');
                 $view_log->pushHandler(new StreamHandler(storage_path('logs/query.log'), Logger::INFO));
                 $view_log->addInfo("Slow query run on DB", [

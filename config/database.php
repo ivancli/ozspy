@@ -117,4 +117,8 @@ return [
 
     ],
 
+    'log' => [
+        'threshold' => 50
+    ]
+
 ];
