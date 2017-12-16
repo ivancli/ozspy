@@ -158,6 +158,7 @@ class WebProductList implements ShouldQueue
 
         $this->webProductRepo->insertAll($data);
 
+        $toBeCreatedPrices = [];
 
         foreach ($this->toBeCreatedProducts as $toBeCreatedProduct) {
             if (isset($toBeCreatedProduct->price)) {
@@ -170,7 +171,14 @@ class WebProductList implements ShouldQueue
                 }
 
                 if (isset($webProduct) && !is_null($webProduct)) {
-                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
+                    $price = [
+                        'web_product_id' => $webProduct->getKey(),
+                        'amount' => $toBeCreatedProduct->price,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                    $toBeCreatedPrices[] = $price;
+//                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
                 }
 
                 unset($price);
@@ -180,6 +188,9 @@ class WebProductList implements ShouldQueue
                 }
             }
             unset($webProduct);
+        }
+        if (!empty($toBeCreatedPrices)) {
+            $this->batchSavePrice($toBeCreatedPrices);
         }
     }
 
