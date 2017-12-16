@@ -118,7 +118,7 @@ return [
     ],
 
     'log' => [
-        'threshold' => 50
+        'threshold' => env('DB_LOG_THRESHOLD', 1000)
     ]
 
 ];
