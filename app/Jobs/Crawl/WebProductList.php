@@ -73,8 +73,6 @@ class WebProductList implements ShouldQueue
         $this->webCategory = $webCategory;
 
         $this->retailer = $webCategory->retailer;
-
-        $this->existingWebProducts = $webCategory->webProducts;
     }
 
     /**
@@ -105,6 +103,9 @@ class WebProductList implements ShouldQueue
                 throw new ProductsNotFoundException;
             }
 
+
+            $this->existingWebProducts = $this->webCategory->webProducts;
+            
             foreach ($products as $product) {
                 $this->processSingleProduct($product);
             }
