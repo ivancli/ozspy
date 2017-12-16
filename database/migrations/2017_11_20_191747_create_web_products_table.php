@@ -33,17 +33,17 @@ class CreateWebProductsTable extends Migration
             $table->timestamps();
 
             $table->index('name');
-            $table->index(['name', 'retailer_id']);
+            $table->index(['retailer_id', 'name']);
             $table->index('slug');
-            $table->index(['slug', 'retailer_id']);
+            $table->index(['retailer_id', 'slug']);
             $table->index('retailer_product_id');
-            $table->index(['retailer_product_id', 'retailer_id']);
+            $table->index(['retailer_id', 'retailer_product_id']);
             $table->index('brand');
-            $table->index(['brand', 'retailer_id']);
+            $table->index(['retailer_id', 'brand']);
             $table->index('model');
-            $table->index(['model', 'retailer_id']);
+            $table->index(['retailer_id', 'model']);
             $table->index('sku');
-            $table->index(['sku', 'retailer_id']);
+            $table->index(['retailer_id', 'sku']);
         });
 
         DB::statement('ALTER TABLE web_products ADD FULLTEXT full(name)');

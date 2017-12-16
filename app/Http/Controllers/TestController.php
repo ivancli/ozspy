@@ -21,13 +21,6 @@ class TestController extends Controller
 {
     public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
     {
-        $result = WebProduct::createAll([
-            ['name' => 'wtf'],
-            ['name' => 'ftw'],
-            ['name' => 'super'],
-            ['name' => 'duper'],
-        ]);
-        dd($result);
 
 //        $content = simplexml_load_string(file_get_contents('https://www.officeworks.com.au/sitemap-products.xml'));
 //        $listInString = json_encode($content);
@@ -90,10 +83,12 @@ class TestController extends Controller
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
 //        return;
 
-        $webCategory = $webCategoryRepo->get(1);
+        measure('My long operation', function() use($webCategoryRepo){
+            $webCategory = $webCategoryRepo->get(5246);
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
-        dispatch((new WebProductList($webCategory))->onConnection('sync'));
-
+            dispatch((new WebProductList($webCategory))->onConnection('sync'));
+        });
+        return view('auth.login');
     }
 
     /**

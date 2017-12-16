@@ -26,4 +26,10 @@ abstract class WebHistoricalPriceContract extends BaseContract
      * @return WebHistoricalPrice
      */
     abstract public function storeIfNull(WebProduct $webProduct, array $data);
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    abstract public function insertAll(array $data);
 }

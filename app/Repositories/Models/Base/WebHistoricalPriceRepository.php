@@ -34,10 +34,19 @@ class WebHistoricalPriceRepository extends WebHistoricalPriceContract
             }
         }
         if ($diff === true) {
-            $webPriceHistoricalPrice = $this->store($data);
-            $webProduct->webHistoricalPrices()->save($webPriceHistoricalPrice);
+//            $webPriceHistoricalPrice = $this->store();
+            $webPriceHistoricalPrice = $webProduct->webHistoricalPrices()->save(new $this->model($data));
             return $webPriceHistoricalPrice;
         }
         return $webProduct->recentWebHistoricalPrice;
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function insertAll(array $data)
+    {
+        return $this->model->createAll($data);
     }
 }

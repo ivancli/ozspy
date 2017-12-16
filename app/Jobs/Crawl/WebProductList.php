@@ -156,28 +156,41 @@ class WebProductList implements ShouldQueue
             return $productData;
         }, $this->toBeCreatedProducts);
 
-        $inserted = $this->webProductRepo->insertAll($data);
+        $this->webProductRepo->insertAll($data);
+
+        $toBeCreatedPrices = [];
 
         foreach ($this->toBeCreatedProducts as $toBeCreatedProduct) {
             if (isset($toBeCreatedProduct->price)) {
                 if (isset($toBeCreatedProduct->retailer_product_id) && !is_null($toBeCreatedProduct->retailer_product_id)) {
                     $webProduct = $this->webProductRepo->findBy($this->retailer, 'retailer_product_id', $toBeCreatedProduct->retailer_product_id);
                     $webProduct = $webProduct->first();
-                    if (!is_null($webProduct)) {
-                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
-                    }
                 } elseif (isset($toBeCreatedProduct->slug) && !is_null($toBeCreatedProduct->slug)) {
                     $webProduct = $this->webProductRepo->findBy($this->retailer, 'slug', $toBeCreatedProduct->slug);
                     $webProduct = $webProduct->first();
-                    if (!is_null($webProduct)) {
-                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
-                    }
                 }
+
+                if (isset($webProduct) && !is_null($webProduct)) {
+                    $price = [
+                        'web_product_id' => $webProduct->getKey(),
+                        'amount' => $toBeCreatedProduct->price,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                    $toBeCreatedPrices[] = $price;
+//                        $this->savePrice($webProduct, $toBeCreatedProduct->price);
+                }
+
+                unset($price);
+
                 if (isset($webProduct) && !is_null($webProduct)) {
                     $this->webCategory->webProducts()->syncWithoutDetaching($webProduct->getKey());
                 }
             }
             unset($webProduct);
+        }
+        if (!empty($toBeCreatedPrices)) {
+            $this->batchSavePrice($toBeCreatedPrices);
         }
     }
 
@@ -186,6 +199,11 @@ class WebProductList implements ShouldQueue
         $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
             'amount' => $price
         ]);
+    }
+
+    private function batchSavePrice(array $prices)
+    {
+        $this->webHistoricalPriceRepo->insertAll($prices);
     }
 
     private function __getData(array $data)
