@@ -30,7 +30,13 @@ class Retailer extends Model
      */
     public function getPriorityAttribute($value)
     {
-        return $value > 5 ? 'high' : 'low';
+        if ($value < 4) {
+            return 'low';
+        } elseif ($value < 7) {
+            return 'medium';
+        } else {
+            return 'high';
+        }
     }
 
     /**
