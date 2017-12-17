@@ -83,8 +83,9 @@ class TestController extends Controller
 //        dispatch((new WebCategory($retailer))->onConnection('sync'));
 //        return;
 
+
         measure('My long operation', function() use($webCategoryRepo){
-            $webCategory = $webCategoryRepo->get(613);
+            $webCategory = $webCategoryRepo->get(1);
             dispatch((new WebProductList($webCategory))->onConnection('sync'));
         });
         return view('auth.login');

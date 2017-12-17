@@ -64,6 +64,11 @@ class WebProductList implements ShouldQueue
     protected $toBeCreatedProducts = [];
 
     /**
+     * @var array
+     */
+    protected $toBeSyncProductIds = [];
+
+    /**
      * Create a new job instance.
      *
      * @param WebCategory $webCategory
@@ -109,6 +114,8 @@ class WebProductList implements ShouldQueue
             foreach ($products as $product) {
                 $this->processSingleProduct($product);
             }
+
+            $this->syncWebProductWebCategoryWithoutDetach($this->toBeSyncProductIds);
 
             $this->processBatchCreate();
 
@@ -163,7 +170,10 @@ class WebProductList implements ShouldQueue
             $this->savePrice($storedProduct, $product->price);
         }
 
-        $this->webCategory->webProducts()->syncWithoutDetaching($storedProduct->getKey());
+        $this->toBeSyncProductIds[] = $storedProduct->getKey();
+//        $this->webCategory->webProducts()->syncWithoutDetaching($storedProduct->getKey());
+
+        unset($productData);
 
         return $storedProduct;
     }
@@ -191,7 +201,10 @@ class WebProductList implements ShouldQueue
         });
 
         $webProductIds = $insertedWebProducts->pluck('id');
-        $this->webCategory->webProducts()->syncWithoutDetaching($webProductIds);
+
+
+//        $this->webCategory->webProducts()->syncWithoutDetaching($webProductIds);
+        $this->syncWebProductWebCategoryWithoutDetach($webProductIds->all());
 
         $toBeCreatedPrices = [];
 
@@ -216,13 +229,16 @@ class WebProductList implements ShouldQueue
                     ];
                     $toBeCreatedPrices[] = $price;
                 }
-                unset($price);
+
             }
-            unset($webProduct);
+
+            unset($webProduct, $price);
         }
         if (!empty($toBeCreatedPrices)) {
             $this->batchSavePrice($toBeCreatedPrices);
         }
+
+        unset($retailerWebProducts, $pluckedRetailerProductIds, $pluckedSlugs, $webProductIds);
     }
 
     private function savePrice(WebProduct $webProduct, $price)
@@ -240,5 +256,21 @@ class WebProductList implements ShouldQueue
     private function __getData(array $data)
     {
         return array_only($data, $this->webProductModel->getFillable());
+    }
+
+    private function syncWebProductWebCategoryWithoutDetach(array $webProductIds)
+    {
+        if (count($webProductIds) > 0) {
+            $query = "INSERT IGNORE INTO web_product_web_category (web_product_id, web_category_id, created_at, updated_at) ";
+            $values = [];
+            $now = Carbon::now();
+            foreach ($webProductIds as $webProductId) {
+                $value = '(' . $webProductId . ',' . $this->webCategory->getKey() . ',"' . $now . '", "' . $now . '")';
+                $values[] = $value;
+            }
+            $query .= "VALUES " . join(',', $values);
+
+            \DB::statement($query);
+        }
     }
 }

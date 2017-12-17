@@ -41,6 +41,11 @@ class WebCategory extends Command
     public function handle(RetailerContract $retailerRepo)
     {
         $retailers = $retailerRepo->all();
+        if (!is_null($this->option('retailer'))) {
+            $retailers = $retailers->filter(function ($retailer) {
+                return $retailer->getKey() == $this->option('retailer');
+            });
+        }
         $this->output->progressStart($retailers->count());
         foreach ($retailers as $retailer) {
             if ($retailer->active) {
