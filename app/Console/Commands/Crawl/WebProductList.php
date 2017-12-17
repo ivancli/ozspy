@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Jobs\Crawl\WebProductList as WebProductListJob;
+use OzSpy\Models\Base\Retailer;
 
 class WebProductList extends Command
 {
@@ -42,25 +43,34 @@ class WebProductList extends Command
      */
     public function handle(WebCategoryContract $webCategoryRepo, RetailerContract $retailerRepo)
     {
-        if (is_null($this->option('retailer'))) {
-            $webCategories = $webCategoryRepo->all();
-        } else {
-            $retailer_id = $this->option('retailer');
-            $retailer = $retailerRepo->get($retailer_id);
-            $webCategories = $retailer->webCategories;
-        }
-        if ($this->option('active') === true) {
-            $webCategories = $webCategories->filter(function ($webCategory) {
-                return $webCategory->active === true;
+        $retailers = $retailerRepo->all();
+
+        if (!is_null($this->option('retailer'))) {
+            $retailers = $retailers->filter(function (Retailer $retailer) {
+                return $retailer->getKey() == $this->option('retailer');
             });
         }
 
-        $this->output->progressStart($webCategories->count());
-        foreach ($webCategories as $webCategory) {
-            dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list'));
-            $this->output->progressAdvance();
-        }
-        $this->output->progressFinish();
+        $retailers->each(function (Retailer $retailer) {
+            $webCategories = $retailer->webCategories;
+
+            if ($this->option('active') === true) {
+                $webCategories = $webCategories->filter(function ($webCategory) {
+                    return $webCategory->active === true;
+                });
+            }
+            $this->output->comment("Retailer is being processed: {$retailer->name}");
+
+            $this->output->progressStart($webCategories->count());
+
+            $webCategories->each(function (\OzSpy\Models\Base\WebCategory $webCategory) use ($retailer) {
+                dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list-' . $retailer->priority));
+                $this->output->progressAdvance();
+            });
+            $this->output->progressFinish();
+            $this->output->comment("Retailer has been processed: {$retailer->name}");
+        });
+
         $this->output->success("crawl:web-product-list has dispatched all jobs");
     }
 }

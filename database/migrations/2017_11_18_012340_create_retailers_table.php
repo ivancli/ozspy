@@ -24,6 +24,7 @@ class CreateRetailersTable extends Migration
             $table->string('ecommerce_url', 2083);
             $table->binary('logo')->nullable();
             $table->tinyInteger('active')->default(1);
+            $table->tinyInteger('priority')->default(1);
             $table->softDeletes();
             $table->timestamps();
 

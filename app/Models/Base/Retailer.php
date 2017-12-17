@@ -9,7 +9,7 @@ class Retailer extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'abbreviation', 'domain', 'ecommerce_url', 'logo', 'active'];
+    protected $fillable = ['name', 'abbreviation', 'domain', 'ecommerce_url', 'logo', 'active', 'priority'];
 
     protected $dates = ['deleted_at'];
 
@@ -24,6 +24,16 @@ class Retailer extends Model
     }
 
     /**
+     * Accessor - priority
+     * @param $value
+     * @return string
+     */
+    public function getPriorityAttribute($value)
+    {
+        return $value > 5 ? 'high' : 'low';
+    }
+
+    /**
      * Mutator - active
      * @param $value
      * @return void
@@ -31,6 +41,19 @@ class Retailer extends Model
     public function setActiveAttribute($value)
     {
         array_set($this->attributes, 'active', $value === true ? 1 : 0);
+    }
+
+    /**
+     * Mutator - priority
+     * @param $value
+     * @return void
+     */
+    public function setPriorityAttribute($value)
+    {
+        if (intval($value) <= 0 || intval($value) > 10) {
+            $value = 1;
+        }
+        array_set($this->attributes, 'priority', $value);
     }
 
     /**
