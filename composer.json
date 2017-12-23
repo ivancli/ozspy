@@ -68,7 +68,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover",
+            "npm --prefix ./storage/app/scraper/ install ./storage/app/scraper/ --no-bin-links"
         ]
     },
     "config": {
