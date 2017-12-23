@@ -18,7 +18,7 @@ if (!argvs.id) {
     throw new Error('Please provide target ID for output purpose.');
 }
 
-if (!argvs.url) {
+if (argvs.scraper === 'products' && !argvs.url) {
     throw new Error('Please provide URL for crawling purpose.');
 }
 
@@ -30,5 +30,3 @@ let Scraper = require('./scrapers/' + argvs.retailer + '/' + argvs.scraper);
 
 let scraper = new Scraper(argvs.id, argvs.url);
 scraper.scrape();
-let products = scraper.products;
-console.info(products);
