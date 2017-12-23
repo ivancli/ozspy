@@ -1,0 +1,6 @@
+*
+!scrapers/
+!storage/
+!.gitignore
+!index.js
+!package.json

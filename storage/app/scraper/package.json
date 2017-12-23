@@ -1,0 +1,10 @@
+{
+  "name": "scraper",
+  "main": "index.js",
+  "author": "Ivan Li",
+  "dependencies": {
+    "cheerio": "latest",
+    "jsonfile": "^4.0.0",
+    "request": "latest"
+  }
+}
