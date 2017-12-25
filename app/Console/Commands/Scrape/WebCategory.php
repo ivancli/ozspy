@@ -1,10 +1,10 @@
 <?php
 
-namespace OzSpy\Console\Commands\Crawl;
+namespace OzSpy\Console\Commands\Scrape;
 
 use Illuminate\Console\Command;
 use OzSpy\Contracts\Models\Base\RetailerContract;
-use OzSpy\Jobs\Crawl\WebCategory as WebCategoryJob;
+use OzSpy\Jobs\Scrape\WebCategory as WebCategoryJob;
 
 class WebCategory extends Command
 {
@@ -13,14 +13,14 @@ class WebCategory extends Command
      *
      * @var string
      */
-    protected $signature = 'crawl:web-category {--R|retailer=}';
+    protected $signature = 'scrape:web-category {--R|retailer=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Scrape categories from retailer websites';
+    protected $description = 'Trigger node js web category crawler';
 
     /**
      * Create a new command instance.
@@ -36,7 +36,7 @@ class WebCategory extends Command
      * Execute the console command.
      *
      * @param RetailerContract $retailerRepo
-     * @return void
+     * @return mixed
      */
     public function handle(RetailerContract $retailerRepo)
     {
@@ -49,11 +49,11 @@ class WebCategory extends Command
         $this->output->progressStart($retailers->count());
         foreach ($retailers as $retailer) {
             if ($retailer->active) {
-                dispatch((new WebCategoryJob($retailer))->onQueue('crawl-web-category'));
+                dispatch((new WebCategoryJob($retailer))->onQueue('scrape-web-category'));
             }
             $this->output->progressAdvance();
         }
         $this->output->progressFinish();
-        $this->output->success("crawl:web-category has dispatched all jobs");
+        $this->output->success("scrape:web-category has dispatched all jobs");
     }
 }

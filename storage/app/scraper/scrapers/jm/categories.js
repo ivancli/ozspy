@@ -1,14 +1,21 @@
+var fs = require('fs');
 var request = require('request');
-var cherrio = require('cheerio');
+var cheerio = require('cheerio');
 var jsonfile = require('jsonfile');
-
+var moment = require('moment');
 
 class Scraper {
-    constructor(id) {
-        this.id = id;
+    constructor(argvs) {
+        this.retailer = argvs.retailer;
         this.url = 'https://www.joycemayne.com.au/sitemap';
         this.categories = [];
-        this.file = __dirname + '/../../storage/categories/' + this.id + '.json';
+        this.file = __dirname + '/../../storage/categories/' + this.retailer.id + '.json';
+
+        if (fs.existsSync(this.file)) {
+            fs.unlink(this.file, err => {
+                console.log(err);
+            });
+        }
     }
 
     scrape() {
@@ -22,7 +29,7 @@ class Scraper {
     }
 
     parse(html) {
-        let $ = cherrio.load(html);
+        let $ = cheerio.load(html);
         let $this = this;
         $('#sitemap a').each(function () {
             let category = {};
@@ -34,24 +41,15 @@ class Scraper {
     }
 
     save() {
-        jsonfile.readFile(this.file, (err, existingObject) => {
-            let categories = this.categories;
-            let category_urls = categories.map(category => category.url);
+        let object = {
+            retailer_id: this.retailer.id,
+            scraped_at: moment().format(),
+            categories: this.categories
+        };
 
-            if (typeof existingObject !== 'undefined') {
-                let outstandingCategories = existingObject.categories.filter(function (category) {
-                    return category_urls.indexOf(category.url) === -1;
-                });
-                categories = categories.concat(outstandingCategories);
-            }
+        jsonfile.writeFileSync(this.file, object);
 
-            let object = {
-                retailer_id: this.id,
-                categories: categories
-            };
-
-            jsonfile.writeFileSync(this.file, object);
-        });
+        object = null;
     }
 }
 

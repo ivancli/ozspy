@@ -13,6 +13,10 @@ class WebCategory extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected $hidden = [
+        'last_crawled_products_count', 'active', 'last_crawled_at'
+    ];
+
     /**
      * relationship with retailer
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -58,6 +62,15 @@ class WebCategory extends Model
     public function parentCategory()
     {
         return $this->belongsTo(self::class, 'web_category_id', 'id');
+    }
+
+    /**
+     * recursive loading relationship with category
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function recursiveParentCategory()
+    {
+        return $this->parentCategory()->with('recursiveParentCategory');
     }
 
     /**

@@ -1,14 +1,22 @@
+var fs = require('fs');
 var request = require('request');
-var cherrio = require('cheerio');
+var cheerio = require('cheerio');
 var jsonfile = require('jsonfile');
+var moment = require('moment');
 
 
 class Scraper {
-    constructor(id, url) {
-        this.id = id;
-        this.url = url;
+    constructor(argvs) {
+        this.category = argvs.category;
+        this.url = this.category.url;
         this.products = [];
-        this.file = __dirname + '/../../storage/products/' + this.id + '.json';
+        this.file = __dirname + '/../../storage/products/' + this.category.id + '.json';
+
+        if (fs.existsSync(this.file)) {
+            fs.unlink(this.file, err => {
+                console.log(err);
+            });
+        }
     }
 
     scrape() {
@@ -22,7 +30,7 @@ class Scraper {
     }
 
     parse(html) {
-        let $ = cherrio.load(html);
+        let $ = cheerio.load(html);
         let $this = this;
         $('#category-grid .panel_product').each(function () {
             let product = {};
@@ -35,33 +43,25 @@ class Scraper {
             product.price = parseFloat(priceText) > 0 ? parseFloat(priceText) : null;
             $this.products.push(product);
         });
-        this.save();
 
         if ($('#toolbar-btm .icn-next-page').length > 0) {
             let href = $('#toolbar-btm .icn-next-page').attr('href');
             this.fetch(href);
+        } else {
+            this.save();
         }
     }
 
     save() {
-        jsonfile.readFile(this.file, (err, existingObject) => {
-            let products = this.products;
-            let retailer_product_ids = products.map(product => product.retailer_product_id);
+        let object = {
+            category_id: this.category.id,
+            scraped_at: moment().format(),
+            products: this.products
+        };
 
-            if (typeof existingObject !== 'undefined') {
-                let outstandingProducts = existingObject.products.filter(function (product) {
-                    return retailer_product_ids.indexOf(product.retailer_product_id) === -1;
-                });
-                products = products.concat(outstandingProducts);
-            }
+        jsonfile.writeFileSync(this.file, object);
 
-            let object = {
-                category_id: this.id,
-                products: products
-            };
-
-            jsonfile.writeFileSync(this.file, object);
-        });
+        object = null;
     }
 }
 

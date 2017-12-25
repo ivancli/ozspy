@@ -1,16 +1,15 @@
 <?php
 
-namespace OzSpy\Jobs\Crawl;
+namespace OzSpy\Jobs\Update;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
-use OzSpy\Contracts\Scrapers\Webs\WebCategoryScraper;
 use OzSpy\Exceptions\Crawl\CategoriesNotFoundException;
-use OzSpy\Exceptions\Crawl\ScraperNotFoundException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory as WebCategoryModel;
 
@@ -18,15 +17,9 @@ class WebCategory implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var Retailer
-     */
     protected $retailer;
 
-    /**
-     * @var WebCategoryScraper
-     */
-    protected $categoryScraper;
+    protected $storedCategories = [];
 
     /**
      * @var WebCategoryContract
@@ -37,11 +30,6 @@ class WebCategory implements ShouldQueue
      * @var WebCategoryModel
      */
     protected $categoryModel;
-
-    /**
-     * @var array
-     */
-    protected $storedCategories = [];
 
     /**
      * Create a new job instance.
@@ -55,12 +43,10 @@ class WebCategory implements ShouldQueue
 
     /**
      * Execute the job.
-     *
      * @param WebCategoryContract $categoryRepo
      * @param WebCategoryModel $categoryModel
      * @return void
      * @throws CategoriesNotFoundException
-     * @throws ScraperNotFoundException
      */
     public function handle(WebCategoryContract $categoryRepo, WebCategoryModel $categoryModel)
     {
@@ -68,28 +54,32 @@ class WebCategory implements ShouldQueue
 
         $this->categoryModel = $categoryModel;
 
-        $className = 'OzSpy\Repositories\Scrapers\Web\\' . studly_case($this->retailer->name) . '\WebCategoryScraper';
+        $filePath = storage_path('app/scraper/storage/categories/' . $this->retailer->getKey() . '.json');
+        if (file_exists($filePath)) {
+            $content = file_get_contents($filePath);
+            $scrapingResult = json_decode($content);
+            if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
+                if (isset($scrapingResult->retailer_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->categories)) {
+                    $retailer_id = $scrapingResult->retailer_id;
+                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
+                    $categories = $scrapingResult->categories;
 
-        if (!class_exists($className)) {
-            throw new ScraperNotFoundException;
+                    if ($this->retailer->getKey() == $retailer_id) {
+
+                        if (count($categories) == 0) {
+                            throw new CategoriesNotFoundException;
+                        }
+
+                        foreach ($categories as $category) {
+                            $this->processSingleCategory($category);
+                        }
+                        $this->retailer = $this->retailer->fresh();
+                        $this->restoreCategories();
+                        $this->deleteCategories();
+                    }
+                }
+            }
         }
-
-        $this->categoryScraper = new $className($this->retailer);
-
-        $this->categoryScraper->scrape();
-
-        $categories = $this->categoryScraper->getCategories();
-        if (count($categories) == 0) {
-            throw new CategoriesNotFoundException;
-        }
-
-        foreach ($categories as $category) {
-            $this->processSingleCategory($category);
-        }
-        $this->retailer = $this->retailer->fresh();
-        $this->restoreCategories();
-        $this->deleteCategories();
-
     }
 
     /**
@@ -100,6 +90,9 @@ class WebCategory implements ShouldQueue
      */
     protected function processSingleCategory($category, WebCategoryModel $parentCategory = null)
     {
+        if (!isset($category->slug)) {
+            $category->slug = str_slug($category->name);
+        }
         $categoryData = (array)$category;
         $categoryData = $this->__getData($categoryData);
         if (!is_null($parentCategory)) {

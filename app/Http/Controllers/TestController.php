@@ -21,7 +21,9 @@ class TestController extends Controller
 {
     public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
     {
+        $category = $webCategoryRepo->get(1048);
 
+        dd($category->load(['recursiveParentCategory', 'retailer'])->toJson());
 //        $content = simplexml_load_string(file_get_contents('https://www.officeworks.com.au/sitemap-products.xml'));
 //        $listInString = json_encode($content);
 //        $listInArray = json_decode($listInString);

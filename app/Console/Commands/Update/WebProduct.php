@@ -1,28 +1,27 @@
 <?php
 
-namespace OzSpy\Console\Commands\Crawl;
+namespace OzSpy\Console\Commands\Update;
 
 use Illuminate\Console\Command;
 use OzSpy\Contracts\Models\Base\RetailerContract;
-use OzSpy\Contracts\Models\Base\WebCategoryContract;
-use OzSpy\Jobs\Crawl\WebProductList as WebProductListJob;
 use OzSpy\Models\Base\Retailer;
+use OzSpy\Jobs\Update\WebProduct as WebProductJob;
 
-class WebProductList extends Command
+class WebProduct extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'crawl:web-product-list {--R|retailer=} {--active}';
+    protected $signature = 'update:web-product {--R|retailer=} {--active}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Scrape product list from retailer websites';
+    protected $description = 'Dispatch jobs to create/update products based on given scraping result';
 
     /**
      * Create a new command instance.
@@ -37,11 +36,10 @@ class WebProductList extends Command
     /**
      * Execute the console command.
      *
-     * @param WebCategoryContract $webCategoryRepo
      * @param RetailerContract $retailerRepo
-     * @return void
+     * @return mixed
      */
-    public function handle(WebCategoryContract $webCategoryRepo, RetailerContract $retailerRepo)
+    public function handle(RetailerContract $retailerRepo)
     {
         $retailers = $retailerRepo->all();
 
@@ -64,13 +62,13 @@ class WebProductList extends Command
             $this->output->progressStart($webCategories->count());
 
             $webCategories->each(function (\OzSpy\Models\Base\WebCategory $webCategory) use ($retailer) {
-                dispatch((new WebProductListJob($webCategory))->onQueue('crawl-web-product-list-' . $retailer->priority));
+                dispatch((new WebProductJob($webCategory))->onQueue('update-web-product'));
                 $this->output->progressAdvance();
             });
             $this->output->progressFinish();
             $this->output->comment("Retailer has been processed: {$retailer->name}");
         });
 
-        $this->output->success("crawl:web-product-list has dispatched all jobs");
+        $this->output->success("update:web-product-list has dispatched all jobs");
     }
 }

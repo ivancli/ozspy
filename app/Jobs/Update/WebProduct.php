@@ -1,32 +1,49 @@
 <?php
 
-namespace OzSpy\Jobs\Crawl;
+namespace OzSpy\Jobs\Update;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Collection;
 use OzSpy\Contracts\Models\Base\WebHistoricalPriceContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
-use OzSpy\Contracts\Scrapers\Webs\WebProductListScraper;
 use OzSpy\Exceptions\Crawl\ProductsNotFoundException;
-use OzSpy\Exceptions\Crawl\ScraperNotFoundException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct as WebProductModel;
-use OzSpy\Models\Base\WebProduct;
 
-class WebProductList implements ShouldQueue
+class WebProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var WebCategory
+     * @var \OzSpy\Models\Base\WebCategory
      */
     protected $webCategory;
+
+    /**
+     * @var Retailer
+     */
+    protected $retailer;
+
+    /**
+     * @var Collection
+     */
+    protected $existingWebProducts;
+
+    /**
+     * @var array
+     */
+    protected $toBeCreatedProducts = [];
+
+    /**
+     * @var array
+     */
+    protected $toBeSyncProductIds = [];
 
     /**
      * @var WebProductContract
@@ -44,87 +61,65 @@ class WebProductList implements ShouldQueue
     protected $webProductModel;
 
     /**
-     * @var Retailer
-     */
-    protected $retailer;
-
-    /**
-     * @var Collection
-     */
-    protected $existingWebProducts;
-
-    /**
-     * @var WebProductListScraper
-     */
-    protected $webProductListScraper;
-
-    /**
-     * @var array
-     */
-    protected $toBeCreatedProducts = [];
-
-    /**
-     * @var array
-     */
-    protected $toBeSyncProductIds = [];
-
-    /**
      * Create a new job instance.
      *
-     * @param WebCategory $webCategory
+     * @param \OzSpy\Models\Base\WebCategory $webCategory
      */
     public function __construct(WebCategory $webCategory)
     {
         $this->webCategory = $webCategory;
 
-        $this->retailer = $webCategory->retailer;
+        $this->retailer = $this->webCategory->retailer;
     }
 
     /**
      * Execute the job.
-     *
      * @param WebProductContract $webProductRepo
      * @param WebHistoricalPriceContract $webHistoricalPriceRepo
      * @param WebProductModel $webProductModel
      * @return void
      * @throws ProductsNotFoundException
-     * @throws ScraperNotFoundException
      */
     public function handle(WebProductContract $webProductRepo, WebHistoricalPriceContract $webHistoricalPriceRepo, WebProductModel $webProductModel)
     {
         $this->webProductRepo = $webProductRepo;
         $this->webHistoricalPriceRepo = $webHistoricalPriceRepo;
         $this->webProductModel = $webProductModel;
-        $className = 'OzSpy\Repositories\Scrapers\Web\\' . studly_case($this->retailer->name) . '\WebProductListScraper';
 
-        if (!class_exists($className)) {
-            throw new ScraperNotFoundException;
-        }
-        $this->webProductListScraper = new $className($this->webCategory);
-        $this->webProductListScraper->scrape();
-        $products = $this->webProductListScraper->getProducts();
-        if ($this->webProductListScraper->isAvailable()) {
-            if (count($products) == 0) {
-                throw new ProductsNotFoundException;
+        $filePath = storage_path('app/scraper/storage/products/' . $this->webCategory->getKey() . '.json');
+        if (file_exists($filePath)) {
+            $content = file_get_contents($filePath);
+            $scrapingResult = json_decode($content);
+            if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
+                if (isset($scrapingResult->category_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->products)) {
+                    $category_id = $scrapingResult->category_id;
+                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
+                    $products = $scrapingResult->products;
+
+                    if ($this->webCategory->getKey() == $category_id) {
+                        if (count($products) == 0) {
+                            throw new ProductsNotFoundException;
+                        }
+
+                        $this->existingWebProducts = $this->retailer->webProducts;
+
+                        foreach ($products as $product) {
+                            $this->processSingleProduct($product);
+                        }
+
+                        $this->syncWebProductWebCategoryWithoutDetach($this->toBeSyncProductIds);
+
+                        $this->processBatchCreate();
+
+                        $this->retailer = $this->retailer->fresh();
+                        $this->webCategory = $this->webCategory->fresh();
+
+                        $this->webCategory->last_crawled_products_count = count($products);
+                        $this->webCategory->last_crawled_at = $last_scraped_at;
+                        $this->webCategory->save();
+                    }
+                }
             }
-
-
-            $this->existingWebProducts = $this->retailer->webProducts;
-
-            foreach ($products as $product) {
-                $this->processSingleProduct($product);
-            }
-
-            $this->syncWebProductWebCategoryWithoutDetach($this->toBeSyncProductIds);
-
-            $this->processBatchCreate();
-
-            $this->retailer = $this->retailer->fresh();
-            $this->webCategory = $this->webCategory->fresh();
-
-            $this->webCategory->last_crawled_products_count = count($products);
-            $this->webCategory->last_crawled_at = Carbon::now();
-            $this->webCategory->save();
         }
     }
 
@@ -193,7 +188,7 @@ class WebProductList implements ShouldQueue
         $pluckedRetailerProductIds = array_unique(array_pluck($data, 'retailer_product_id'));
         $pluckedSlugs = array_unique(array_pluck($data, 'slug'));
 
-        $insertedWebProducts = $retailerWebProducts->filter(function (WebProduct $retailerWebProduct) use ($pluckedRetailerProductIds, $pluckedSlugs) {
+        $insertedWebProducts = $retailerWebProducts->filter(function (WebProductModel $retailerWebProduct) use ($pluckedRetailerProductIds, $pluckedSlugs) {
             return
                 (!is_null($retailerWebProduct->retailer_product_id) && in_array($retailerWebProduct->retailer_product_id, $pluckedRetailerProductIds))
                 ||
@@ -241,7 +236,7 @@ class WebProductList implements ShouldQueue
         unset($retailerWebProducts, $pluckedRetailerProductIds, $pluckedSlugs, $webProductIds);
     }
 
-    private function savePrice(WebProduct $webProduct, $price)
+    private function savePrice(WebProductModel $webProduct, $price)
     {
         $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
             'amount' => $price

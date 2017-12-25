@@ -9,24 +9,21 @@ process.argv.forEach((argv) => {
         }
     }
 });
-
 if (!argvs.scraper) {
     argvs.scraper = 'categories';
 }
 
-if (!argvs.id) {
-    throw new Error('Please provide target ID for output purpose.');
-}
-
-if (argvs.scraper === 'products' && !argvs.url) {
-    throw new Error('Please provide URL for crawling purpose.');
+if (argvs.category) {
+    argvs.category = JSON.parse(argvs.category);
 }
 
 if (!argvs.retailer) {
-    throw new Error('Please provide retailer for crawling purpose.');
+    throw new Error('Retailer not found.');
 }
 
-let Scraper = require('./scrapers/' + argvs.retailer + '/' + argvs.scraper);
+argvs.retailer = JSON.parse(argvs.retailer);
 
-let scraper = new Scraper(argvs.id, argvs.url);
+let Scraper = require('./scrapers/' + argvs.retailer.abbreviation + '/' + argvs.scraper);
+
+let scraper = new Scraper(argvs);
 scraper.scrape();
