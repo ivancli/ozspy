@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebHistoricalPriceContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
 use OzSpy\Exceptions\Crawl\ProductsNotFoundException;
+use OzSpy\Jobs\Models\WebProduct\UpdateOrStore;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct as WebProductModel;
@@ -101,15 +102,14 @@ class WebProduct implements ShouldQueue
                             throw new ProductsNotFoundException;
                         }
 
-                        $this->existingWebProducts = $this->retailer->webProducts;
-
                         foreach ($products as $product) {
-                            $this->processSingleProduct($product);
+                            $productData = (array)$product;
+                            $productData = $this->__getData($productData);
+                            dispatch((new UpdateOrStore($this->retailer, $productData, function (WebProductModel $webProduct) use ($product) {
+                                $this->savePrice($webProduct, $product->price);
+                                $webProduct->webCategories()->syncWithoutDetaching([$this->webCategory->getKey()]);
+                            }))->onConnection('sync'));
                         }
-
-                        $this->syncWebProductWebCategoryWithoutDetach($this->toBeSyncProductIds);
-
-                        $this->processBatchCreate();
 
                         $this->retailer = $this->retailer->fresh();
                         $this->webCategory = $this->webCategory->fresh();
@@ -125,18 +125,13 @@ class WebProduct implements ShouldQueue
 
     protected function processSingleProduct($product)
     {
-
         $productData = (array)$product;
         $productData = $this->__getData($productData);
 
         if (isset($product->retailer_product_id) && !is_null($product->retailer_product_id)) {
-            $storedProduct = $this->existingWebProducts->filter(function ($existingWebProduct) use ($product) {
-                return $existingWebProduct->retailer_product_id == $product->retailer_product_id;
-            })->first();
+            $storedProduct = $this->webProductRepo->findBy($this->retailer, 'retailer_product_id', $product->retailer_product_id)->first();
         } elseif (isset($product->slug) && !is_null($product->slug)) {
-            $storedProduct = $this->existingWebProducts->filter(function ($existingWebProduct) use ($product) {
-                return $existingWebProduct->slug == $product->slug;
-            })->first();
+            $storedProduct = $this->webProductRepo->findBy($this->retailer, 'slug', $product->slug)->first();
         }
 
         if (!isset($storedProduct) || is_null($storedProduct)) {
