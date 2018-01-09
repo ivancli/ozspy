@@ -73,6 +73,18 @@ class BaseContract
     }
 
     /**
+     * @param array $search
+     * @param array $data
+     * @return Model
+     */
+    public function updateOrStore(array $search, array $data)
+    {
+        $data = $this->__getData($data);
+        $model = $this->model->updateOrCreate($search, $data);
+        return $model;
+    }
+
+    /**
      * delete a model
      * @param Model $model
      * @param bool $force

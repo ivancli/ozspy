@@ -9,7 +9,7 @@ class Retailer extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'abbreviation', 'domain', 'ecommerce_url', 'logo', 'active', 'priority'];
+    protected $fillable = ['name', 'abbreviation', 'domain', 'ecommerce_url', 'logo', 'active', 'priority', 'last_crawled_at'];
 
     protected $dates = ['deleted_at'];
 

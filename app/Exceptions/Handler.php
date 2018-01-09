@@ -17,7 +17,11 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        \OzSpy\Exceptions\Crawl\CategoriesNotFoundException::class,
+        \OzSpy\Exceptions\Crawl\ProductsNotFoundException::class,
+        \OzSpy\Exceptions\Crawl\ScraperNotFoundException::class,
+        \OzSpy\Exceptions\Models\DuplicateCategoryException::class,
+        \OzSpy\Exceptions\Models\DuplicateProductException::class,
     ];
 
     /**

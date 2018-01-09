@@ -64,7 +64,6 @@ class Scraper {
                 webProduct.sku = product.sku;
                 this.products.push(webProduct);
             });
-            this.save();
         }
         if (this.hasNext === true) {
             this.setUrl();

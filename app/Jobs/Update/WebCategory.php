@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Exceptions\Crawl\CategoriesNotFoundException;
+use OzSpy\Jobs\Models\WebCategory\UpdateOrStore;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory as WebCategoryModel;
 
@@ -61,9 +62,8 @@ class WebCategory implements ShouldQueue
             if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
                 if (isset($scrapingResult->retailer_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->categories)) {
                     $retailer_id = $scrapingResult->retailer_id;
-                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
                     $categories = $scrapingResult->categories;
-
+                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
                     if ($this->retailer->getKey() == $retailer_id) {
 
                         if (count($categories) == 0) {
@@ -74,8 +74,8 @@ class WebCategory implements ShouldQueue
                             $this->processSingleCategory($category);
                         }
                         $this->retailer = $this->retailer->fresh();
-                        $this->restoreCategories();
-                        $this->deleteCategories();
+                        $this->retailer->last_crawled_at = $last_scraped_at;
+                        $this->retailer->save();
                     }
                 }
             }
@@ -85,45 +85,13 @@ class WebCategory implements ShouldQueue
     /**
      * process and store a single category
      * @param $category
-     * @param WebCategoryModel|null $parentCategory
      * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\HasMany|WebCategoryModel
      */
-    protected function processSingleCategory($category, WebCategoryModel $parentCategory = null)
+    protected function processSingleCategory($category)
     {
-        if (!isset($category->slug)) {
-            $category->slug = str_slug($category->name);
-        }
         $categoryData = (array)$category;
-        $categoryData = $this->__getData($categoryData);
-        if (!is_null($parentCategory)) {
-            if ($this->categoryRepo->exist($this->retailer, $category->name, $parentCategory, true)) {
-                $storedCategory = $this->categoryRepo->findByName($this->retailer, $category->name, $parentCategory, true);
-                $this->categoryRepo->update($storedCategory, $categoryData);
-                $storedCategory = $storedCategory->fresh();
-            }
-        } else {
-            if ($this->categoryRepo->exist($this->retailer, $category->name, null, true)) {
-                $storedCategory = $this->categoryRepo->findByName($this->retailer, $category->name, null, true);
-                $this->categoryRepo->update($storedCategory, $categoryData);
-                $storedCategory = $storedCategory->fresh();
-            }
-        }
-        if (!isset($storedCategory)) {
-            $storedCategory = $this->categoryRepo->store($categoryData);
-            $this->retailer->webCategories()->save($storedCategory);
-        }
-        if (!is_null($parentCategory)) {
-            $parentCategory->childCategories()->save($storedCategory);
-        }
-        if (!empty($category->categories)) {
-            foreach ($category->categories as $childCategory) {
-                $this->processSingleCategory($childCategory, $storedCategory);
-            }
-        }
 
-        $this->__signCategory($storedCategory);
-
-        return $storedCategory;
+        dispatch((new UpdateOrStore($this->retailer, $categoryData)));
     }
 
     /**

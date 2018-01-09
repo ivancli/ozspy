@@ -21,21 +21,14 @@ class Destroy implements ShouldQueue
     protected $webProduct;
 
     /**
-     * @var Closure
-     */
-    protected $callback;
-
-    /**
      * Create a new job instance.
      *
      * @param WebProduct $webProduct
-     * @param Closure $callback
      */
-    public function __construct(WebProduct $webProduct, Closure $callback = null)
+    public function __construct(WebProduct $webProduct)
     {
         $this->webProduct = $webProduct;
 
-        $this->callback = $callback;
     }
 
     /**
@@ -47,9 +40,5 @@ class Destroy implements ShouldQueue
     public function handle(WebProductContract $webProductRepo)
     {
         $webProductRepo->delete($this->webProduct);
-
-        if (!is_null($this->callback)) {
-            ($this->callback)();
-        }
     }
 }

@@ -42,7 +42,6 @@ class WebCategory implements ShouldQueue
             ];
 
             $optionStr = $this->format($options)->toString()->getOptionsStr();
-
             exec("node $execFilePath {$optionStr}");
         }
     }

@@ -11,19 +11,64 @@ use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use Illuminate\Http\Request;
 use OzSpy\Jobs\Crawl\WebCategory;
 use OzSpy\Jobs\Crawl\WebProductList;
+use OzSpy\Jobs\Models\WebProduct\UpdateOrStore;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Models\Crawl\Proxy;
 use OzSpy\Repositories\Scrapers\Proxies\ProxyNova;
 use OzSpy\Repositories\Scrapers\Web\Kogan\WebCategoryScraper;
+use OzSpy\Traits\Commands\Optionable;
 
 class TestController extends Controller
 {
-    public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo)
+    use Optionable;
+
+    public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo, RetailerContract $retailerRepo)
     {
-        $webCategory = $webCategoryRepo->get(602);
-        set_time_limit(99999);
-        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
+
+
+//        $retailer = $retailerRepo->get(3);
+//
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
+//        $execFilePath = storage_path('app/scraper/index.js');
+//        if (file_exists($filePath)) {
+//            $options = [
+//                'retailer' => "'" . $retailer->toJson() . "'",
+//                'scraper' => 'categories'
+//            ];
+//
+//            $optionStr = $this->format($options)->toString()->getOptionsStr();
+//            dd("node $execFilePath {$optionStr}");
+//        }
+
+
+        $webCategory = $webCategoryRepo->get(6476);
+        $filePath = storage_path('app/scraper/scrapers/hn/products.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'category' => "'" . $webCategory->toJson() . "'",
+                'retailer' => "'" . $webCategory->retailer->toJson() . "'",
+                'scraper' => 'products',
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+
+            dd("node $execFilePath {$optionStr}");
+        }
+
+
+
+
+
+
+
+//        $webCategory = $webCategoryRepo->get(1601);
+//        set_time_limit(99999);
+//        $this->dispatch((new \OzSpy\Jobs\Scrape\WebProduct($webCategory))->onConnection('sync'));
+//        $this->dispatch((new \OzSpy\Jobs\Update\WebCategory($retailer))->onConnection('sync'));
+//        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
+        return view('test');
     }
 
     /**

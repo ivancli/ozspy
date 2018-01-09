@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use OzSpy\Contracts\Models\Base\WebProductContract;
+use OzSpy\Exceptions\Models\DuplicateProductException;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct;
@@ -38,19 +39,13 @@ class Store implements ShouldQueue
     protected $webProductModel;
 
     /**
-     * @var Closure
-     */
-    protected $callback;
-
-    /**
      * Create a new job instance.
      *
      * @param Retailer $retailer
      * @param array $data
      * @param WebCategory $webCategory
-     * @param Closure $callback
      */
-    public function __construct(Retailer $retailer, array $data, WebCategory $webCategory = null, Closure $callback = null)
+    public function __construct(Retailer $retailer, array $data, WebCategory $webCategory = null)
     {
         $this->webProductModel = new WebProduct;
 
@@ -59,8 +54,6 @@ class Store implements ShouldQueue
         $this->data = $this->__getData($data);
 
         $this->webCategory = $webCategory;
-
-        $this->callback = $callback;
     }
 
     /**
@@ -68,6 +61,7 @@ class Store implements ShouldQueue
      *
      * @param WebProductContract $webProductRepo
      * @return void
+     * @throws DuplicateProductException
      */
     public function handle(WebProductContract $webProductRepo)
     {
@@ -80,10 +74,8 @@ class Store implements ShouldQueue
 
         if (!isset($existingWebProduct) || is_null($existingWebProduct)) {
             $existingWebProduct = $webProductRepo->store($this->data);
-        }
-
-        if (!is_null($this->callback)) {
-            ($this->callback)($existingWebProduct);
+        } else {
+            throw new DuplicateProductException;
         }
     }
 

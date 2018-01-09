@@ -1,23 +1,22 @@
 <?php
 
-namespace OzSpy\Jobs\Models\WebProduct;
+namespace OzSpy\Jobs\Models\WebCategory;
 
-use Closure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use OzSpy\Models\Base\WebProduct;
+use OzSpy\Models\Base\WebCategory;
 
 class Update implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var WebProduct
+     * @var WebCategory
      */
-    protected $webProduct;
+    protected $webCategory;
 
     /**
      * @var array
@@ -27,12 +26,12 @@ class Update implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param WebProduct $webProduct
+     * @param WebCategory $webCategory
      * @param array $data
      */
-    public function __construct(WebProduct $webProduct, array $data)
+    public function __construct(WebCategory $webCategory, array $data)
     {
-        $this->webProduct = $webProduct;
+        $this->webCategory = $webCategory;
 
         $this->data = $data;
     }
@@ -44,11 +43,11 @@ class Update implements ShouldQueue
      */
     public function handle()
     {
-        $this->webProduct->update($this->__getData($this->data));
+        $this->webCategory->update($this->__getData($this->data));
     }
 
     private function __getData(array $data)
     {
-        return array_only($data, $this->webProduct->getFillable());
+        return array_only($data, $this->webCategory->getFillable());
     }
 }

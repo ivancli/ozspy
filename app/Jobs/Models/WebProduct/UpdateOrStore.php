@@ -2,14 +2,15 @@
 
 namespace OzSpy\Jobs\Models\WebProduct;
 
-use Closure;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use OzSpy\Contracts\Models\Base\WebHistoricalPriceContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
 use OzSpy\Models\Base\Retailer;
+use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct;
 
 /**
@@ -37,51 +38,78 @@ class UpdateOrStore implements ShouldQueue
     protected $data;
 
     /**
-     * @var Closure
+     * @var array
      */
-    protected $callback;
+    protected $productData;
 
     /**
-     * Create a new job instance.
-     *
+     * @var WebCategory
+     */
+    protected $webCategory;
+
+    /**
+     * @var WebHistoricalPriceContract
+     */
+    protected $webHistoricalPriceRepo;
+
+    /**
+     * UpdateOrStore constructor.
      * @param Retailer $retailer
      * @param array $data
-     * @param Closure $callback
+     * @param WebCategory|null $webCategory
      */
-    public function __construct(Retailer $retailer, array $data, Closure $callback = null)
+    public function __construct(Retailer $retailer, array $data, WebCategory $webCategory = null)
     {
         $this->retailer = $retailer;
 
-        $this->webProductModel = new WebProduct;
+        $this->data = $data;
 
-        $this->data = $this->__getData($data);
-
-        $this->callback = $callback;
+        $this->webCategory = $webCategory;
     }
 
     /**
      * Execute the job.
      *
      * @param WebProductContract $webProductRepo
+     * @param WebHistoricalPriceContract $webHistoricalPriceRepo
      * @return void
      */
-    public function handle(WebProductContract $webProductRepo)
+    public function handle(WebProductContract $webProductRepo, WebHistoricalPriceContract $webHistoricalPriceRepo)
     {
-        if (array_has($this->data, 'retailer_product_id')) {
+        $this->webProductModel = new WebProduct;
+
+        $this->productData = $this->__getData($this->data);
+
+        $this->webHistoricalPriceRepo = $webHistoricalPriceRepo;
+
+        if (array_has($this->productData, 'retailer_product_id')) {
             $existingWebProduct = $webProductRepo->findBy($this->retailer, 'retailer_product_id', array_get($this->data, 'retailer_product_id'))->first();
-        } elseif (array_has($this->data, 'slug')) {
-            $existingWebProduct = $webProductRepo->findBy($this->retailer, 'slug', array_get($this->data, 'slug'))->first();
+        } elseif (array_has($this->productData, 'slug')) {
+            $existingWebProduct = $webProductRepo->findBy($this->retailer, 'slug', array_get($this->productData, 'slug'))->first();
         }
 
         if (!isset($existingWebProduct) || is_null($existingWebProduct)) {
-            $existingWebProduct = $webProductRepo->store($this->data);
+            $existingWebProduct = $webProductRepo->store($this->productData);
         } else {
-            $webProductRepo->update($existingWebProduct, $this->data);
+            $webProductRepo->update($existingWebProduct, $this->productData);
         }
 
-        if (!is_null($this->callback)) {
-            ($this->callback)($existingWebProduct);
+        if (!is_null(array_get($this->data, 'price'))) {
+            $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
         }
+
+        $this->retailer->webProducts()->save($existingWebProduct);
+
+        if (!is_null($this->webCategory)) {
+            $existingWebProduct->webCategories()->syncWithoutDetaching([$this->webCategory->getKey()]);
+        }
+    }
+
+    private function savePrice(WebProduct $webProduct, $price)
+    {
+        $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
+            'amount' => $price
+        ]);
     }
 
     private function __getData(array $data)

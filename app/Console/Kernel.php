@@ -48,6 +48,7 @@ class Kernel extends ConsoleKernel
         $this->__scheduleScrapeWebProduct();
         $this->__scheduleUpdateWebCategory();
         $this->__scheduleUpdateWebProduct();
+//        $this->__scheduleHorizonSnapshot();
     }
 
     /**
@@ -79,7 +80,7 @@ class Kernel extends ConsoleKernel
     private function __scheduleScrapeWebProduct()
     {
         $this->schedule->command('scrape:web-product --active')
-            ->dailyAt("3:00");
+            ->dailyAt("14:00");
     }
 
     private function __scheduleUpdateWebCategory()
@@ -91,7 +92,12 @@ class Kernel extends ConsoleKernel
     private function __scheduleUpdateWebProduct()
     {
         $this->schedule->command('update:web-product --active')
-            ->dailyAt("5:00");
+            ->dailyAt('22:00');
+    }
+
+    private function __scheduleHorizonSnapshot()
+    {
+        $this->schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
     /**

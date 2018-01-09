@@ -25,6 +25,7 @@ class CreateRetailersTable extends Migration
             $table->binary('logo')->nullable();
             $table->tinyInteger('active')->default(1);
             $table->tinyInteger('priority')->default(1);
+            $table->timestamp('last_crawled_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

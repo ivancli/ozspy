@@ -4,10 +4,11 @@
   "author": "Ivan Li",
   "dependencies": {
     "cheerio": "latest",
+    "fs": "0.0.1-security",
     "jsonfile": "^4.0.0",
-    "request": "latest"
-  },
-  "devDependencies": {
-    "moment": "^2.20.1"
+    "moment": "^2.20.1",
+    "request": "latest",
+    "tough-cookie-filestore": "0.0.1",
+    "xml-to-json-promise": "0.0.3"
   }
 }
