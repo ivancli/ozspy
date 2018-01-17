@@ -137,7 +137,7 @@ return [
                 'connection' => 'redis',
                 'queue' => ['scrape-web-product'],
                 'balance' => 'simple',
-                'processes' => 5,
+                'processes' => 8,
                 'tries' => 3,
                 'timeout' => 1800,
             ],

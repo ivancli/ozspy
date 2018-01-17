@@ -3,17 +3,32 @@
 namespace OzSpy\Models\Auth;
 
 use Illuminate\Database\Eloquent\Model;
-use IvanCLI\UM\UMRole;
 
-class Role extends UMRole
+class Role extends Model
 {
-    public static function getAdminRole()
+    protected $fillable = ['name', 'description'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function groups()
     {
-        return self::where('name', 'admin')->first();
+        return $this->belongsToMany(Group::class, 'user_groups', 'role_id', 'group_id');
     }
 
-    public static function getClientRole()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function groupUsers()
     {
-        return self::where('name', 'client')->first();
+        return $this->belongsToMany(User::class, 'user_groups', 'role_id', 'user_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_roles', 'role_id', 'user_id');
     }
 }

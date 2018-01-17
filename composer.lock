@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a804366b518a60c704454b95ba5b989d",
+    "content-hash": "3b9c2c57bf9623e5e52f12f7a56da394",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -757,51 +757,6 @@
                 "issues": "https://github.com/ketchol/parser/issues"
             },
             "time": "2017-11-11T04:25:00+00:00"
-        },
-        {
-            "name": "ivancli/um",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ketchol/um.git",
-                "reference": "c1db281f4bb3e7b35ec29b904df2c05221af869e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ketchol/um/zipball/c1db281f4bb3e7b35ec29b904df2c05221af869e",
-                "reference": "c1db281f4bb3e7b35ec29b904df2c05221af869e",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/cache": "~5.0",
-                "illuminate/console": "~5.0",
-                "illuminate/support": "~5.0",
-                "php": ">=5.5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/commands"
-                ],
-                "psr-4": {
-                    "IvanCLI\\UM\\": "src/UM/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ivan Li",
-                    "email": "ivan.li@hotmail.com"
-                }
-            ],
-            "description": "User management package",
-            "support": {
-                "source": "https://github.com/ketchol/um/tree/1.1.0",
-                "issues": "https://github.com/ketchol/um/issues"
-            },
-            "time": "2017-10-08T13:09:49+00:00"
         },
         {
             "name": "ixudra/curl",

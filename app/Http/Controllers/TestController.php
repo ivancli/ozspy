@@ -3,6 +3,7 @@
 namespace OzSpy\Http\Controllers;
 
 use Ixudra\Curl\Facades\Curl;
+use OzSpy\Contracts\Models\Auth\UserContract;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
@@ -23,10 +24,11 @@ class TestController extends Controller
 {
     use Optionable;
 
-    public function index(WebProductContract $webProductRepo, WebCategoryContract $webCategoryRepo, RetailerContract $retailerRepo)
+    public function index(UserContract $userContract)
     {
-
-
+        $user = $userContract->findBy('id', 1)->first();
+        auth()->login($user);
+        return view('test');
 //        $retailer = $retailerRepo->get(3);
 //
 //        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
@@ -42,7 +44,7 @@ class TestController extends Controller
 //        }
 
 
-        $webCategory = $webCategoryRepo->get(6476);
+        $webCategory = $webCategoryRepo->get(4147);
         $filePath = storage_path('app/scraper/scrapers/hn/products.js');
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
@@ -56,11 +58,6 @@ class TestController extends Controller
 
             dd("node $execFilePath {$optionStr}");
         }
-
-
-
-
-
 
 
 //        $webCategory = $webCategoryRepo->get(1601);

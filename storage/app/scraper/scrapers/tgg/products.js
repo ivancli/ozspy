@@ -49,9 +49,9 @@ class Scraper {
         this.extractNextPageUrl(content);
         let $this = this;
         let $ = cheerio.load(content);
-        $(".product-tile-inner script").each(function () {
-            let scriptText = $(this).get()[0].children[0].data;
-
+        $("#product_listing_tab > ul > li").each(function () {
+            let $script = $(this).find(".product-tile-inner script")
+            let scriptText = $script.get()[0].children[0].data;
             let idMatches = scriptText.match(/'id': '(.*?)',/);
             let nameMatches = scriptText.match(/'name': '(.*?)',/);
             let priceMatches = scriptText.match(/'price': '(.*?)',/);
@@ -62,10 +62,17 @@ class Scraper {
                 product.name = cheerio.load(nameMatches[nameMatches.length - 1]).text();
                 product.price = parseFloat(priceMatches[priceMatches.length - 1]);
                 product.brand = brandMatches[brandMatches.length - 1];
+                let $model = $(this).find(".product-tile-model")
+                if ($model.length > 0) {
+                    product.model = $model.text();
+                }
+                let $url = $(this).find("a.disp-block")
+                product.url = $url.attr('href');
                 $this.products.push(product);
                 $this.offset++;
             }
         });
+
         if ($("#WC_SearchBasedNavigationResults_pagination_link_right_categoryResults").length > 0 && $this.nextUrl !== null) {
             $this.fetchProductList();
         } else {

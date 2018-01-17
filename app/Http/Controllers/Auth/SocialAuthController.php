@@ -9,7 +9,7 @@
 namespace OzSpy\Http\Controllers\Auth;
 
 
-use OzSpy\Contracts\Models\UserContract;
+use OzSpy\Contracts\Models\Auth\UserContract;
 use OzSpy\Exceptions\SocialAuthExceptions\NullEmailException;
 use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
 use OzSpy\Http\Controllers\Controller;
@@ -70,7 +70,7 @@ class SocialAuthController extends Controller
             $matchedUsers = $this->userRepo->findBy('email', $email);
             $user = $matchedUsers->first();
             if (is_null($user)) {
-                $user = $this->userRepo->create(compact([
+                $user = $this->userRepo->store(compact([
                     'email', 'first_name', 'last_name', 'provider', 'provider_id'
                 ]));
             }

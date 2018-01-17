@@ -9,19 +9,12 @@
 namespace OzSpy\Repositories\Models\Auth;
 
 
+use Illuminate\Database\Eloquent\Builder;
 use OzSpy\Contracts\Models\Auth\UserContract;
-use OzSpy\Models\Auth\User;
 use Illuminate\Support\Collection;
 
-class UserRepository implements UserContract
+class UserRepository extends UserContract
 {
-    protected $userModel;
-
-    public function __construct(User $userModel)
-    {
-        $this->userModel = $userModel;
-    }
-
 
     /**
      * Get a collection of users by an attribute
@@ -31,35 +24,6 @@ class UserRepository implements UserContract
      */
     public function findBy($attributes, $value)
     {
-        return $this->userModel->where($attributes, $value)->get();
-    }
-
-    /**
-     * @param array $data
-     * @return User
-     */
-    public function create(array $data)
-    {
-        $user = $this->userModel->create($data);
-        return $user;
-    }
-
-    /**
-     * @param User $user
-     * @param array $data
-     * @return bool
-     */
-    public function update(User $user, array $data)
-    {
-        return $user->update($data);
-    }
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    public function delete(User $user)
-    {
-        return $user->delete();
+        return $this->builder()->where($attributes, $value)->get();
     }
 }

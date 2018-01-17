@@ -181,8 +181,6 @@ return [
         OzSpy\Providers\RouteServiceProvider::class,
 
         OzSpy\Providers\RepositoryServiceProvider::class,
-
-        \IvanCLI\UM\UMServiceProvider::class,
     ],
 
     /*
@@ -233,8 +231,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-
-        'UM' => \IvanCLI\UM\UMFacade::class,
     ],
 
 ];

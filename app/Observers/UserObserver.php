@@ -33,10 +33,7 @@ class UserObserver
 
     public function created(User $user)
     {
-        $clientRole = $this->roleModel->getClientRole();
-        if (!is_null($clientRole)) {
-            $user->attachRole($clientRole);
-        }
+
     }
 
     public function updating()

@@ -9,6 +9,7 @@
 namespace OzSpy\Contracts\Models\Base;
 
 
+use OzSpy\Contracts\Models\BaseContract;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\Retailer;
 

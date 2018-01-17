@@ -23,7 +23,6 @@
         "fideloper/proxy": "~3.3",
         "ivancli/crawler": "^1.0",
         "ivancli/parser": "^1.0",
-        "ivancli/um": "^1.0",
         "laravel/framework": "5.5.*",
         "laravel/horizon": "^1.0",
         "laravel/passport": "^4.0",

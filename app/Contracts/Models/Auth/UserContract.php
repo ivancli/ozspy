@@ -2,42 +2,27 @@
 /**
  * Created by PhpStorm.
  * User: Ivan
- * Date: 30/09/2017
- * Time: 12:15 AM
+ * Date: 15/01/2018
+ * Time: 11:24 PM
  */
 
 namespace OzSpy\Contracts\Models\Auth;
 
 
-use OzSpy\Models\Auth\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use OzSpy\Contracts\Models\BaseContract;
+use OzSpy\Models\Auth\User;
 
-interface UserContract
+abstract class UserContract extends BaseContract
 {
+
     /**
      * Get a collection of users by an attribute
      * @param $attributes
      * @param $value
      * @return Collection
      */
-    public function findBy($attributes, $value);
+    abstract public function findBy($attributes, $value);
 
-    /**
-     * @param array $data
-     * @return User
-     */
-    public function create(array $data);
-
-    /**
-     * @param User $user
-     * @param array $data
-     * @return bool
-     */
-    public function update(User $user, array $data);
-
-    /**
-     * @param User $user
-     * @return bool
-     */
-    public function delete(User $user);
 }

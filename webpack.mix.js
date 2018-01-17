@@ -14,6 +14,7 @@ let mix = require('laravel-mix');
 mix
 /*js files*/
     .js('resources/assets/js/app/app.js', 'public/js')
+    .js('resources/assets/js/test.js', 'public/js')
     /*auth js*/
     .js('resources/assets/js/app/auth/login.js', 'public/js/auth')
     .js('resources/assets/js/app/auth/register.js', 'public/js/auth')

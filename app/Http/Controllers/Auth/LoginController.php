@@ -2,11 +2,9 @@
 
 namespace OzSpy\Http\Controllers\Auth;
 
-use OzSpy\Contracts\Models\UserContract;
 use OzSpy\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {

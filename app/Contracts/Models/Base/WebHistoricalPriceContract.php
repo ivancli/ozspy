@@ -10,6 +10,7 @@ namespace OzSpy\Contracts\Models\Base;
 
 
 use Illuminate\Database\Eloquent\Model;
+use OzSpy\Contracts\Models\BaseContract;
 use OzSpy\Models\Base\WebHistoricalPrice;
 use OzSpy\Models\Base\WebProduct;
 

@@ -6,7 +6,7 @@
  * Time: 6:38 PM
  */
 
-namespace OzSpy\Contracts\Models\Base;
+namespace OzSpy\Contracts\Models;
 
 
 use OzSpy\Models\Model;
@@ -21,6 +21,14 @@ class BaseContract
     }
 
     /**
+     * @return Model
+     */
+    public function builder()
+    {
+        return $this->model;
+    }
+
+    /**
      * get all models
      * @param bool $trashed
      * @return \Illuminate\Database\Eloquent\Collection|Model[]
@@ -28,9 +36,9 @@ class BaseContract
     public function all($trashed = false)
     {
         if ($trashed === true) {
-            return $this->model->withTrashed()->get();
+            return $this->builder()->withTrashed()->get();
         } else {
-            return $this->model->all();
+            return $this->builder()->all();
         }
     }
 
@@ -43,9 +51,9 @@ class BaseContract
     public function get($id, $throw = true)
     {
         if ($throw === true) {
-            return $this->model->findOrFail($id);
+            return $this->builder()->findOrFail($id);
         } else {
-            return $this->model->find($id);
+            return $this->builder()->find($id);
         }
     }
 
@@ -57,7 +65,7 @@ class BaseContract
     public function store(array $data)
     {
         $data = $this->__getData($data);
-        return $this->model->create($data);
+        return $this->builder()->create($data);
     }
 
     /**
@@ -80,7 +88,7 @@ class BaseContract
     public function updateOrStore(array $search, array $data)
     {
         $data = $this->__getData($data);
-        $model = $this->model->updateOrCreate($search, $data);
+        $model = $this->builder()->updateOrCreate($search, $data);
         return $model;
     }
 
@@ -111,6 +119,6 @@ class BaseContract
 
     private function __getData(array $data)
     {
-        return array_only($data, $this->model->getFillable());
+        return array_only($data, $this->builder()->getFillable());
     }
 }
