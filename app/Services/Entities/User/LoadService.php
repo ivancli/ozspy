@@ -8,18 +8,35 @@
 
 namespace OzSpy\Services\Entities\User;
 
+use OzSpy\Traits\Responses\Pageable;
 
+/**
+ * Class LoadService
+ * @package OzSpy\Services\Entities\User
+ */
 class LoadService extends UserServiceContract
 {
+    use Pageable;
 
-    public function handle()
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function handle(array $data = [])
     {
         if (!is_null($this->authUser)) {
 
         }
 
-        $users = $this->userRepo->all();
-        return $users;
+        //set pagination data
+//        $this->setAttrs($data);
+//
+//        $users = $this->userRepo->all();
+//
+//        $this->data = $users;
+//        $result = $this->composer();
+
+//        return $result;
     }
 
     protected function loadMembers()

@@ -8,12 +8,17 @@
 
 namespace OzSpy\Services\Entities\User;
 
+use OzSpy\Models\Auth\User;
 
+/**
+ * Class DestroyService
+ * @package OzSpy\Services\Entities\User
+ */
 class DestroyService extends UserServiceContract
 {
 
-    public function handle()
+    public function handle(User $user)
     {
-        // TODO: Implement handle() method.
+        $result = $this->userRepo->delete($user);
     }
 }

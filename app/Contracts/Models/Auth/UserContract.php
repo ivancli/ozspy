@@ -9,13 +9,16 @@
 namespace OzSpy\Contracts\Models\Auth;
 
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use OzSpy\Contracts\Models\BaseContract;
 use OzSpy\Models\Auth\User;
 
 abstract class UserContract extends BaseContract
 {
+    public function __construct(User $model)
+    {
+        parent::__construct($model);
+    }
 
     /**
      * Get a collection of users by an attribute

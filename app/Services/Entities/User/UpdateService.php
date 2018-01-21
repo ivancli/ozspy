@@ -8,12 +8,17 @@
 
 namespace OzSpy\Services\Entities\User;
 
+use OzSpy\Models\Auth\User;
 
+/**
+ * Class UpdateService
+ * @package OzSpy\Services\Entities\User
+ */
 class UpdateService extends UserServiceContract
 {
 
-    public function handle()
+    public function handle(User $user, array $data = [])
     {
-        // TODO: Implement handle() method.
+        $this->userRepo->update($user, $data);
     }
 }

@@ -30,4 +30,18 @@ Vue.component(
 
 const ozspy = new Vue({
     el: '#ozspy',
+    methods: {
+        test() {
+            axios.get('/api/v1/web-product', {
+                params:{
+                    offset: -1,
+                    length: 101
+                }
+            }).then(response => {
+                console.log(response);
+            }).catch(error => {
+                console.log(error);
+            })
+        }
+    }
 });

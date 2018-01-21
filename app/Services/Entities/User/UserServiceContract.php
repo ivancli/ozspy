@@ -16,7 +16,7 @@ use OzSpy\Services\ServiceContract;
  * Class UserServiceContract
  * @package OzSpy\Services\Entities\User
  */
-abstract class UserServiceContract implements ServiceContract
+abstract class UserServiceContract extends ServiceContract
 {
     /**
      * @var UserContract
@@ -24,19 +24,12 @@ abstract class UserServiceContract implements ServiceContract
     protected $userRepo;
 
     /**
-     * @var \Illuminate\Contracts\Auth\Authenticatable|\OzSpy\Models\Auth\User
-     */
-    protected $authUser;
-
-    /**
      * UserServiceContract constructor.
      * @param UserContract $userContract
      */
     public function __construct(UserContract $userContract)
     {
-        if (auth()->check()) {
-            $this->authUser = auth()->user();
-        }
+        parent::__construct();
 
         $this->userRepo = $userContract;
     }

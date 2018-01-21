@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
     public function unauthenticated($request, AuthenticationException $exception)
     {
         return $request->expectsJson()
-            ? response()->json(['message' => 'Unauthenticated.'], 401)
+            ? response()->json(['message' => 'Unauthenticated. For API requests, please include access token in request header.'], 401)
             : redirect()->guest(route('auth.login.get'));
     }
 }

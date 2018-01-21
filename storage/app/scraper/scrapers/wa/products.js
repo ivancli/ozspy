@@ -51,7 +51,7 @@ class Scraper {
                     slug = paths[paths.length - 1];
                 }
                 webProduct.slug = slug;
-                webProduct.url = this.retailer.domain + product.uri;
+                webProduct.url = this.retailer.domain + '/p' + product.uri;
                 webProduct.price = product.price !== null && parseFloat(product.price) > 0 ? parseFloat(product.price) : null;
                 webProduct.brand = product.brand;
                 webProduct.sku = product.sku;

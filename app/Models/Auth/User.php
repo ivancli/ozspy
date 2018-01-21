@@ -6,11 +6,11 @@ use Laravel\Passport\HasApiTokens;
 use OzSpy\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use IvanCLI\UM\Traits\UMUserTrait;
+use OzSpy\Traits\Entities\Auth\Roleable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, Roleable;
 
     /**
      * The attributes that are mass assignable.

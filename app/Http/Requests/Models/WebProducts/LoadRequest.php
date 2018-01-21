@@ -1,10 +1,10 @@
 <?php
 
-namespace OzSpy\Http\Requests\Models\Users;
+namespace OzSpy\Http\Requests\Models\WebProducts;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class LoadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'offset' => 'numeric|min:0',
+            'length' => 'numeric|min:1|max:100',
         ];
     }
 }

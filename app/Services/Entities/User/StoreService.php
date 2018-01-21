@@ -8,12 +8,15 @@
 
 namespace OzSpy\Services\Entities\User;
 
-
+/**
+ * Class StoreService
+ * @package OzSpy\Services\Entities\User
+ */
 class StoreService extends UserServiceContract
 {
 
-    public function handle()
+    public function handle(array $data = [])
     {
-        // TODO: Implement handle() method.
+        $this->userRepo->store($data);
     }
 }

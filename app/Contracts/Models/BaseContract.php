@@ -9,7 +9,8 @@
 namespace OzSpy\Contracts\Models;
 
 
-use OzSpy\Models\Model;
+
+use Illuminate\Database\Eloquent\Model;
 
 class BaseContract
 {
