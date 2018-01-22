@@ -34,8 +34,7 @@ const ozspy = new Vue({
         test() {
             axios.get('/api/v1/web-product', {
                 params:{
-                    offset: -1,
-                    length: 101
+                    length: 45
                 }
             }).then(response => {
                 console.log(response);

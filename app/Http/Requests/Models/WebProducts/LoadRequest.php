@@ -24,8 +24,8 @@ class LoadRequest extends FormRequest
     public function rules()
     {
         return [
-            'offset' => 'numeric|min:0',
-            'length' => 'numeric|min:1|max:100',
+            'offset' => 'integer|min:0',
+            'length' => 'integer|between:1,100',
         ];
     }
 }

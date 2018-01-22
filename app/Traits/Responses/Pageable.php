@@ -16,14 +16,29 @@ use Illuminate\Database\Eloquent\Model as Builder;
  */
 trait Pageable
 {
+    /**
+     * @var array
+     */
     protected $data;
 
+    /**
+     * @var int
+     */
     protected $total;
 
+    /**
+     * @var int
+     */
     protected $offset = 0;
 
+    /**
+     * @var int
+     */
     protected $length = 25;
 
+    /**
+     * @var array
+     */
     protected $order;
 
     /**
@@ -61,13 +76,22 @@ trait Pageable
         return $data;
     }
 
+    /**
+     * @param Builder $builder
+     */
     protected function pageablePrepare(Builder &$builder)
     {
+        //count before skip
+        $this->total = $builder->count();
+
         $this->__skip($builder);
         $this->__take($builder);
         $this->__order($builder);
     }
 
+    /**
+     * @param $builder
+     */
     private function __skip(&$builder)
     {
         if (!is_null($this->offset) && $this->offset > 0) {
@@ -75,6 +99,9 @@ trait Pageable
         }
     }
 
+    /**
+     * @param $builder
+     */
     private function __take(&$builder)
     {
         if (!is_null($this->length) && $this->length > 0) {
@@ -82,6 +109,9 @@ trait Pageable
         }
     }
 
+    /**
+     * @param $builder
+     */
     private function __order(&$builder)
     {
         if (!is_null($this->order)) {

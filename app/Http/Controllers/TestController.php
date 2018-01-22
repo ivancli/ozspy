@@ -3,6 +3,7 @@
 namespace OzSpy\Http\Controllers;
 
 use Illuminate\Http\Request;
+use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Traits\Commands\Optionable;
@@ -12,7 +13,7 @@ class TestController extends Controller
 {
     use Optionable;
 
-    public function index(LoadService $loadService)
+    public function index(RetailerContract $retailerRepo)
     {
 //        $data = $loadService->handle();
 //        dd($data);
@@ -20,19 +21,19 @@ class TestController extends Controller
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-//        $retailer = $retailerRepo->get(3);
-//
-//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-//        $execFilePath = storage_path('app/scraper/index.js');
-//        if (file_exists($filePath)) {
-//            $options = [
-//                'retailer' => "'" . $retailer->toJson() . "'",
-//                'scraper' => 'categories'
-//            ];
-//
-//            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//            dd("node $execFilePath {$optionStr}");
-//        }
+        $retailer = $retailerRepo->get(10);
+
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'retailer' => "'" . $retailer->toJson() . "'",
+                'scraper' => 'categories'
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+            dd("node $execFilePath {$optionStr}");
+        }
 
 
 //        $webCategory = $webCategoryRepo->get(4147);
