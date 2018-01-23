@@ -4,6 +4,7 @@ namespace OzSpy\Http\Controllers;
 
 use Illuminate\Http\Request;
 use OzSpy\Contracts\Models\Base\RetailerContract;
+use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Traits\Commands\Optionable;
@@ -13,7 +14,7 @@ class TestController extends Controller
 {
     use Optionable;
 
-    public function index(RetailerContract $retailerRepo)
+    public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo)
     {
 //        $data = $loadService->handle();
 //        dd($data);
@@ -21,35 +22,35 @@ class TestController extends Controller
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-        $retailer = $retailerRepo->get(10);
-
-        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-        $execFilePath = storage_path('app/scraper/index.js');
-        if (file_exists($filePath)) {
-            $options = [
-                'retailer' => "'" . $retailer->toJson() . "'",
-                'scraper' => 'categories'
-            ];
-
-            $optionStr = $this->format($options)->toString()->getOptionsStr();
-            dd("node $execFilePath {$optionStr}");
-        }
-
-
-//        $webCategory = $webCategoryRepo->get(4147);
-//        $filePath = storage_path('app/scraper/scrapers/hn/products.js');
+//        $retailer = $retailerRepo->get(10);
+//
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
 //        $execFilePath = storage_path('app/scraper/index.js');
 //        if (file_exists($filePath)) {
 //            $options = [
-//                'category' => "'" . $webCategory->toJson() . "'",
-//                'retailer' => "'" . $webCategory->retailer->toJson() . "'",
-//                'scraper' => 'products',
+//                'retailer' => "'" . $retailer->toJson() . "'",
+//                'scraper' => 'categories'
 //            ];
 //
 //            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//
 //            dd("node $execFilePath {$optionStr}");
 //        }
+
+
+        $webCategory = $webCategoryRepo->get(4);
+        $filePath = storage_path('app/scraper/scrapers/hn/products.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'category' => "'" . $webCategory->toJson() . "'",
+                'retailer' => "'" . $webCategory->retailer->toJson() . "'",
+                'scraper' => 'products',
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+
+            dd("node $execFilePath {$optionStr}");
+        }
 
 
 //        $webCategory = $webCategoryRepo->get(1601);

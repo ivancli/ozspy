@@ -18,16 +18,16 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $admin = $this->roleModel->create([
-            'name' => 'admin',
-            'display_name' => 'Admin',
-            'description' => 'Role with all permissions'
-        ]);
-
-        $client = $this->roleModel->create([
-            'name' => 'client',
-            'display_name' => 'client',
-            'description' => 'Client with normal user permissions'
-        ]);
+//        $admin = $this->roleModel->create([
+//            'name' => 'admin',
+//            'display_name' => 'Admin',
+//            'description' => 'Role with all permissions'
+//        ]);
+//
+//        $client = $this->roleModel->create([
+//            'name' => 'client',
+//            'display_name' => 'client',
+//            'description' => 'Client with normal user permissions'
+//        ]);
     }
 }
