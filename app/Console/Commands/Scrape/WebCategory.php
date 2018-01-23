@@ -13,7 +13,7 @@ class WebCategory extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:web-category {--R|retailer=}';
+    protected $signature = 'scrape:web-category {--R|retailer=} {--active}';
 
     /**
      * The console command description.
@@ -48,7 +48,7 @@ class WebCategory extends Command
         }
         $this->output->progressStart($retailers->count());
         foreach ($retailers as $retailer) {
-            if ($retailer->active) {
+            if ($this->option('active') !== true || $retailer->active) {
                 dispatch((new WebCategoryJob($retailer))->onQueue('scrape-web-category'));
             }
             $this->output->progressAdvance();

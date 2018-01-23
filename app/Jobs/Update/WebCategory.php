@@ -91,6 +91,10 @@ class WebCategory implements ShouldQueue
     {
         $categoryData = (array)$category;
 
+        if (array_get($categoryData, 'active') !== false) {
+            $categoryData = array_except($categoryData, 'active');
+        }
+
         dispatch((new UpdateOrStore($this->retailer, $categoryData)));
     }
 

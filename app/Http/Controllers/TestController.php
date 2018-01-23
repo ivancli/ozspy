@@ -37,7 +37,7 @@ class TestController extends Controller
 //        }
 
 
-        $webCategory = $webCategoryRepo->get(4);
+        $webCategory = $webCategoryRepo->get(10000);
         $filePath = storage_path('app/scraper/scrapers/hn/products.js');
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
