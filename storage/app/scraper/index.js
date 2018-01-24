@@ -14,6 +14,10 @@ if (!argvs.scraper) {
     argvs.scraper = 'categories';
 }
 
+if (argvs.product) {
+    argvs.product = JSON.parse(argvs.product);
+}
+
 if (argvs.category) {
     argvs.category = JSON.parse(argvs.category);
 }

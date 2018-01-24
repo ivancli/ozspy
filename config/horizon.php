@@ -149,6 +149,14 @@ return [
                 'tries' => 3,
                 'timeout' => 1800,
             ],
+            'scrape-web-image' => [
+                'connection' => 'redis',
+                'queue' => ['scrape-web-image'],
+                'balance' => 'simple',
+                'processes' => 5,
+                'tries' => 3,
+                'timeout' => 1800,
+            ],
             'crawl-proxy' => [
                 'connection' => 'redis',
                 'queue' => ['crawl-proxy'],

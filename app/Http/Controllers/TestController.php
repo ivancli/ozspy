@@ -5,6 +5,7 @@ namespace OzSpy\Http\Controllers;
 use Illuminate\Http\Request;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
+use OzSpy\Contracts\Models\Base\WebProductContract;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Traits\Commands\Optionable;
@@ -14,7 +15,7 @@ class TestController extends Controller
 {
     use Optionable;
 
-    public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo)
+    public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo)
     {
 //        $data = $loadService->handle();
 //        dd($data);
@@ -37,14 +38,31 @@ class TestController extends Controller
 //        }
 
 
-        $webCategory = $webCategoryRepo->get(10000);
-        $filePath = storage_path('app/scraper/scrapers/hn/products.js');
+//        $webCategory = $webCategoryRepo->get(10000);
+//        $retailer = $webCategory->retailer;
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
+//        $execFilePath = storage_path('app/scraper/index.js');
+//        if (file_exists($filePath)) {
+//            $options = [
+//                'category' => "'" . $webCategory->toJson() . "'",
+//                'retailer' => "'" . $webCategory->retailer->toJson() . "'",
+//                'scraper' => 'products',
+//            ];
+//
+//            $optionStr = $this->format($options)->toString()->getOptionsStr();
+//
+//            dd("node $execFilePath {$optionStr}");
+//        }
+
+        $webProduct = $webProductRepo->get(183002);
+        $retailer = $webProduct->retailer;
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/images.js');
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
             $options = [
-                'category' => "'" . $webCategory->toJson() . "'",
-                'retailer' => "'" . $webCategory->retailer->toJson() . "'",
-                'scraper' => 'products',
+                'product' => "'" . $webProduct->toJson() . "'",
+                'retailer' => "'" . $retailer->toJson() . "'",
+                'scraper' => 'images',
             ];
 
             $optionStr = $this->format($options)->toString()->getOptionsStr();
