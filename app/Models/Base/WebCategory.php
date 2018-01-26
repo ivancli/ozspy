@@ -74,6 +74,15 @@ class WebCategory extends Model
     }
 
     /**
+     * recursive loading relationship with reverse category
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recursiveChildCategories()
+    {
+        return $this->childCategories()->with('recursiveChildCategories');
+    }
+
+    /**
      * relationship with WebProduct
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

@@ -48,8 +48,8 @@ class WebImage implements ShouldQueue
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
             $options = [
-                'product' => "'" . $this->webProduct->toJson() . "'",
-                'retailer' => "'" . $this->retailer->toJson() . "'",
+                'product' => urlencode($this->webProduct->toJson()),
+                'retailer' => urlencode($this->retailer->toJson()),
                 'scraper' => 'images',
             ];
 

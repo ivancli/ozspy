@@ -153,7 +153,7 @@ return [
                 'connection' => 'redis',
                 'queue' => ['scrape-web-image'],
                 'balance' => 'simple',
-                'processes' => 5,
+                'processes' => 2,
                 'tries' => 3,
                 'timeout' => 1800,
             ],

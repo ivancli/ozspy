@@ -15,11 +15,11 @@ if (!argvs.scraper) {
 }
 
 if (argvs.product) {
-    argvs.product = JSON.parse(argvs.product);
+    argvs.product = JSON.parse(decodeURIComponent(argvs.product));
 }
 
 if (argvs.category) {
-    argvs.category = JSON.parse(argvs.category);
+    argvs.category = JSON.parse(decodeURIComponent(argvs.category));
 }
 
 if (!argvs.retailer) {
@@ -32,7 +32,7 @@ if (argvs.test) {
     argvs.test = false;
 }
 
-argvs.retailer = JSON.parse(argvs.retailer);
+argvs.retailer = JSON.parse(decodeURIComponent(argvs.retailer));
 
 let Scraper = require('./scrapers/' + argvs.retailer.abbreviation + '/' + argvs.scraper);
 

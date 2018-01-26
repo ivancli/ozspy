@@ -23,19 +23,19 @@ class TestController extends Controller
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-//        $retailer = $retailerRepo->get(10);
-//
-//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-//        $execFilePath = storage_path('app/scraper/index.js');
-//        if (file_exists($filePath)) {
-//            $options = [
-//                'retailer' => "'" . $retailer->toJson() . "'",
-//                'scraper' => 'categories'
-//            ];
-//
-//            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//            dd("node $execFilePath {$optionStr}");
-//        }
+        $retailer = $retailerRepo->get(10);
+
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'retailer' => urlencode($retailer->toJson()),
+                'scraper' => 'categories'
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+            dd("node $execFilePath {$optionStr}");
+        }
 
 
 //        $webCategory = $webCategoryRepo->get(10000);
