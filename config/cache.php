@@ -2,6 +2,8 @@
 
 return [
 
+    'enabled' => env('CACHE_ENABLED', env('APP_ENV', 'local') == 'local' ? false : true),
+
     /*
     |--------------------------------------------------------------------------
     | Default Cache Store
@@ -88,7 +90,8 @@ return [
 
     'prefix' => env(
         'CACHE_PREFIX',
-        str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
+        str_slug(env('APP_NAME', 'laravel'), '_') . '_cache'
     ),
 
+    'expiry' => 10
 ];

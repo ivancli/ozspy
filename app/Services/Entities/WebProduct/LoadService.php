@@ -9,6 +9,12 @@
 namespace OzSpy\Services\Entities\WebProduct;
 
 use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
+use OzSpy\Http\Resources\Base\WebProductCollection;
+use OzSpy\Http\Resources\Base\WebProducts;
+use OzSpy\Models\Base\Retailer;
+use OzSpy\Models\Base\WebCategory;
+use OzSpy\Models\Base\WebProduct;
+use OzSpy\Traits\Entities\Cacheable;
 use OzSpy\Traits\Responses\Pageable;
 
 /**
@@ -17,7 +23,13 @@ use OzSpy\Traits\Responses\Pageable;
  */
 class LoadService extends WebProductServiceContract
 {
-    use Pageable;
+    use Cacheable;
+
+    protected $relatedEntities = [
+        WebProduct::class,
+        WebCategory::class,
+        Retailer::class,
+    ];
 
     /**
      * @param array $data
@@ -26,32 +38,43 @@ class LoadService extends WebProductServiceContract
      */
     public function handle(array $data = [])
     {
-        $this->data = $this->webProductRepo->builder()->first();
-
         if (is_null($this->authUser)) {
             throw new UnauthorisedException;
         }
 
-        //set pagination data
-        $this->pageableSet($data);
+        $this->setTags();
 
+        return $this->remember($this->setKey($data), function () use ($data) {
+            //set pagination data
+            if ($this->authUser->isStaff()) {
+                $webProductBuilder = $this->webProductRepo->builder();
+            } else {
+                /*TODO change this part to link with user model*/
+                $webProductBuilder = $this->webProductRepo->builder();
+            }
 
-        if ($this->authUser->isStaff()) {
-            $webProductBuilder = $this->webProductRepo->builder();
-        } else {
-            /*TODO change this part to link with user model*/
-            $webProductBuilder = $this->webProductRepo->builder();
-        }
+            return new WebProducts($webProductBuilder->paginate(array_get($data, 'per_page', 15)));
+        });
+    }
 
-        $this->pageablePrepare($webProductBuilder);
+    /**
+     * @param array $data
+     * @return array
+     */
+    protected function setKey(array $data)
+    {
+        return [
+            'Path' => self::class,
+            'Request' => $data
+        ];
+    }
 
-
-        $webProducts = $webProductBuilder->get();
-
-        $this->data = $webProducts;
-
-        $result = $this->pageableComposer();
-
-        return $result;
+    /**
+     * set tag for caching
+     */
+    protected function setTags()
+    {
+        $this->authBasedTag();
+        $this->nameBasedTag($this->relatedEntities);
     }
 }

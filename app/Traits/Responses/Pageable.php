@@ -78,6 +78,7 @@ trait Pageable
 
     /**
      * @param Builder $builder
+     * @return Builder
      */
     protected function pageablePrepare(Builder &$builder)
     {
@@ -87,6 +88,8 @@ trait Pageable
         $this->__skip($builder);
         $this->__take($builder);
         $this->__order($builder);
+
+        return $builder;
     }
 
     /**

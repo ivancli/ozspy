@@ -13,6 +13,8 @@ class Retailer extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected $hidden = ['id', 'country_id', 'active', 'priority'];
+
     /**
      * Accessor - active
      * @param $value

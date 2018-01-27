@@ -23,11 +23,7 @@ class WebProductsController extends Controller
      */
     public function index(LoadRequest $request, LoadService $loadService)
     {
-        $data = $loadService->handle($request->all());
-
-        $responseCode = array_get($data, 'total', 0) > array_get($data, 'count', 0) ? 206 : 200;
-
-        return new Response($data, $responseCode);
+        return $loadService->handle($request->all());
     }
 
     /**

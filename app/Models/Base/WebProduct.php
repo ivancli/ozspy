@@ -13,6 +13,12 @@ class WebProduct extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected $hidden = ['id', 'retailer_id'];
+
+    /**
+     * relationship with retailer
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function retailer()
     {
         return $this->belongsTo(Retailer::class, 'retailer_id', 'id');
@@ -53,4 +59,5 @@ class WebProduct extends Model
     {
         return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')->orderByDesc('create_at')->offset(1)->limit(1);
     }
+
 }

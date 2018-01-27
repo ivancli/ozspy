@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -64,12 +65,16 @@ class Handler extends ExceptionHandler
             return redirect()->route('auth.login.get')->withErrors($e->getMessage());
         }
 
+        if ($e instanceof NotFoundHttpException && $request->acceptsJson()) {
+            return response()->json(['message' => 'The resource you are looking for cannot be found.'], 404);
+        }
+
         return parent::render($request, $exception);
     }
 
     public function unauthenticated($request, AuthenticationException $exception)
     {
-        return $request->expectsJson()
+        return $request->acceptsJson()
             ? response()->json(['message' => 'Unauthenticated. For API requests, please include access token in request header.'], 401)
             : redirect()->guest(route('auth.login.get'));
     }

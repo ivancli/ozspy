@@ -14,7 +14,7 @@ class WebCategory extends Model
     protected $dates = ['deleted_at'];
 
     protected $hidden = [
-        'last_crawled_products_count', 'active', 'last_crawled_at'
+        'id', 'retailer_id', 'last_crawled_products_count', 'active', 'last_crawled_at'
     ];
 
     /**

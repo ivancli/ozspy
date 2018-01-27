@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
+use OzSpy\Http\Resources\Base\WebProducts;
+use OzSpy\Models\Auth\User;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Traits\Commands\Optionable;
@@ -17,25 +19,30 @@ class TestController extends Controller
 
     public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo)
     {
+
+//        $webProduct = new \OzSpy\Http\Resources\Base\WebProduct($webProductRepo->get(1));
+//        return $webProduct;
+        return new WebProducts(WebProduct::paginate());
+
 //        $data = $loadService->handle();
 //        dd($data);
 
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-        $retailer = $retailerRepo->get(10);
-
-        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-        $execFilePath = storage_path('app/scraper/index.js');
-        if (file_exists($filePath)) {
-            $options = [
-                'retailer' => urlencode($retailer->toJson()),
-                'scraper' => 'categories'
-            ];
-
-            $optionStr = $this->format($options)->toString()->getOptionsStr();
-            dd("node $execFilePath {$optionStr}");
-        }
+//        $retailer = $retailerRepo->get(10);
+//
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
+//        $execFilePath = storage_path('app/scraper/index.js');
+//        if (file_exists($filePath)) {
+//            $options = [
+//                'retailer' => urlencode($retailer->toJson()),
+//                'scraper' => 'categories'
+//            ];
+//
+//            $optionStr = $this->format($options)->toString()->getOptionsStr();
+//            dd("node $execFilePath {$optionStr}");
+//        }
 
 
 //        $webCategory = $webCategoryRepo->get(10000);
@@ -54,21 +61,21 @@ class TestController extends Controller
 //            dd("node $execFilePath {$optionStr}");
 //        }
 
-        $webProduct = $webProductRepo->get(183002);
-        $retailer = $webProduct->retailer;
-        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/images.js');
-        $execFilePath = storage_path('app/scraper/index.js');
-        if (file_exists($filePath)) {
-            $options = [
-                'product' => "'" . $webProduct->toJson() . "'",
-                'retailer' => "'" . $retailer->toJson() . "'",
-                'scraper' => 'images',
-            ];
-
-            $optionStr = $this->format($options)->toString()->getOptionsStr();
-
-            dd("node $execFilePath {$optionStr}");
-        }
+//        $webProduct = $webProductRepo->get(183002);
+//        $retailer = $webProduct->retailer;
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/images.js');
+//        $execFilePath = storage_path('app/scraper/index.js');
+//        if (file_exists($filePath)) {
+//            $options = [
+//                'product' => "'" . $webProduct->toJson() . "'",
+//                'retailer' => "'" . $retailer->toJson() . "'",
+//                'scraper' => 'images',
+//            ];
+//
+//            $optionStr = $this->format($options)->toString()->getOptionsStr();
+//
+//            dd("node $execFilePath {$optionStr}");
+//        }
 
 
 //        $webCategory = $webCategoryRepo->get(1601);
@@ -76,6 +83,8 @@ class TestController extends Controller
 //        $this->dispatch((new \OzSpy\Jobs\Scrape\WebProduct($webCategory))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebCategory($retailer))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
+        auth()->login(User::findOrFail(1));
+
         return view('test');
     }
 
