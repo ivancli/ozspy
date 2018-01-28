@@ -9,6 +9,7 @@
 namespace OzSpy\Services\Entities\WebProduct;
 
 use OzSpy\Models\Base\WebProduct;
+use OzSpy\Traits\Entities\Cacheable;
 
 /**
  * Class DestroyService
@@ -16,6 +17,8 @@ use OzSpy\Models\Base\WebProduct;
  */
 class DestroyService extends WebProductServiceContract
 {
+    use Cacheable;
+
     /**
      * @param WebProduct $webProduct
      * @return bool
@@ -23,6 +26,25 @@ class DestroyService extends WebProductServiceContract
     public function handle(WebProduct $webProduct)
     {
         $result = $this->webProductRepo->delete($webProduct);
+        $this->clearCache();
         return $result;
+    }
+
+    /**
+     * clear cache
+     */
+    protected function clearCache()
+    {
+        $this->setTags();
+        $this->flush();
+    }
+
+    /**
+     * set tag for removal
+     */
+    protected function setTags()
+    {
+        /*todo check role and flush based on tags*/
+        $this->authBasedTag();
     }
 }

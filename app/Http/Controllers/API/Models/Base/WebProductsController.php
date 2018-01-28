@@ -8,6 +8,7 @@ use OzSpy\Models\Base\WebProduct;
 use Illuminate\Http\Request;
 use OzSpy\Http\Controllers\Controller;
 use OzSpy\Services\Entities\WebProduct\DestroyService;
+use OzSpy\Services\Entities\WebProduct\GetService;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Services\Entities\WebProduct\StoreService;
 use OzSpy\Services\Entities\WebProduct\UpdateService;
@@ -19,11 +20,11 @@ class WebProductsController extends Controller
      *
      * @param Request|LoadRequest $request
      * @param LoadService $loadService
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(LoadRequest $request, LoadService $loadService)
     {
-        return $loadService->handle($request->all());
+        return $loadService->handle($request->all())->response();
     }
 
     /**
@@ -31,23 +32,25 @@ class WebProductsController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param StoreService $storeService
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, StoreService $storeService)
     {
         $webProduct = $storeService->handle($request->all());
-        return new Response($webProduct, 201);
+        return $webProduct->response()->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \OzSpy\Models\Base\WebProduct $webProduct
-     * @return \Illuminate\Http\Response
+     * @param GetService $getService
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(WebProduct $webProduct)
+    public function show(WebProduct $webProduct, GetService $getService)
     {
-        return new Response($webProduct);
+        $webProductResource = $getService->handle($webProduct);
+        return $webProductResource->response();
     }
 
     /**

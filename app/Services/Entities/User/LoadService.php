@@ -8,16 +8,12 @@
 
 namespace OzSpy\Services\Entities\User;
 
-use OzSpy\Traits\Responses\Pageable;
-
 /**
  * Class LoadService
  * @package OzSpy\Services\Entities\User
  */
 class LoadService extends UserServiceContract
 {
-    use Pageable;
-
     /**
      * @param array $data
      * @return array

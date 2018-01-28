@@ -9,6 +9,7 @@
 namespace OzSpy\Services\Entities\WebProduct;
 
 use OzSpy\Models\Base\WebProduct;
+use OzSpy\Traits\Entities\Cacheable;
 
 /**
  * Class UpdateService
@@ -16,6 +17,8 @@ use OzSpy\Models\Base\WebProduct;
  */
 class UpdateService extends WebProductServiceContract
 {
+    use Cacheable;
+
     /**
      * @param WebProduct $webProduct
      * @param array $data
@@ -25,5 +28,23 @@ class UpdateService extends WebProductServiceContract
     {
         $result = $this->webProductRepo->update($webProduct, $data);
         return $result;
+    }
+
+    /**
+     * clear cache
+     */
+    protected function clearCache()
+    {
+        $this->setTags();
+        $this->flush();
+    }
+
+    /**
+     * set tag for removal
+     */
+    protected function setTags()
+    {
+        /*todo check role and flush based on tags*/
+        $this->authBasedTag();
     }
 }

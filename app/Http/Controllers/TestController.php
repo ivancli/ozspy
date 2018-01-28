@@ -2,7 +2,9 @@
 
 namespace OzSpy\Http\Controllers;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use OzSpy\Contracts\Models\Base\RetailerContract;
 use OzSpy\Contracts\Models\Base\WebCategoryContract;
 use OzSpy\Contracts\Models\Base\WebProductContract;
@@ -19,10 +21,13 @@ class TestController extends Controller
 
     public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo)
     {
-
-//        $webProduct = new \OzSpy\Http\Resources\Base\WebProduct($webProductRepo->get(1));
-//        return $webProduct;
-        return new WebProducts(WebProduct::paginate());
+//        DB::enableQueryLog();
+//        WebProduct::with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice'])->paginate();
+//        dd(DB::getQueryLog());
+        DB::enableQueryLog();
+//        $builder = WebProduct::whereHas('recentWebHistoricalPrice');
+        dump(new WebProducts(WebProduct::with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice'])->paginate()));
+        dd(DB::getQueryLog());
 
 //        $data = $loadService->handle();
 //        dd($data);

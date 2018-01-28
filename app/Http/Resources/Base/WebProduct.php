@@ -16,6 +16,12 @@ class WebProduct extends Resource
     {
         $data = parent::toArray($request);
 
+        array_set($data, 'prices', [
+            'amount' => !is_null($this->recentWebHistoricalPrice) ? $this->recentWebHistoricalPrice->amount : null,
+            'recent' => new WebHistoricalPrice($this->recentWebHistoricalPrice),
+            'previous' => new WebHistoricalPrice($this->previousWebHistoricalPrice),
+        ]);
+
         array_set($data, 'relation', [
             'categories' => new WebCategories($this->webCategories),
             'retailer' => new Retailer($this->retailer),

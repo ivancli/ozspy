@@ -8,14 +8,14 @@
 
 namespace OzSpy\Services\Entities\WebProduct;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
-use OzSpy\Http\Resources\Base\WebProductCollection;
 use OzSpy\Http\Resources\Base\WebProducts;
 use OzSpy\Models\Base\Retailer;
 use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Traits\Entities\Cacheable;
-use OzSpy\Traits\Responses\Pageable;
 
 /**
  * Class LoadService
@@ -33,7 +33,7 @@ class LoadService extends WebProductServiceContract
 
     /**
      * @param array $data
-     * @return array
+     * @return WebProducts
      * @throws UnauthorisedException
      */
     public function handle(array $data = [])
@@ -46,15 +46,36 @@ class LoadService extends WebProductServiceContract
 
         return $this->remember($this->setKey($data), function () use ($data) {
             //set pagination data
-            if ($this->authUser->isStaff()) {
-                $webProductBuilder = $this->webProductRepo->builder();
-            } else {
-                /*TODO change this part to link with user model*/
-                $webProductBuilder = $this->webProductRepo->builder();
+            $webProductBuilder = $this->webProductRepo->builder();
+            if (array_has($data, 'query')) {
+                switch (array_get($data, 'query')) {
+                    case 'price_change':
+                        $webProductBuilder = $this->priceChangeBuilder($webProductBuilder);
+                        break;
+                    default:
+                }
             }
 
-            return new WebProducts($webProductBuilder->paginate(array_get($data, 'per_page', 15)));
+            if (array_has($data, 'order') && array_has(array_get($data, 'order'), 'attr')) {
+                $order = array_get($data, 'order');
+                $column = array_get($order, 'attr');
+                $direction = array_get($order, 'direction', 'asc');
+                $webProductBuilder->orderBy($column, $direction);
+            }
+
+            $webProductBuilder->paginate(array_get($data, 'per_page', 15));
+
+            return new WebProducts($webProductBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->paginate(array_get($data, 'per_page', 15)));
         });
+    }
+
+    protected function priceChangeBuilder(Model $builder = null)
+    {
+        if (is_null($builder)) {
+            $builder = $this->webProductRepo->builder();
+        }
+        $builder = $builder->whereHas('recentWebHistoricalPrice')->whereHas('previousWebHistoricalPrice');
+        return $builder;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace OzSpy\Models\Base;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use OzSpy\Models\Model;
 
 class WebProduct extends Model
@@ -13,7 +14,7 @@ class WebProduct extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $hidden = ['id', 'retailer_id'];
+    protected $hidden = ['id', 'retailer_id', 'retailer', 'webCategories', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'];
 
     /**
      * relationship with retailer
@@ -48,7 +49,13 @@ class WebProduct extends Model
      */
     public function recentWebHistoricalPrice()
     {
-        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')->orderByDesc('created_at')->limit(1);
+        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')
+            ->where('id', function ($subQuery) {
+                $subQuery->from('web_historical_prices as recent_price_ids')
+                    ->selectRaw('max(recent_price_ids.id)')
+                    ->whereRaw('recent_price_ids.web_product_id=web_historical_prices.web_product_id')
+                    ->groupBy('recent_price_ids.web_product_id');
+            });
     }
 
     /**
@@ -57,7 +64,22 @@ class WebProduct extends Model
      */
     public function previousWebHistoricalPrice()
     {
-        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')->orderByDesc('create_at')->offset(1)->limit(1);
+        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')
+            ->where('id', function ($previousPriceSubQuery) {
+                $previousPriceSubQuery->from('web_historical_prices as previous_price_ids')
+                    ->join(DB::raw(
+                        '
+                        (
+                            SELECT MAX(web_historical_prices.id) id, web_historical_prices.web_product_id web_product_id
+                            FROM web_historical_prices
+                            GROUP BY web_historical_prices.web_product_id
+                        ) AS recent_price_ids
+                        '
+                    ), 'recent_price_ids.web_product_id', 'previous_price_ids.web_product_id')
+                    ->selectRaw('max(previous_price_ids.id)')
+                    ->whereRaw('previous_price_ids.web_product_id=web_historical_prices.web_product_id')
+                    ->where('previous_price_ids.id', '!=', 'recent_price_ids.id')
+                    ->groupBy('previous_price_ids.web_product_id');
+            });
     }
-
 }
