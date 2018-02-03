@@ -6,9 +6,10 @@ use OzSpy\Models\Model;
 
 class WebHistoricalPrice extends Model
 {
+    /**
+     * @var array
+     */
     protected $fillable = ['amount'];
-
-    protected $hidden = ['id', 'web_product_id', 'updated_at', 'webProduct'];
 
     /**
      * relationship with WebProduct

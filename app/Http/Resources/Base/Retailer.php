@@ -2,10 +2,10 @@
 
 namespace OzSpy\Http\Resources\Base;
 
-use Illuminate\Http\Resources\Json\Resource;
-
-class Retailer extends Resource
+class Retailer extends ResourceContract
 {
+    protected const HIDDEN_ATTRIBUTES = ['id', 'country_id', 'active', 'priority'];
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +14,8 @@ class Retailer extends Resource
      */
     public function toArray($request)
     {
+        $this->hideAttributes();
+
         $data = parent::toArray($request);
 
         array_set($data, 'links', [

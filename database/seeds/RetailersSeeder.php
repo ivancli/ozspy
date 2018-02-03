@@ -83,5 +83,13 @@ class RetailersSeeder extends Seeder
             'logo' => NULL,
             'priority' => 6,
         ])->save();
+        $godfreys = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Godfreys',
+            'abbreviation' => 'gf',
+            'domain' => 'https://www.godfreys.com.au',
+            'ecommerce_url' => 'https://www.godfreys.com.au/',
+            'logo' => NULL,
+            'priority' => 6,
+        ])->save();
     }
 }

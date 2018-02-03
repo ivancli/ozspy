@@ -9,13 +9,15 @@ class WebCategory extends Model
 {
     use SoftDeletes;
 
+    /**
+     * @var array
+     */
     protected $fillable = ['name', 'slug', 'field', 'url', 'last_crawled_products_count', 'active', 'last_crawled_at'];
 
+    /**
+     * @var array
+     */
     protected $dates = ['deleted_at'];
-
-    protected $hidden = [
-        'id', 'retailer_id', 'web_category_id', 'last_crawled_products_count', 'active', 'last_crawled_at', 'pivot'
-    ];
 
     /**
      * relationship with retailer

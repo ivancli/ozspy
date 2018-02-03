@@ -2,10 +2,10 @@
 
 namespace OzSpy\Http\Resources\Base;
 
-use Illuminate\Http\Resources\Json\Resource;
-
-class WebProduct extends Resource
+class WebProduct extends ResourceContract
 {
+    protected const HIDDEN_ATTRIBUTES = ['id', 'retailer_id', 'retailer', 'webCategories', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'];
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +14,8 @@ class WebProduct extends Resource
      */
     public function toArray($request)
     {
+        $this->hideAttributes();
+
         $data = parent::toArray($request);
 
         array_set($data, 'prices', [
@@ -22,10 +24,8 @@ class WebProduct extends Resource
             'previous' => new WebHistoricalPrice($this->previousWebHistoricalPrice),
         ]);
 
-        array_set($data, 'relation', [
-            'categories' => new WebCategories($this->webCategories),
-            'retailer' => new Retailer($this->retailer),
-        ]);
+        array_set($data, 'categories', $this->webCategories->pluck('name'));
+        array_set($data, 'retailer', $this->retailer->name);
 
         array_set($data, 'links', [
             'self' => route('api.v1.web-product.show', $this->getKey()),

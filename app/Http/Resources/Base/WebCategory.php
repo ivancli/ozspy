@@ -2,10 +2,10 @@
 
 namespace OzSpy\Http\Resources\Base;
 
-use Illuminate\Http\Resources\Json\Resource;
-
-class WebCategory extends Resource
+class WebCategory extends ResourceContract
 {
+    protected const HIDDEN_ATTRIBUTES = ['id', 'retailer_id', 'web_category_id', 'last_crawled_products_count', 'active', 'last_crawled_at', 'pivot'];
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +14,8 @@ class WebCategory extends Resource
      */
     public function toArray($request)
     {
+        $this->hideAttributes();
+
         $data = parent::toArray($request);
 
         array_set($data, 'links', [

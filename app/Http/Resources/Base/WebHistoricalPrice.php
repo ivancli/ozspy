@@ -2,10 +2,10 @@
 
 namespace OzSpy\Http\Resources\Base;
 
-use Illuminate\Http\Resources\Json\Resource;
-
-class WebHistoricalPrice extends Resource
+class WebHistoricalPrice extends ResourceContract
 {
+    protected const HIDDEN_ATTRIBUTES = ['id', 'web_product_id', 'updated_at', 'webProduct'];
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +14,8 @@ class WebHistoricalPrice extends Resource
      */
     public function toArray($request)
     {
+        $this->hideAttributes();
+
         $data = parent::toArray($request);
 
         return $data;

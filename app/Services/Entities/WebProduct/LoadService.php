@@ -63,7 +63,11 @@ class LoadService extends WebProductServiceContract
                 $webProductBuilder->orderBy($column, $direction);
             }
 
-            $webProductBuilder->paginate(array_get($data, 'per_page', 15));
+
+            $webProductBuilder = $webProductBuilder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
+            $sql = $webProductBuilder->toSql();
+//            $sql = $webProductBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->toSql();
+            print_r($sql);exit();
 
             return new WebProducts($webProductBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->paginate(array_get($data, 'per_page', 15)));
         });
@@ -74,6 +78,9 @@ class LoadService extends WebProductServiceContract
         if (is_null($builder)) {
             $builder = $this->webProductRepo->builder();
         }
+        $builder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
+
+
         $builder = $builder->whereHas('recentWebHistoricalPrice')->whereHas('previousWebHistoricalPrice');
         return $builder;
     }
