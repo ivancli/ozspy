@@ -19,7 +19,7 @@ class TestController extends Controller
 {
     use Optionable;
 
-    public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo)
+    public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo, LoadService $loadService)
     {
 //        DB::enableQueryLog();
 //        WebProduct::with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice'])->paginate();
@@ -89,7 +89,7 @@ class TestController extends Controller
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebCategory($retailer))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
         auth()->login(User::findOrFail(1));
-
+        $loadService->handle(request()->all())->response();
         return view('test');
     }
 

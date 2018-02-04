@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         $this->__scheduleScrapeWebProduct();
         $this->__scheduleUpdateWebCategory();
         $this->__scheduleUpdateWebProduct();
-        $this->__scheduleHorizonSnapshot();
+//        $this->__scheduleHorizonSnapshot();
     }
 
     /**

@@ -66,15 +66,6 @@ class LoadService extends WebProductServiceContract
 
 
             $webProductsBuilder = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice']);
-            $sql = $webProductsBuilder->toSql();
-//            $sql = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->toSql();
-//            print_r($sql);
-
-            \DB::enableQueryLog();
-            $webProductsBuilder->paginate(array_get($data, 'per_page', 15));
-            print_r(\DB::getQueryLog());
-
-            exit();
 
             return new WebProducts($webProductsBuilder->paginate(array_get($data, 'per_page', 15)));
         });
