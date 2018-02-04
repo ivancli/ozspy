@@ -49,7 +49,12 @@ class Scraper {
 
         jsonfile.writeFileSync(this.file, object);
 
-        object = null;
+        if (global.gc) {
+            global.gc();
+        } else {
+            console.log('Garbage collection unavailable.  Pass --expose-gc when launching node to enable forced garbage collection.');
+        }
+        process.exit();
     }
 }
 

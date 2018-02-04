@@ -23,6 +23,7 @@ class CreateWebHistoricalPricesTable extends Migration
 
             $table->index('created_at');
             $table->index(['web_product_id', 'created_at']);
+            $table->index(['id', 'web_product_id']);
         });
     }
 

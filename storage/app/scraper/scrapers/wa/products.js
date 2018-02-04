@@ -76,6 +76,7 @@ class Scraper {
         } else {
             console.log('Garbage collection unavailable.  Pass --expose-gc when launching node to enable forced garbage collection.');
         }
+        process.exit();
     }
 
     setUrl() {

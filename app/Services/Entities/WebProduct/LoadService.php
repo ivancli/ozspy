@@ -45,45 +45,64 @@ class LoadService extends WebProductServiceContract
         $this->setTags();
 
         return $this->remember($this->setKey($data), function () use ($data) {
-            //set pagination data
-            $webProductBuilder = $this->webProductRepo->builder();
-            if (array_has($data, 'query')) {
-                switch (array_get($data, 'query')) {
-                    case 'price_change':
-                        $webProductBuilder = $this->priceChangeBuilder($webProductBuilder);
-                        break;
-                    default:
-                }
+
+
+            $query = array_get($data, 'query');
+
+            switch (array_get($data, 'query')) {
+                case 'price_change':
+                    $webProductsBuilder = $this->priceChange();
+                    break;
+                default:
+                    $webProductsBuilder = $this->default();
             }
 
             if (array_has($data, 'order') && array_has(array_get($data, 'order'), 'attr')) {
                 $order = array_get($data, 'order');
                 $column = array_get($order, 'attr');
                 $direction = array_get($order, 'direction', 'asc');
-                $webProductBuilder->orderBy($column, $direction);
+                $webProductsBuilder->orderBy($column, $direction);
             }
 
 
-            $webProductBuilder = $webProductBuilder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
-            $sql = $webProductBuilder->toSql();
-//            $sql = $webProductBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->toSql();
-            print_r($sql);exit();
+            $webProductsBuilder = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice']);
+            $sql = $webProductsBuilder->toSql();
+//            $sql = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->toSql();
+//            print_r($sql);
 
-            return new WebProducts($webProductBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice'])->paginate(array_get($data, 'per_page', 15)));
+            \DB::enableQueryLog();
+            $webProductsBuilder->paginate(array_get($data, 'per_page', 15));
+            print_r(\DB::getQueryLog());
+
+            exit();
+
+            return new WebProducts($webProductsBuilder->paginate(array_get($data, 'per_page', 15)));
         });
     }
 
-    protected function priceChangeBuilder(Model $builder = null)
+    protected function default()
     {
-        if (is_null($builder)) {
-            $builder = $this->webProductRepo->builder();
-        }
-        $builder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
-
-
-        $builder = $builder->whereHas('recentWebHistoricalPrice')->whereHas('previousWebHistoricalPrice');
-        return $builder;
+        $webProductsBuilder = $this->webProductRepo->builder();
+        return $webProductsBuilder;
     }
+
+    protected function priceChange()
+    {
+        $webProductsBuilder = $this->webProductRepo->builder();
+        return $webProductsBuilder;
+    }
+
+//    protected function priceChangeBuilder(Model $builder = null)
+//    {
+//        if (is_null($builder)) {
+//            $builder = $this->webProductRepo->builder();
+//        }
+//        $builder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
+//
+//
+//        $builder = $builder->whereHas('recentWebHistoricalPrice')->whereHas('previousWebHistoricalPrice');
+//        return $builder;
+//    }
 
     /**
      * @param array $data
