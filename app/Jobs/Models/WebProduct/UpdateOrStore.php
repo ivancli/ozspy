@@ -77,29 +77,22 @@ class UpdateOrStore implements ShouldQueue
     public function handle(WebProductContract $webProductRepo, WebHistoricalPriceContract $webHistoricalPriceRepo)
     {
         $this->webProductModel = new WebProduct;
-
         $this->productData = $this->__getData($this->data);
-
         $this->webHistoricalPriceRepo = $webHistoricalPriceRepo;
-
         if (array_has($this->productData, 'retailer_product_id')) {
             $existingWebProduct = $webProductRepo->findBy($this->retailer, 'retailer_product_id', array_get($this->data, 'retailer_product_id'))->first();
         } elseif (array_has($this->productData, 'slug')) {
             $existingWebProduct = $webProductRepo->findBy($this->retailer, 'slug', array_get($this->productData, 'slug'))->first();
         }
-
         if (!isset($existingWebProduct) || is_null($existingWebProduct)) {
             $existingWebProduct = $webProductRepo->store($this->productData);
         } else {
             $webProductRepo->update($existingWebProduct, $this->productData);
         }
-
         if (!is_null(array_get($this->data, 'price'))) {
             $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
         }
-
         $this->retailer->webProducts()->save($existingWebProduct);
-
         if (!is_null($this->webCategory)) {
             $existingWebProduct->webCategories()->syncWithoutDetaching([$this->webCategory->getKey()]);
         }

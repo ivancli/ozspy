@@ -2,8 +2,12 @@
 
 namespace OzSpy\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use OzSpy\Contracts\Models\Base\RetailerContract;
+use OzSpy\Contracts\Models\Base\WebCategoryContract;
+use OzSpy\Exceptions\Crawl\ProductsNotFoundException;
+use OzSpy\Jobs\Models\WebProduct\UpdateOrStore;
 use OzSpy\Models\Base\WebCategory;
 
 class Test extends Command
@@ -35,15 +39,40 @@ class Test extends Command
     /**
      * Execute the console command.
      *
-     * @param RetailerContract $retailerContract
+     * @param WebCategoryContract $webCategoryRepo
      * @return mixed
+     * @throws ProductsNotFoundException
      */
-    public function handle(RetailerContract $retailerContract)
+    public function handle(WebCategoryContract $webCategoryRepo)
     {
-        $retailer = $retailerContract->get(9);
-        $retailer->webCategories->each(function (WebCategory $webCategory) use ($retailer) {
-            $command = "node " . storage_path('app/scraper/index.js') . " --retailer=" . str_replace(' ', '', $retailer->name) . " --id={$webCategory->getKey()} --url={$webCategory->url} --scraper=products";
-            exec($command);
-        });
+        $webCategory = $webCategoryRepo->get(6981);
+        $filePath = storage_path('app/scraper/storage/products/' . $webCategory->getKey() . '.json');
+        if (file_exists($filePath)) {
+            $content = file_get_contents($filePath);
+            $scrapingResult = json_decode($content);
+            if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
+                if (isset($scrapingResult->category_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->products)) {
+                    $category_id = $scrapingResult->category_id;
+                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
+                    $products = $scrapingResult->products;
+                    if ($webCategory->getKey() == $category_id) {
+                        if (count($products) == 0) {
+                            throw new ProductsNotFoundException;
+                        }
+
+                        foreach ($products as $product) {
+                            $productData = (array)$product;
+                            dispatch((new UpdateOrStore($webCategory->retailer, $productData, $webCategory))->onConnection('sync'));
+                            dump($productData);
+                        }
+
+                        $webCategory->last_crawled_products_count = count($products);
+                        $webCategory->last_crawled_at = $last_scraped_at;
+                        $webCategory->save();
+                    }
+                }
+            }
+        }
+        dd("called");
     }
 }
