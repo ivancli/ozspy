@@ -88,6 +88,22 @@ class UpdateOrStore implements ShouldQueue
         if (!isset($existingWebProduct) || is_null($existingWebProduct)) {
             $existingWebProduct = $webProductRepo->store($this->productData);
         } else {
+            if (!is_null(array_get($this->data, 'price'))) {
+                if (is_null($existingWebProduct->recent_price)) {
+                    array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
+                    $existingWebProduct->save();
+                } else {
+                    $currentAmount = $existingWebProduct->recent_price;
+                    $newAmount = round(floatval(array_get($this->data, 'price')), 2);
+                    if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
+                        array_set($this->productData, 'previous_price', $existingWebProduct->recent_price);
+                        array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
+                        array_set($this->productData, 'price_changed_at', Carbon::now());
+                        $existingWebProduct->save();
+                    }
+                }
+            }
+
             $webProductRepo->update($existingWebProduct, $this->productData);
         }
         if (!is_null(array_get($this->data, 'price'))) {
@@ -101,20 +117,6 @@ class UpdateOrStore implements ShouldQueue
 
     private function savePrice(WebProduct $webProduct, $price)
     {
-        if (is_null($webProduct->recent_price)) {
-            $webProduct->recent_price = $price;
-            $webProduct->save();
-        } else {
-            $currentAmount = $webProduct->recent_price;
-            $newAmount = round(floatval(array_get($price, 'amount')), 2);
-            if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
-                $webProduct->previous_price = $webProduct->recent_price;
-                $webProduct->recent_price = $price;
-                $webProduct->price_changed_at = Carbon::now();
-                $webProduct->save();
-            }
-        }
-
         $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
             'amount' => $price
         ]);
