@@ -20,6 +20,8 @@ class CreateWebProductsTable extends Migration
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->string('retailer_product_id')->nullable();
             $table->string('name');
+            $table->float('recent_price')->unsigned()->nullable();
+            $table->float('previous_price')->unsigned()->nullable();
             $table->string('slug')->nullable();
             $table->string('url', 2083)->nullable();
             $table->string('brand')->nullable();
@@ -29,6 +31,7 @@ class CreateWebProductsTable extends Migration
             $table->string('gtin12', 12)->nullable();
             $table->string('gtin13', 13)->nullable();
             $table->string('gtin14', 14)->nullable();
+            $table->timestamp('price_changed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

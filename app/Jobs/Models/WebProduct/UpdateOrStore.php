@@ -2,6 +2,7 @@
 
 namespace OzSpy\Jobs\Models\WebProduct;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -100,6 +101,20 @@ class UpdateOrStore implements ShouldQueue
 
     private function savePrice(WebProduct $webProduct, $price)
     {
+        if (is_null($webProduct->recent_price)) {
+            $webProduct->recent_price = $price;
+            $webProduct->save();
+        } else {
+            $currentAmount = $webProduct->recent_price;
+            $newAmount = round(floatval(array_get($price, 'amount')), 2);
+            if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
+                $webProduct->previous_price = $webProduct->recent_price;
+                $webProduct->recent_price = $price;
+                $webProduct->price_changed_at = Carbon::now();
+                $webProduct->save();
+            }
+        }
+
         $this->webHistoricalPriceRepo->storeIfNull($webProduct, [
             'amount' => $price
         ]);

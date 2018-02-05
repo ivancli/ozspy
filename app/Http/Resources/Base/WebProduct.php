@@ -18,11 +18,9 @@ class WebProduct extends ResourceContract
 
         $data = parent::toArray($request);
 
-        array_set($data, 'prices', [
-            'amount' => !is_null($this->recentWebHistoricalPrice) ? $this->recentWebHistoricalPrice->amount : null,
-            'recent' => new WebHistoricalPrice($this->recentWebHistoricalPrice),
-            'previous' => new WebHistoricalPrice($this->previousWebHistoricalPrice),
-        ]);
+        $attributes = $request->has('attributes') && is_array($request->get('attributes')) ? $request->get('attributes') : [];
+
+        $this->setPrices($data, $attributes);
 
         array_set($data, 'categories', $this->webCategories->pluck('name'));
         array_set($data, 'retailer', $this->retailer->name);
@@ -32,5 +30,20 @@ class WebProduct extends ResourceContract
         ]);
 
         return $data;
+    }
+
+    protected function setPrices(&$data, $attributes)
+    {
+        if (in_array('recent_price', $attributes) || in_array('previous_price', $attributes)) {
+            $prices = [];
+            if (in_array('recent_price', $attributes)) {
+                array_set($prices, 'amount', !is_null($this->recentWebHistoricalPrice) ? $this->recentWebHistoricalPrice->amount : null);
+                array_set($prices, 'recent', new WebHistoricalPrice($this->recentWebHistoricalPrice));
+            }
+            if (in_array('previous_price', $attributes)) {
+                array_set($prices, 'previous', new WebHistoricalPrice($this->previousWebHistoricalPrice));
+            }
+            array_set($data, 'prices', $prices);
+        }
     }
 }

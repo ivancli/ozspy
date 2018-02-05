@@ -31,6 +31,10 @@ class LoadService extends WebProductServiceContract
         Retailer::class,
     ];
 
+    protected $eagerLoadRelations = [
+        'webCategories', 'retailer',
+    ];
+
     /**
      * @param array $data
      * @return WebProducts
@@ -64,6 +68,18 @@ class LoadService extends WebProductServiceContract
                 $webProductsBuilder->orderBy($column, $direction);
             }
 
+            if (array_has($data, 'attributes') && is_array(array_get($data, 'attributes'))) {
+                foreach (array_get($data, 'attributes') as $attribute) {
+                    switch ($attribute) {
+                        case 'recent_price':
+                            $this->eagerLoadRelations[] = 'recentWebHistoricalPrice';
+                            break;
+                        case 'previous_price':
+                            $this->eagerLoadRelations[] = 'previousWebHistoricalPrice';
+                            break;
+                    }
+                }
+            }
 
             $webProductsBuilder = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice']);
 
@@ -80,20 +96,10 @@ class LoadService extends WebProductServiceContract
     protected function priceChange()
     {
         $webProductsBuilder = $this->webProductRepo->builder();
+
+
         return $webProductsBuilder;
     }
-
-//    protected function priceChangeBuilder(Model $builder = null)
-//    {
-//        if (is_null($builder)) {
-//            $builder = $this->webProductRepo->builder();
-//        }
-//        $builder->join('web_historical_prices', 'web_products.id', 'web_historical_prices.web_product_id');
-//
-//
-//        $builder = $builder->whereHas('recentWebHistoricalPrice')->whereHas('previousWebHistoricalPrice');
-//        return $builder;
-//    }
 
     /**
      * @param array $data

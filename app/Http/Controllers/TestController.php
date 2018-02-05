@@ -53,21 +53,21 @@ class TestController extends Controller
 //        }
 
 
-//        $webCategory = $webCategoryRepo->get(10667);
-//        $retailer = $webCategory->retailer;
-//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
-//        $execFilePath = storage_path('app/scraper/index.js');
-//        if (file_exists($filePath)) {
-//            $options = [
-//                'category' => urlencode($webCategory->toJson()),
-//                'retailer' => urlencode($retailer->toJson()),
-//                'scraper' => 'products',
-//            ];
-//
-//            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//
-//            dd("node --expose-gc $execFilePath {$optionStr}");
-//        }
+        $webCategory = $webCategoryRepo->get(10656);
+        $retailer = $webCategory->retailer;
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'category' => urlencode($webCategory->toJson()),
+                'retailer' => urlencode($retailer->toJson()),
+                'scraper' => 'products',
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+
+            dd("node --expose-gc $execFilePath {$optionStr}");
+        }
 
 //        $webProduct = $webProductRepo->get(183002);
 //        $retailer = $webProduct->retailer;
