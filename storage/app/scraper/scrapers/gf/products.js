@@ -46,7 +46,7 @@ class Scraper {
                     }
                 }
             }
-            product.name = $(this).find('[itemprop="name"]').text();
+            product.name = $(this).find('h2.product-name > a').text();
             product.url = $(this).find('.product-image-wrapper a.product-image').attr('href');
             let priceText = $(this).find('.regular-price .price, .special-price .price').text();
             priceText = priceText.replace(',', '');
