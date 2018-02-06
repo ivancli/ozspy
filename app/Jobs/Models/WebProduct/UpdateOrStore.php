@@ -107,7 +107,7 @@ class UpdateOrStore implements ShouldQueue
                         if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
                             array_set($this->productData, 'previous_price', $existingWebProduct->recent_price);
                             array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
-                            array_set($this->productData, 'price_changed_at', Carbon::now());
+                            array_set($this->productData, 'price_changed_at', array_get($this->data, 'last_scraped_at'));
                         }
                     }
                     $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
