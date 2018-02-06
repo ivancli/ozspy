@@ -86,26 +86,30 @@ class UpdateOrStore implements ShouldQueue
             $existingWebProduct = $webProductRepo->findBy($this->retailer, 'slug', array_get($this->productData, 'slug'))->first();
         }
         if (!isset($existingWebProduct) || is_null($existingWebProduct)) {
+            /*new product, set recent price to it*/
+            array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
             $existingWebProduct = $webProductRepo->store($this->productData);
         } else {
+            /*existing product*/
             if (!is_null(array_get($this->data, 'price'))) {
                 if (is_null($existingWebProduct->recent_price)) {
+                    /*set recent price*/
                     array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
-                    $existingWebProduct->save();
                 } else {
+                    /*check price change and set recent/previous price*/
                     $currentAmount = $existingWebProduct->recent_price;
                     $newAmount = round(floatval(array_get($this->data, 'price')), 2);
                     if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
                         array_set($this->productData, 'previous_price', $existingWebProduct->recent_price);
                         array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
                         array_set($this->productData, 'price_changed_at', Carbon::now());
-                        $existingWebProduct->save();
                     }
                 }
             }
-
+            /*update existing product*/
             $webProductRepo->update($existingWebProduct, $this->productData);
         }
+
         if (!is_null(array_get($this->data, 'price'))) {
             $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
         }

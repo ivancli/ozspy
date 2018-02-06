@@ -46,4 +46,40 @@ class WebProduct extends Model
     {
         return $this->hasMany(WebHistoricalPrice::class, 'web_product_id', 'id');
     }
+
+    /**
+     * Recent Price
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function recentWebHistoricalPrice()
+    {
+        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')
+            ->where('id', function ($subQuery) {
+                $subQuery->from('web_historical_prices as recent_price_ids')
+                    ->selectRaw('max(recent_price_ids.id)')
+                    ->whereRaw('recent_price_ids.web_product_id=web_historical_prices.web_product_id')
+                    ->groupBy('recent_price_ids.web_product_id');
+            });
+    }
+
+    /**
+     * Previous Price
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function previousWebHistoricalPrice()
+    {
+        return $this->hasOne(WebHistoricalPrice::class, 'web_product_id', 'id')
+            ->where('id', function ($previousPriceSubQuery) {
+                $previousPriceSubQuery->from('web_historical_prices as previous_price_ids')
+                    ->selectRaw('max(previous_price_ids.id)')
+                    ->whereRaw('previous_price_ids.web_product_id=web_historical_prices.web_product_id')
+                    ->where('previous_price_ids.id', '!=', function ($recentPriceSubQuery) {
+                        $recentPriceSubQuery->from('web_historical_prices as recent_price_ids')
+                            ->selectRaw('max(recent_price_ids.id)')
+                            ->whereRaw('recent_price_ids.web_product_id=web_historical_prices.web_product_id')
+                            ->groupBy('recent_price_ids.web_product_id');
+                    })
+                    ->groupBy('previous_price_ids.web_product_id');
+            });
+    }
 }
