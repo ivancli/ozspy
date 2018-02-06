@@ -110,13 +110,10 @@ class UpdateOrStore implements ShouldQueue
                             array_set($this->productData, 'price_changed_at', Carbon::now());
                         }
                     }
+                    $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
                 }
                 /*update existing product*/
                 $webProductRepo->update($existingWebProduct, $this->productData);
-
-                if (!is_null(array_get($this->data, 'price'))) {
-                    $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
-                }
             }
         }
 
