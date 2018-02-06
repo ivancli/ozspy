@@ -89,30 +89,37 @@ class UpdateOrStore implements ShouldQueue
             /*new product, set recent price to it*/
             array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
             $existingWebProduct = $webProductRepo->store($this->productData);
+
+            if (!is_null(array_get($this->data, 'price'))) {
+                $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
+            }
         } else {
             /*existing product*/
-            if (!is_null(array_get($this->data, 'price'))) {
-                if (is_null($existingWebProduct->recent_price)) {
-                    /*set recent price*/
-                    array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
-                } else {
-                    /*check price change and set recent/previous price*/
-                    $currentAmount = $existingWebProduct->recent_price;
-                    $newAmount = round(floatval(array_get($this->data, 'price')), 2);
-                    if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
-                        array_set($this->productData, 'previous_price', $existingWebProduct->recent_price);
+            if (is_null($existingWebProduct->last_scraped_at) || array_get($this->data, 'last_scraped_at')->gt($existingWebProduct->last_scraped_at)) {
+                if (!is_null(array_get($this->data, 'price'))) {
+                    if (is_null($existingWebProduct->recent_price)) {
+                        /*set recent price*/
                         array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
-                        array_set($this->productData, 'price_changed_at', Carbon::now());
+                    } else {
+                        /*check price change and set recent/previous price*/
+                        $currentAmount = $existingWebProduct->recent_price;
+                        $newAmount = round(floatval(array_get($this->data, 'price')), 2);
+                        if (abs($currentAmount - $newAmount) > config('number.epsilon')) {
+                            array_set($this->productData, 'previous_price', $existingWebProduct->recent_price);
+                            array_set($this->productData, 'recent_price', array_get($this->data, 'price'));
+                            array_set($this->productData, 'price_changed_at', Carbon::now());
+                        }
                     }
                 }
+                /*update existing product*/
+                $webProductRepo->update($existingWebProduct, $this->productData);
+
+                if (!is_null(array_get($this->data, 'price'))) {
+                    $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
+                }
             }
-            /*update existing product*/
-            $webProductRepo->update($existingWebProduct, $this->productData);
         }
 
-        if (!is_null(array_get($this->data, 'price'))) {
-            $this->savePrice($existingWebProduct, array_get($this->data, 'price'));
-        }
         $this->retailer->webProducts()->save($existingWebProduct);
         if (!is_null($this->webCategory)) {
             $existingWebProduct->webCategories()->syncWithoutDetaching([$this->webCategory->getKey()]);

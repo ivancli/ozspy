@@ -2,6 +2,7 @@
 
 namespace OzSpy\Models\Base;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use OzSpy\Models\Model;
@@ -13,7 +14,7 @@ class WebProduct extends Model
     /**
      * @var array
      */
-    protected $fillable = ['retailer_product_id', 'name', 'recent_price', 'previous_price', 'slug', 'url', 'brand', 'model', 'sku', 'gtin8', 'gtin12', 'gtin13', 'gtin14', 'price_changed_at'];
+    protected $fillable = ['retailer_product_id', 'name', 'recent_price', 'previous_price', 'slug', 'url', 'brand', 'model', 'sku', 'gtin8', 'gtin12', 'gtin13', 'gtin14', 'last_scraped_at', 'price_changed_at'];
 
     /**
      * @var array
@@ -81,5 +82,29 @@ class WebProduct extends Model
                     })
                     ->groupBy('previous_price_ids.web_product_id');
             });
+    }
+
+    /**
+     * @param $value
+     * @return Carbon|null
+     */
+    public function getLastScrapedAtAttribute($value)
+    {
+        if (!is_null($value)) {
+            return Carbon::parse($value);
+        }
+        return $value;
+    }
+
+    /**
+     * @param $value
+     * @return Carbon|null
+     */
+    public function getPriceChangedAtAttribute($value)
+    {
+        if (!is_null($value)) {
+            return Carbon::parse($value);
+        }
+        return $value;
     }
 }

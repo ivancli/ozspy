@@ -103,6 +103,7 @@ class WebProduct implements ShouldQueue
 
                         foreach ($products as $product) {
                             $productData = (array)$product;
+                            array_set($productData, 'last_scraped_at', $last_scraped_at);
                             dispatch((new UpdateOrStore($this->retailer, $productData, $this->webCategory)));
                         }
 

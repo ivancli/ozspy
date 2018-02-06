@@ -31,6 +31,7 @@ class CreateWebProductsTable extends Migration
             $table->string('gtin12', 12)->nullable();
             $table->string('gtin13', 13)->nullable();
             $table->string('gtin14', 14)->nullable();
+            $table->timestamp('last_scraped_at')->nullable();
             $table->timestamp('price_changed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
