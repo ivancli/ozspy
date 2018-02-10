@@ -8,6 +8,7 @@
 
 namespace OzSpy\Services\Entities\WebProduct;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use OzSpy\Exceptions\SocialAuthExceptions\UnauthorisedException;
@@ -50,12 +51,18 @@ class LoadService extends WebProductServiceContract
 
         return $this->remember($this->setKey($data), function () use ($data) {
 
-
-            $query = array_get($data, 'query');
-
             switch (array_get($data, 'query')) {
+                case 'recent_price':
+                    $webProductsBuilder = $this->recentPrice();
+                    break;
                 case 'price_change':
                     $webProductsBuilder = $this->priceChange();
+                    break;
+                case 'price_drop':
+                    $webProductsBuilder = $this->priceDrop();
+                    break;
+                case 'price_raise':
+                    $webProductsBuilder = $this->priceRaise();
                     break;
                 default:
                     $webProductsBuilder = $this->default();
@@ -68,36 +75,105 @@ class LoadService extends WebProductServiceContract
                 $webProductsBuilder->orderBy($column, $direction);
             }
 
-            if (array_has($data, 'attributes') && is_array(array_get($data, 'attributes'))) {
-                foreach (array_get($data, 'attributes') as $attribute) {
-                    switch ($attribute) {
-                        case 'recent_price':
-                            $this->eagerLoadRelations[] = 'recentWebHistoricalPrice';
-                            break;
-                        case 'previous_price':
-                            $this->eagerLoadRelations[] = 'previousWebHistoricalPrice';
-                            break;
-                    }
-                }
+            if (array_has($data, 'filter') && is_array(array_get($data, 'filter'))) {
+                $filter = array_get($data, 'filter');
+                $webProductsBuilder = $this->filter($webProductsBuilder, $filter);
             }
 
-            $webProductsBuilder = $webProductsBuilder->with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice', 'previousWebHistoricalPrice']);
+            $webProductsBuilder = $webProductsBuilder->with(['webCategories', 'retailer']);
 
             return new WebProducts($webProductsBuilder->paginate(array_get($data, 'per_page', 15)));
         });
     }
 
+    /**
+     * @param Builder|Model $builder
+     * @param array $data
+     * @return $this|Builder|static
+     */
+    protected function filter($builder, array $data)
+    {
+        foreach ($data as $attr => $value) {
+            switch ($attr) {
+                case 'category':
+                    $builder = $builder->whereHas('webCategories', function (Builder $builder) use ($value) {
+                        if (is_array($value)) {
+                            $builder->whereIn('name', $value);
+                        } else {
+                            $builder->where('name', $value);
+                        }
+                    });
+                    break;
+                case 'retailer':
+                    $builder = $builder->whereHas('retailer', function (Builder $builder) use ($value) {
+                        if (is_array($value)) {
+                            $builder->whereIn('name', $value);
+                        } else {
+                            $builder->where('name', $value);
+                        }
+                    });
+                    break;
+                case 'max_recent_price':
+                    $builder = $builder->hasRecentPrice()->where('recent_price', '<=', $value);
+                    break;
+                case 'max_previous_price':
+                    $builder = $builder->hasPreviousPrice()->where('previous_price', '<=', $value);
+                    break;
+                case 'min_recent_price':
+                    $builder = $builder->hasRecentPrice()->where('recent_price', '>=', $value);
+                    break;
+                case 'min_previous_price':
+                    $builder = $builder->hasPreviousPrice()->where('previous_price', '>=', $value);
+                    break;
+                default:
+                    $builder = $builder->where($attr, $value);
+            }
+        }
+        return $builder;
+    }
+
+    /**
+     * @return Builder|Model
+     */
     protected function default()
     {
         $webProductsBuilder = $this->webProductRepo->builder();
         return $webProductsBuilder;
     }
 
+    /**
+     * @return Builder
+     */
+    protected function recentPrice()
+    {
+        $webProductsBuilder = $this->webProductRepo->builder()->hasRecentPrice();
+        return $webProductsBuilder;
+    }
+
+    /**
+     * @return Builder
+     */
     protected function priceChange()
     {
-        $webProductsBuilder = $this->webProductRepo->builder();
+        $webProductsBuilder = $this->webProductRepo->builder()->hasPreviousPrice();
+        return $webProductsBuilder;
+    }
 
+    /**
+     * @return Builder
+     */
+    protected function priceDrop()
+    {
+        $webProductsBuilder = $this->webProductRepo->builder()->hasPriceDrop();
+        return $webProductsBuilder;
+    }
 
+    /**
+     * @return Builder
+     */
+    protected function priceRaise()
+    {
+        $webProductsBuilder = $this->webProductRepo->builder()->hasPriceRaise();
         return $webProductsBuilder;
     }
 

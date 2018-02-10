@@ -24,6 +24,10 @@ class TestController extends Controller
 
     public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo, LoadService $loadService)
     {
+
+//        $webProducts = $webProductRepo->builder()->hasPreviousPrice()->get();
+//        dd($webProducts);
+
 //        DB::enableQueryLog();
 //        WebProduct::with(['webCategories', 'retailer', 'webHistoricalPrices', 'recentWebHistoricalPrice'])->paginate();
 //        dd(DB::getQueryLog());
@@ -53,21 +57,21 @@ class TestController extends Controller
 //        }
 
 
-        $webCategory = $webCategoryRepo->get(10656);
-        $retailer = $webCategory->retailer;
-        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
-        $execFilePath = storage_path('app/scraper/index.js');
-        if (file_exists($filePath)) {
-            $options = [
-                'category' => urlencode($webCategory->toJson()),
-                'retailer' => urlencode($retailer->toJson()),
-                'scraper' => 'products',
-            ];
-
-            $optionStr = $this->format($options)->toString()->getOptionsStr();
-
-            dd("node --expose-gc $execFilePath {$optionStr}");
-        }
+//        $webCategory = $webCategoryRepo->get(10656);
+//        $retailer = $webCategory->retailer;
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
+//        $execFilePath = storage_path('app/scraper/index.js');
+//        if (file_exists($filePath)) {
+//            $options = [
+//                'category' => urlencode($webCategory->toJson()),
+//                'retailer' => urlencode($retailer->toJson()),
+//                'scraper' => 'products',
+//            ];
+//
+//            $optionStr = $this->format($options)->toString()->getOptionsStr();
+//
+//            dd("node --expose-gc $execFilePath {$optionStr}");
+//        }
 
 //        $webProduct = $webProductRepo->get(183002);
 //        $retailer = $webProduct->retailer;
@@ -91,8 +95,8 @@ class TestController extends Controller
 //        $this->dispatch((new \OzSpy\Jobs\Scrape\WebProduct($webCategory))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebCategory($retailer))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
-        auth()->login(User::findOrFail(1));
-        $loadService->handle(request()->all())->response();
+        auth()->login(User::findOrFail(2));
+//        $loadService->handle(request()->all())->response();
         return view('test');
     }
 

@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler
             return redirect()->route('auth.login.get')->withErrors($e->getMessage());
         }
 
-        if ($e instanceof NotFoundHttpException && $request->acceptsJson()) {
+        if ($e instanceof NotFoundHttpException && !$request->acceptsHtml() && $request->acceptsJson()) {
             return response()->json(['message' => 'The resource you are looking for cannot be found.'], 404);
         }
 
@@ -74,7 +74,7 @@ class Handler extends ExceptionHandler
 
     public function unauthenticated($request, AuthenticationException $exception)
     {
-        return $request->acceptsJson()
+        return !$request->acceptsHtml() && $request->acceptsJson()
             ? response()->json(['message' => 'Unauthenticated. For API requests, please include access token in request header.'], 401)
             : redirect()->guest(route('auth.login.get'));
     }

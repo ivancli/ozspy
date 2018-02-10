@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LoadRequest extends FormRequest
 {
+    protected const AVAILABLE_QUERY = ['recent_price', 'price_change', 'price_drop', 'price_raise'];
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,7 +27,8 @@ class LoadRequest extends FormRequest
     {
         return [
             'offset' => 'integer|min:0',
-            'length' => 'integer|between:1,100',
+            'per_page' => 'integer|between:1,100',
+            'query' => 'max:255|in:' . join(',', self::AVAILABLE_QUERY),
         ];
     }
 }

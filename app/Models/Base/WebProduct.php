@@ -3,6 +3,7 @@
 namespace OzSpy\Models\Base;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use OzSpy\Models\Model;
@@ -106,5 +107,41 @@ class WebProduct extends Model
             return Carbon::parse($value);
         }
         return $value;
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder|static
+     */
+    public function scopeHasRecentPrice(Builder $builder)
+    {
+        return $builder->hasAttribute('recent_price');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder|static
+     */
+    public function scopeHasPreviousPrice(Builder $builder)
+    {
+        return $builder->hasAttribute('previous_price');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder|static
+     */
+    public function scopeHasPriceDrop(Builder $builder)
+    {
+        return $builder->hasRecentPrice()->hasPreviousPrice()->where('recent_price', '<', 'previous_price');
+    }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeHasPriceRaise(Builder $builder)
+    {
+        return $builder->hasRecentPrice()->hasPreviousPrice()->where('recent_price', '>', 'previous_price');
     }
 }

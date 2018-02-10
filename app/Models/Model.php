@@ -10,6 +10,7 @@ namespace OzSpy\Models;
 
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 
 abstract class Model extends BaseModel
@@ -26,5 +27,16 @@ abstract class Model extends BaseModel
             ], $item) : $item;
         }, $items);
         \DB::table($model->getTable())->insert($items);
+    }
+
+
+    /**
+     * @param Builder $builder
+     * @param $attribute
+     * @return Builder|static
+     */
+    public function scopeHasAttribute(Builder $builder, $attribute)
+    {
+        return $builder->whereNotNull($attribute);
     }
 }
