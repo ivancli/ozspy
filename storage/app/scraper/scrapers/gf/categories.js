@@ -30,6 +30,7 @@ class Scraper {
     }
 
     parse(html) {
+        let $this = this;
         convert.xmlDataToJSON(html).then(json => {
             if (typeof json.urlset.url === 'object') {
                 let urls = json.urlset.url.filter(url => url.priority == '0.5');
@@ -37,37 +38,22 @@ class Scraper {
                 urls.forEach(url => {
                     if (url.toLowerCase().indexOf('store-locator') === -1 && url.toLowerCase().indexOf('service-repairs') === -1) {
                         let paths = this.stripUrl(url);
-                        this.generateCategory(paths, this.categories, url);
+                        let path = paths[paths.length - 1];
+                        let name = this.toTitleCase(path.replace((new RegExp('-', 'g')), ' '));
+                        let category = {
+                            name: name,
+                            url: url,
+                            active: false,
+                            categories: [],
+                        };
+
+                        $this.categories.push(category);
                     }
+
                 });
                 this.save();
             }
         });
-    }
-
-    generateCategory(paths, attr, url) {
-        if (paths.length > 0) {
-            let path = paths[0];
-            let existingCategories = attr.filter(category => category.slug === path);
-            let existingCategory = null;
-            if (existingCategories.length > 0) {
-                existingCategory = existingCategories[0];
-            } else {
-                existingCategory = {};
-                existingCategory.name = this.toTitleCase(path.replace((new RegExp('-', 'g')), ' '));
-                existingCategory.slug = path;
-                if (paths.length === 1) {
-                    existingCategory.url = url;
-                } else {
-                    existingCategory.url = null;
-                }
-                existingCategory.active = paths.length === 1;
-                existingCategory.categories = [];
-                attr.push(existingCategory);
-            }
-            paths.splice(0, 1);
-            this.generateCategory(paths, existingCategory.categories, url);
-        }
     }
 
     stripUrl(url) {

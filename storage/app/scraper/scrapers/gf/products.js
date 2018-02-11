@@ -52,7 +52,9 @@ class Scraper {
             priceText = priceText.replace(',', '');
             priceText = priceText.replace('$', '');
             product.price = parseFloat(priceText) > 0 ? parseFloat(priceText) : null;
-            $this.products.push(product);
+            if (typeof product.retailer_product_id !== 'undefined') {
+                $this.products.push(product);
+            }
         });
 
         if ($('.pager li.next a.next').length > 0) {

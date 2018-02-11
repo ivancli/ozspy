@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 
 abstract class Model extends BaseModel
 {
+    /**
+     * @param array $items
+     */
     public static function createAll(array $items)
     {
         $model = with(new static);
@@ -27,6 +30,16 @@ abstract class Model extends BaseModel
             ], $item) : $item;
         }, $items);
         \DB::table($model->getTable())->insert($items);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAppends()
+    {
+        $vars = get_class_vars(__CLASS__);
+
+        return array_get($vars, 'appends');
     }
 
 

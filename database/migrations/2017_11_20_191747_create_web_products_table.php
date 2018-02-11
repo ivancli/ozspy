@@ -20,8 +20,8 @@ class CreateWebProductsTable extends Migration
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->string('retailer_product_id')->nullable();
             $table->string('name');
-            $table->float('recent_price')->unsigned()->nullable();
-            $table->float('previous_price')->unsigned()->nullable();
+            $table->float('recent_price', 12, 2)->unsigned()->nullable();
+            $table->float('previous_price', 12, 2)->unsigned()->nullable();
             $table->string('slug')->nullable();
             $table->string('url', 2083)->nullable();
             $table->string('brand')->nullable();

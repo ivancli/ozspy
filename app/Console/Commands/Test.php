@@ -45,34 +45,34 @@ class Test extends Command
      */
     public function handle(WebCategoryContract $webCategoryRepo)
     {
-        $webCategory = $webCategoryRepo->get(6981);
-        $filePath = storage_path('app/scraper/storage/products/' . $webCategory->getKey() . '.json');
-        if (file_exists($filePath)) {
-            $content = file_get_contents($filePath);
-            $scrapingResult = json_decode($content);
-            if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
-                if (isset($scrapingResult->category_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->products)) {
-                    $category_id = $scrapingResult->category_id;
-                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
-                    $products = $scrapingResult->products;
-                    if ($webCategory->getKey() == $category_id) {
-                        if (count($products) == 0) {
-                            throw new ProductsNotFoundException;
-                        }
-
-                        foreach ($products as $product) {
-                            $productData = (array)$product;
-                            dispatch((new UpdateOrStore($webCategory->retailer, $productData, $webCategory))->onConnection('sync'));
-                            dump($productData);
-                        }
-
-                        $webCategory->last_crawled_products_count = count($products);
-                        $webCategory->last_crawled_at = $last_scraped_at;
-                        $webCategory->save();
-                    }
-                }
-            }
-        }
-        dd("called");
+//        $webCategory = $webCategoryRepo->get(6981);
+//        $filePath = storage_path('app/scraper/storage/products/' . $webCategory->getKey() . '.json');
+//        if (file_exists($filePath)) {
+//            $content = file_get_contents($filePath);
+//            $scrapingResult = json_decode($content);
+//            if (!is_null($scrapingResult) && json_last_error() === JSON_ERROR_NONE) {
+//                if (isset($scrapingResult->category_id) && isset($scrapingResult->scraped_at) && isset($scrapingResult->products)) {
+//                    $category_id = $scrapingResult->category_id;
+//                    $last_scraped_at = Carbon::parse($scrapingResult->scraped_at);
+//                    $products = $scrapingResult->products;
+//                    if ($webCategory->getKey() == $category_id) {
+//                        if (count($products) == 0) {
+//                            throw new ProductsNotFoundException;
+//                        }
+//
+//                        foreach ($products as $product) {
+//                            $productData = (array)$product;
+//                            dispatch((new UpdateOrStore($webCategory->retailer, $productData, $webCategory))->onConnection('sync'));
+//                            dump($productData);
+//                        }
+//
+//                        $webCategory->last_crawled_products_count = count($products);
+//                        $webCategory->last_crawled_at = $last_scraped_at;
+//                        $webCategory->save();
+//                    }
+//                }
+//            }
+//        }
+//        dd("called");
     }
 }

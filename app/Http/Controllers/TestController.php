@@ -13,6 +13,8 @@ use OzSpy\Exceptions\Crawl\ProductsNotFoundException;
 use OzSpy\Http\Resources\Base\WebProducts;
 use OzSpy\Jobs\Models\WebProduct\UpdateOrStore;
 use OzSpy\Models\Auth\User;
+use OzSpy\Models\Base\Retailer;
+use OzSpy\Models\Base\WebCategory;
 use OzSpy\Models\Base\WebProduct;
 use OzSpy\Services\Entities\WebProduct\LoadService;
 use OzSpy\Traits\Commands\Optionable;
@@ -24,6 +26,14 @@ class TestController extends Controller
 
     public function index(RetailerContract $retailerRepo, WebCategoryContract $webCategoryRepo, WebProductContract $webProductRepo, LoadService $loadService)
     {
+//        $retailers = factory(Retailer::class, 100)->create();
+//        $newRetailers = Retailer::all();
+//        dump($retailers->count());
+//        dump($newRetailers->toJson());
+//        $retailer = Retailer::first();
+//        dump($retailer);
+//        dd($retailer->toArray());
+
 
 //        $webProducts = $webProductRepo->builder()->hasPreviousPrice()->get();
 //        dd($webProducts);
@@ -42,19 +52,19 @@ class TestController extends Controller
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-//        $retailer = $retailerRepo->get(11);
-//
-//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-//        $execFilePath = storage_path('app/scraper/index.js');
-//        if (file_exists($filePath)) {
-//            $options = [
-//                'retailer' => urlencode($retailer->toJson()),
-//                'scraper' => 'categories'
-//            ];
-//
-//            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//            dd("node $execFilePath {$optionStr}");
-//        }
+        $retailer = $retailerRepo->get(10);
+
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'retailer' => urlencode($retailer->toJson()),
+                'scraper' => 'categories'
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+            dd("node $execFilePath {$optionStr}");
+        }
 
 
 //        $webCategory = $webCategoryRepo->get(10656);
@@ -95,9 +105,9 @@ class TestController extends Controller
 //        $this->dispatch((new \OzSpy\Jobs\Scrape\WebProduct($webCategory))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebCategory($retailer))->onConnection('sync'));
 //        $this->dispatch((new \OzSpy\Jobs\Update\WebProduct($webCategory))->onConnection('sync'));
-        auth()->login(User::findOrFail(2));
+//        auth()->login(User::findOrFail(2));
 //        $loadService->handle(request()->all())->response();
-        return view('test');
+//        return view('test');
     }
 
     /**

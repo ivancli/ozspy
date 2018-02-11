@@ -47,3 +47,16 @@ if (!function_exists('sanitise_non_utf8')) {
         return preg_replace('/[\x00-\x1F\x7F-\xFF]/', '', $str);
     }
 }
+
+if (!function_exists('str_acronym')) {
+    /**
+     * Convert string to acronym
+     *
+     * @param $str
+     * @return mixed
+     */
+    function str_acronym($str)
+    {
+        return preg_replace('~\b(\w)|.~', '$1', $str);
+    }
+}

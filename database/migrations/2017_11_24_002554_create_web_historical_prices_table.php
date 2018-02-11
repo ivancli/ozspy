@@ -18,7 +18,7 @@ class CreateWebHistoricalPricesTable extends Migration
             $table->integer('web_product_id')->unsigned()->nullable();
             $table->foreign('web_product_id')->references('id')->on('web_products')
                 ->onUpdate('cascade')->onDelete('cascade');
-            $table->float('amount');
+            $table->float('amount', 12, 2);
             $table->timestamps();
 
             $table->index('created_at');
