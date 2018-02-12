@@ -43,7 +43,7 @@ class Scraper {
                         let category = {
                             name: name,
                             url: url,
-                            active: false,
+                            active: true,
                             categories: [],
                         };
 
