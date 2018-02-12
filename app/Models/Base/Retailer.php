@@ -26,7 +26,7 @@ class Retailer extends Model
      */
     public function getActiveAttribute($value)
     {
-        return $value === 1 ? true : false;
+        return $value === 1 || is_null($value) ? true : false;
     }
 
     /**
@@ -36,7 +36,7 @@ class Retailer extends Model
      */
     public function getPriorityAttribute($value)
     {
-        if ($value < 4) {
+        if ($value < 4 || is_null($value)) {
             return 'low';
         } elseif ($value < 7) {
             return 'medium';
@@ -52,7 +52,7 @@ class Retailer extends Model
      */
     public function setActiveAttribute($value)
     {
-        array_set($this->attributes, 'active', $value === true ? 1 : 0);
+        array_set($this->attributes, 'active', $value === true || is_null($value) ? 1 : 0);
     }
 
     /**
@@ -62,6 +62,7 @@ class Retailer extends Model
      */
     public function setPriorityAttribute($value)
     {
+        $value = floatval($value);
         if (intval($value) <= 0 || intval($value) > 10) {
             $value = 1;
         }

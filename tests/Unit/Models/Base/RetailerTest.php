@@ -229,8 +229,151 @@ class RetailerTest extends ModelTestCase
      */
     public function testStore()
     {
-        $this->assertTrue(true);
-        // TODO: Implement testStore() method.
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+    }
+
+    /**
+     * Test storing a new model with active true
+     * @return void
+     */
+    public function testStoreWithActiveTrue()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => true,
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+        $this->assertTrue($retailer->active === true);
+    }
+
+    /**
+     * Test storing a new model with active false
+     * @return void
+     */
+    public function testStoreWithActiveFalse()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => false
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+        $this->assertTrue($retailer->active === false);
+    }
+
+    /**
+     * Test storing a new model with active null
+     * @return void
+     */
+    public function testStoreWithActiveNull()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => null
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue($retailer->active === true);
+    }
+
+    /**
+     * Testing storing retailer with priority out of range
+     * @return void
+     */
+    public function testStoreWithPriorityOutOfRange()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+            'priority' => -1,
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+        $this->assertTrue($retailer->priority === 'low', 'Priority is out of range');
+    }
+
+    /**
+     * Test storing retailer with priority within range
+     * return @void
+     */
+    public function testStoreWithPriorityWithinRange()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $companyName = $faker->company;
+        $retailer = Retailer::create([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+            'priority' => rand(1, 10),
+        ]);
+
+        $this->assertTrue(Retailer::count() === 1);
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue(in_array($retailer->priority, ['low', 'medium', 'high']), 'Priority is out of range');
     }
 
     /**
@@ -239,8 +382,24 @@ class RetailerTest extends ModelTestCase
      */
     public function testUpdate()
     {
-        $this->assertTrue(true);
-        // TODO: Implement testUpdate() method.
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create();
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+            'priority' => $faker->numberBetween(1, 10),
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
     }
 
     /**
@@ -249,7 +408,20 @@ class RetailerTest extends ModelTestCase
      */
     public function testDelete()
     {
-        $this->assertTrue(true);
-        // TODO: Implement testDelete() method.
+        $retailer = factory(Retailer::class)->create();
+        $retailer->delete();
+        $this->assertTrue(Retailer::count() === 0);
+    }
+
+    /**
+     * Test deleting multiple models
+     * @return void
+     */
+    public function testDeleteMultiple()
+    {
+        $numberOfRetailersToCreate = rand(1, 10);
+        $retailers = factory(Retailer::class, $numberOfRetailersToCreate)->create();
+        Retailer::destroy($retailers->pluck('id')->toArray());
+        $this->assertTrue(Retailer::count() === 0);
     }
 }
