@@ -46,7 +46,9 @@ class Scraper {
                             name: $(this).text().replace(new RegExp('\\t', 'g'), '').replace(new RegExp('\\n', 'g'), '').trim(),
                             url: $this.retailer.domain + $(this).attr('href'),
                         };
-                        category.categories.push(subCategory);
+                        if (subCategory.name !== '') {
+                            category.categories.push(subCategory);
+                        }
                     });
                 });
                 $this.categories.push(category);
