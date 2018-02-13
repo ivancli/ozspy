@@ -39,16 +39,18 @@ class Scraper {
                 url: $this.retailer.domain + $(this).find('a.mainsub-menu-link').attr('href'),
                 categories: [],
             };
-            $(this).find('div.submenu-box').each(function () {
-                $(this).find('span.sub-menu-title a, div a').each(function () {
-                    let subCategory = {
-                        name: $(this).text().replace(new RegExp('\\t', 'g'), '').replace(new RegExp('\\n', 'g'), '').trim(),
-                        url: $this.retailer.domain + $(this).attr('href'),
-                    };
-                    category.categories.push(subCategory);
+            if (category.name !== '') {
+                $(this).find('div.submenu-box').each(function () {
+                    $(this).find('span.sub-menu-title a, div a').each(function () {
+                        let subCategory = {
+                            name: $(this).text().replace(new RegExp('\\t', 'g'), '').replace(new RegExp('\\n', 'g'), '').trim(),
+                            url: $this.retailer.domain + $(this).attr('href'),
+                        };
+                        category.categories.push(subCategory);
+                    });
                 });
-            });
-            $this.categories.push(category);
+                $this.categories.push(category);
+            }
         });
         $this.save();
     }
