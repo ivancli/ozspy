@@ -269,7 +269,7 @@ class RetailerTest extends ModelTestCase
         foreach ($retailer->getFillable() as $fillable) {
             $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
         }
-        $this->assertTrue($retailer->active === true);
+        $this->assertTrue($resultRetailer->active === true, 'Active attribute is not true when stored to be true');
     }
 
     /**
@@ -294,7 +294,7 @@ class RetailerTest extends ModelTestCase
         foreach ($retailer->getFillable() as $fillable) {
             $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
         }
-        $this->assertTrue($retailer->active === false);
+        $this->assertTrue($resultRetailer->active === false, 'Active attribute is not false when stored to be false');
     }
 
     /**
@@ -320,7 +320,7 @@ class RetailerTest extends ModelTestCase
             $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
         }
 
-        $this->assertTrue($retailer->active === true);
+        $this->assertTrue($retailer->active === true, 'Active attribute is not true when stored to be null');
     }
 
     /**
@@ -383,7 +383,9 @@ class RetailerTest extends ModelTestCase
     public function testUpdate()
     {
         $faker = $this->app->make(\Faker\Generator::class);
-        $retailer = factory(Retailer::class)->create();
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
         $companyName = $faker->company;
         $retailer->update([
             'name' => $companyName,
@@ -403,12 +405,164 @@ class RetailerTest extends ModelTestCase
     }
 
     /**
+     * Testing update existing retailer with active true
+     * @return void
+     */
+    public function testUpdateWithActiveTrue()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => true,
+            'priority' => $faker->numberBetween(1, 10),
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue($resultRetailer->active === true, 'Active attribute is not true when updated to be true');
+    }
+
+    /**
+     * Testing update existing retailer with active false
+     * @return void
+     */
+    public function testUpdateWithActiveFalse()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => false,
+            'priority' => $faker->numberBetween(1, 10),
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue($resultRetailer->active === false, 'Active attribute is not false when updated to be false');
+    }
+
+    /**
+     * Testing update existing retailer with active null
+     * @return void
+     */
+    public function testUpdateWithActiveNull()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => null,
+            'priority' => $faker->numberBetween(1, 10),
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue($resultRetailer->active === true, 'Active attribute is not true when updated to be null');
+    }
+
+    /**
+     * Testing update existing retailer with out of range priority
+     * @return void
+     */
+    public function testUpdateWithPriorityOutOfRange()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+            'priority' => 100,
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue($resultRetailer->priority === 'low', 'Priority out of range');
+    }
+
+    /**
+     * Testing update existing retailer with correct range of priority
+     * @return void
+     */
+    public function testUpdateWithPriorityWithinRange()
+    {
+        $faker = $this->app->make(\Faker\Generator::class);
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
+        $companyName = $faker->company;
+        $retailer->update([
+            'name' => $companyName,
+            'abbreviation' => strtolower(str_acronym($companyName)),
+            'domain' => 'http://' . $faker->domainName,
+            'ecommerce_url' => 'http://' . $faker->domainName,
+            'logo' => $faker->imageUrl(),
+            'active' => $faker->boolean(),
+            'priority' => rand(1, 10),
+            'last_crawled_at' => null, //unable to compare Carbon with string for now
+        ]);
+
+        $resultRetailer = Retailer::findOrFail($retailer->getKey());
+        foreach ($retailer->getFillable() as $fillable) {
+            $this->assertTrue($retailer->$fillable === $resultRetailer->$fillable, "Fillable {$fillable} expected to be {$retailer->$fillable} but got {$resultRetailer->$fillable}");
+        }
+
+        $this->assertTrue(in_array($resultRetailer->priority, ['low', 'medium', 'high']), 'Priority out of range');
+    }
+
+    /**
      * Test deleting an existing model
      * @return void
      */
     public function testDelete()
     {
-        $retailer = factory(Retailer::class)->create();
+        $retailer = factory(Retailer::class)->create([
+            'deleted_at' => null,
+        ]);
         $retailer->delete();
         $this->assertTrue(Retailer::count() === 0);
     }
@@ -420,7 +574,9 @@ class RetailerTest extends ModelTestCase
     public function testDeleteMultiple()
     {
         $numberOfRetailersToCreate = rand(1, 10);
-        $retailers = factory(Retailer::class, $numberOfRetailersToCreate)->create();
+        $retailers = factory(Retailer::class, $numberOfRetailersToCreate)->create([
+            'deleted_at' => null,
+        ]);
         Retailer::destroy($retailers->pluck('id')->toArray());
         $this->assertTrue(Retailer::count() === 0);
     }

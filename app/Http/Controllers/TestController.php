@@ -52,36 +52,36 @@ class TestController extends Controller
 //        $data = $loadService->handle();
 //        return new Response($data);
 
-        $retailer = $retailerRepo->get(10);
-
-        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
-        $execFilePath = storage_path('app/scraper/index.js');
-        if (file_exists($filePath)) {
-            $options = [
-                'retailer' => urlencode($retailer->toJson()),
-                'scraper' => 'categories'
-            ];
-
-            $optionStr = $this->format($options)->toString()->getOptionsStr();
-            dd("node $execFilePath {$optionStr}");
-        }
-
-
-//        $webCategory = $webCategoryRepo->get(10656);
-//        $retailer = $webCategory->retailer;
-//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
+//        $retailer = $retailerRepo->get(12);
+//
+//        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/categories.js');
 //        $execFilePath = storage_path('app/scraper/index.js');
 //        if (file_exists($filePath)) {
 //            $options = [
-//                'category' => urlencode($webCategory->toJson()),
 //                'retailer' => urlencode($retailer->toJson()),
-//                'scraper' => 'products',
+//                'scraper' => 'categories'
 //            ];
 //
 //            $optionStr = $this->format($options)->toString()->getOptionsStr();
-//
-//            dd("node --expose-gc $execFilePath {$optionStr}");
+//            dd("node $execFilePath {$optionStr}");
 //        }
+
+
+        $webCategory = $webCategoryRepo->get(3);
+        $retailer = $webCategory->retailer;
+        $filePath = storage_path('app/scraper/scrapers/' . $retailer->abbreviation . '/products.js');
+        $execFilePath = storage_path('app/scraper/index.js');
+        if (file_exists($filePath)) {
+            $options = [
+                'category' => urlencode($webCategory->toJson()),
+                'retailer' => urlencode($retailer->toJson()),
+                'scraper' => 'products',
+            ];
+
+            $optionStr = $this->format($options)->toString()->getOptionsStr();
+
+            dd("node --expose-gc $execFilePath {$optionStr}");
+        }
 
 //        $webProduct = $webProductRepo->get(183002);
 //        $retailer = $webProduct->retailer;
