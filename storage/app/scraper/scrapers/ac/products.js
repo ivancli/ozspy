@@ -25,7 +25,7 @@ class Scraper {
         this.page = 1;
         this.max_price = 9999999;
         this.min_price = 1;
-        this.limit = 25;
+        this.limit = 80;
         this.sort = 'p.price';
         this.order = 'ASC';
         this.route = 'product/category';
