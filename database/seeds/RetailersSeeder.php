@@ -91,5 +91,21 @@ class RetailersSeeder extends Seeder
             'logo' => NULL,
             'priority' => 6,
         ])->save();
+        $kitchenWarehouse = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Kitchen Warehouse',
+            'abbreviation' => 'kw',
+            'domain' => 'https://www.kitchenwarehouse.com.au',
+            'ecommerce_url' => 'https://www.kitchenwarehouse.com.au/',
+            'logo' => NULL,
+            'priority' => 1,
+        ])->save();
+        $applianceCentral = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Appliance Central',
+            'abbreviation' => 'ac',
+            'domain' => 'https://www.appliancecentral.com.au',
+            'ecommerce_url' => 'https://www.appliancecentral.com.au/',
+            'logo' => NULL,
+            'priority' => 1,
+        ])->save();
     }
 }
