@@ -40,8 +40,8 @@ class WebProduct implements ShouldQueue
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
             $options = [
-                'category' => urlencode($this->webCategory->toJson()),
-                'retailer' => urlencode($this->retailer->toJson()),
+                'category' => rawurlencode($this->webCategory->toJson()),
+                'retailer' => rawurlencode($this->retailer->toJson()),
                 'scraper' => 'products',
             ];
 

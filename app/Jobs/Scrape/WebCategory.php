@@ -37,7 +37,7 @@ class WebCategory implements ShouldQueue
         $execFilePath = storage_path('app/scraper/index.js');
         if (file_exists($filePath)) {
             $options = [
-                'retailer' => urlencode($this->retailer->toJson()),
+                'retailer' => rawurlencode($this->retailer->toJson()),
                 'scraper' => 'categories'
             ];
 
