@@ -97,7 +97,7 @@ class WebCategoryTest extends ModelTestCase
         $fillableAttributes = $fetchedWebCategory->getFillable();
         if (count($fillableAttributes) > 0) {
             foreach ($fillableAttributes as $fillableAttribute) {
-                $this->assertTrue(isset($webCategory->$fillableAttribute), "Attribute [{$fillableAttribute}] is missing in web category {$webCategory->getKey()}");
+                $this->assertTrue(isset($webCategory->$fillableAttribute) || is_null($webCategory->$fillableAttribute), "Attribute [{$fillableAttribute}] is missing in web category {$webCategory->getKey()}");
             }
         } else {
             $this->assertTrue(true);
@@ -110,7 +110,23 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testAllFillables()
     {
-        // TODO: Implement testAllFillables() method.
+        $numberOfWebCategoriesToCreate = rand(1, 10);
+        $webCategories = factory(WebCategory::class, $numberOfWebCategoriesToCreate)->create();
+        $fetchedWebCategories = WebCategory::all();
+        if ($fetchedWebCategories->count() > 0) {
+            $fetchedWebCategories->each(function (WebCategory $webCategory) {
+                $fillableAttributes = $webCategory->getFillable();
+                if (count($fillableAttributes) > 0) {
+                    foreach ($fillableAttributes as $fillableAttribute) {
+                        $this->assertTrue(isset($webCategory->$fillableAttribute) || is_null($webCategory->$fillableAttribute), "Attribute [{$fillableAttribute}] is missing in web category {$webCategory->getKey()}");
+                    }
+                } else {
+                    $this->assertTrue(true);
+                }
+            });
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -119,7 +135,20 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testSingleHiddens()
     {
-        // TODO: Implement testSingleHiddens() method.
+        $webCategory = factory(WebCategory::class)->create([
+            'deleted_at' => null,
+        ]);
+
+        $fetchedWebCategory = WebCategory::findOrFail($webCategory->getKey());
+        $webCategoryArray = $fetchedWebCategory->toArray();
+        $hiddenAttributes = $fetchedWebCategory->getHidden();
+        if (count($hiddenAttributes) > 0) {
+            foreach ($hiddenAttributes as $hiddenAttribute) {
+                $this->assertArrayNotHasKey($hiddenAttribute, $webCategoryArray, "Attribute [{$hiddenAttribute}] appears in web category {$webCategory->getKey()}");
+            }
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -128,7 +157,24 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testAllHiddens()
     {
-        // TODO: Implement testAllHiddens() method.
+        $numberOfWebCategoriesToCreate = rand(1, 10);
+        $webCategories = factory(WebCategory::class, $numberOfWebCategoriesToCreate)->create();
+        $fetchedWebCategories = WebCategory::all();
+        if ($fetchedWebCategories->count() > 0) {
+            $fetchedWebCategories->each(function (WebCategory $webCategory) {
+                $webCategoryArray = $webCategory->toArray();
+                $hiddenAttributes = $webCategory->getHidden();
+                if (count($hiddenAttributes) > 0) {
+                    foreach ($hiddenAttributes as $hiddenAttribute) {
+                        $this->assertArrayNotHasKey($hiddenAttribute, $webCategoryArray, "Attribute [{$hiddenAttribute}] appears in web category {$webCategory->getKey()}");
+                    }
+                } else {
+                    $this->assertTrue(true);
+                }
+            });
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -137,7 +183,20 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testSingleAppends()
     {
-        // TODO: Implement testSingleAppends() method.
+        $webCategory = factory(WebCategory::class)->create([
+            'deleted_at' => null,
+        ]);
+
+        $fetchedWebCategory = WebCategory::findOrFail($webCategory->getKey());
+        $webCategoryArray = $fetchedWebCategory->toArray();
+        $appendedAttributes = WebCategory::getAppends();
+        if (count($appendedAttributes) > 0) {
+            foreach ($appendedAttributes as $appendedAttribute) {
+                $this->assertArrayHasKey($appendedAttribute, $webCategoryArray, "Attribute [{$appendedAttribute}] is missing in web category {$webCategory->getKey()}");
+            }
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -146,7 +205,22 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testAllAppends()
     {
-        // TODO: Implement testAllAppends() method.
+        $numberOfWebCategoriesToCreate = rand(1, 10);
+        $webCategories = factory(WebCategory::class, $numberOfWebCategoriesToCreate)->create();
+        $fetchedWebCategories = WebCategory::all();
+
+        $appendedAttributes = WebCategory::getAppends();
+
+        if ($fetchedWebCategories->count() > 0 && count($appendedAttributes) > 0) {
+            $fetchedWebCategories->each(function (WebCategory $webCategory) use ($appendedAttributes) {
+                $webCategoryArray = $webCategory->toArray();
+                foreach ($appendedAttributes as $appendedAttribute) {
+                    $this->assertArrayHasKey($appendedAttribute, $webCategoryArray, "Attribute [{$appendedAttribute}] is missing in web category {$webCategory->getKey()}");
+                }
+            });
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -155,7 +229,23 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testStore()
     {
-        // TODO: Implement testStore() method.
+        $faker = $this->app->make(\Faker\Generator::class);
+
+        $categoryName = $faker->sentence(rand(1, 4));
+        $webCategory = WebCategory::create([
+            'name' => $categoryName,
+            'slug' => $faker->boolean() ? str_slug($categoryName) : null,
+            'field' => $faker->boolean(5) ? str_slug($faker->sentence(rand(1, 4))) : null,
+            'url' => $faker->url,
+            'active' => $faker->boolean(70),
+            'last_crawled_products_count' => $faker->boolean() ? $faker->numberBetween() : null,
+        ]);
+
+        $this->assertTrue(WebCategory::count() === 1);
+        $resultWebCategory = WebCategory::findOrFail($webCategory->getKey());
+        foreach ($webCategory->getFillable() as $fillable) {
+            $this->assertTrue($webCategory->$fillable === $resultWebCategory->$fillable, "Fillable {$fillable} expected to be {$webCategory->$fillable} but got {$resultWebCategory->$fillable}");
+        }
     }
 
     /**
@@ -164,7 +254,24 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testUpdate()
     {
-        // TODO: Implement testUpdate() method.
+        $faker = $this->app->make(\Faker\Generator::class);
+        $webCategory = factory(WebCategory::class)->create([
+            'deleted_at' => null,
+        ]);
+        $categoryName = $faker->sentence(rand(1, 4));
+        $webCategory->update([
+            'name' => $categoryName,
+            'slug' => $faker->boolean() ? str_slug($categoryName) : null,
+            'field' => $faker->boolean(5) ? str_slug($faker->sentence(rand(1, 4))) : null,
+            'url' => $faker->url,
+            'active' => $faker->boolean(70),
+            'last_crawled_products_count' => $faker->boolean() ? $faker->numberBetween() : null,
+        ]);
+
+        $resultWebCategory = WebCategory::findOrFail($webCategory->getKey());
+        foreach ($webCategory->getFillable() as $fillable) {
+            $this->assertTrue($webCategory->$fillable === $resultWebCategory->$fillable, "Fillable {$fillable} expected to be {$webCategory->$fillable} but got {$resultWebCategory->$fillable}");
+        }
     }
 
     /**
@@ -173,6 +280,24 @@ class WebCategoryTest extends ModelTestCase
      */
     public function testDelete()
     {
-        // TODO: Implement testDelete() method.
+        $webCategory = factory(WebCategory::class)->create([
+            'deleted_at' => null,
+        ]);
+        $webCategory->delete();
+        $this->assertTrue(WebCategory::count() === 0);
+    }
+
+    /**
+     * Test deleting multiple existing model
+     * @return mixed
+     */
+    public function testDeleteMultiple()
+    {
+        $numberOfWebCategoriesToCreate = rand(1, 10);
+        $webCategories = factory(WebCategory::class, $numberOfWebCategoriesToCreate)->create([
+            'deleted_at' => null,
+        ]);
+        WebCategory::destroy($webCategories->pluck('id')->toArray());
+        $this->assertTrue(WebCategory::count() === 0);
     }
 }

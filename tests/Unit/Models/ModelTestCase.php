@@ -84,4 +84,10 @@ abstract class ModelTestCase extends TestCase
      * @return void
      */
     abstract public function testDelete();
+
+    /**
+     * Test deleting multiple existing model
+     * @return mixed
+     */
+    abstract public function testDeleteMultiple();
 }

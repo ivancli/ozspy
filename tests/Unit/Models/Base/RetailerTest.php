@@ -114,7 +114,6 @@ class RetailerTest extends ModelTestCase
         $fetchedRetailers = Retailer::all();
         if ($fetchedRetailers->count() > 0) {
             $fetchedRetailers->each(function (Retailer $retailer) {
-                $retailerArray = $retailer->toArray();
                 $fillableAttributes = $retailer->getFillable();
                 if (count($fillableAttributes) > 0) {
                     foreach ($fillableAttributes as $fillableAttribute) {
