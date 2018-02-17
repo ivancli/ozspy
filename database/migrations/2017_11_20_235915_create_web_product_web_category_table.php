@@ -17,8 +17,11 @@ class CreateWebProductWebCategoryTable extends Migration
             $table->integer('web_product_id')->unsigned();
             $table->integer('web_category_id')->unsigned();
             $table->timestamps();
-
             $table->primary(['web_product_id', 'web_category_id']);
+            $table->foreign('web_product_id')->references('id')->on('web_products')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('web_category_id')->references('id')->on('web_categories')
+                ->onUpdate('cascade')->onDelete('cascade');
             $table->index(['web_product_id']);
             $table->index(['web_category_id']);
         });
