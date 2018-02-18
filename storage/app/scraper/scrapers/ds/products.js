@@ -93,7 +93,7 @@ class Scraper {
     setUrl() {
         this.url = this.apiUrl + '?' +
             'group_variants=false&' +
-            'store=au&' +
+            'store=da&' +
             ((this.department !== null) ? ("department=" + this.department + "&") : '') +
             ((this.filterFieldName !== null && this.filterFieldValue !== null) ? (this.filterFieldName + '=' + this.filterFieldValue + '&') : null) +
             'offset=' + this.offset;
