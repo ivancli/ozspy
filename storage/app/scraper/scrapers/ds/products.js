@@ -95,7 +95,7 @@ class Scraper {
             'group_variants=false&' +
             'store=da&' +
             ((this.department !== null) ? ("department=" + this.department + "&") : '') +
-            ((this.filterFieldName !== null && this.filterFieldValue !== null) ? (this.filterFieldName + '=' + this.filterFieldValue + '&') : null) +
+            ((this.filterFieldName !== null && this.filterFieldValue !== null) ? (this.filterFieldName + '=' + this.filterFieldValue + '&') : '') +
             'offset=' + this.offset;
     }
 
