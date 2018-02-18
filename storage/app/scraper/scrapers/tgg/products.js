@@ -61,7 +61,7 @@ class Scraper {
                 product.retailer_product_id = idMatches[idMatches.length - 1];
                 product.name = cheerio.load(nameMatches[nameMatches.length - 1]).text();
                 product.price = parseFloat(priceMatches[priceMatches.length - 1]);
-                product.brand = brandMatches[brandMatches.length - 1];
+                product.brand = cheerio.load(brandMatches[brandMatches.length - 1]).text();
                 let $model = $(this).find(".product-tile-model")
                 if ($model.length > 0) {
                     product.model = $model.text();
