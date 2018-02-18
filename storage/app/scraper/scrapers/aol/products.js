@@ -127,8 +127,8 @@ class Scraper {
         content = JSON.parse(content);
         if (content.product) {
             let product = {};
-            product.name = content.product.name;
-            product.brand = content.product.manufacturer && content.product.manufacturer.name ? content.product.manufacturer.name : null;
+            product.name = cheerio.load(content.product.name).text();
+            product.brand = content.product.manufacturer && content.product.manufacturer.name ? cheerio.load(content.product.manufacturer.name).text() : null;
             product.sku = content.product.sku;
             product.retailer_product_id = content.product.productId;
             product.price = parseFloat(content.product.price) > 0 ? parseFloat(content.product.price) : null;

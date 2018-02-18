@@ -53,7 +53,7 @@ class Scraper {
                 webProduct.slug = slug;
                 webProduct.url = this.retailer.domain + '/p' + product.uri;
                 webProduct.price = product.price !== null && parseFloat(product.price) > 0 ? parseFloat(product.price) : null;
-                webProduct.brand = product.brand;
+                webProduct.brand = product.brand !== null ? cheerio.load(product.brand).text() : null;
                 webProduct.sku = product.sku;
                 this.products.push(webProduct);
             });

@@ -74,7 +74,7 @@ class Scraper {
                 webProduct.url = product.productUrl;
                 webProduct.retailer_product_id = product.uniqueId;
                 webProduct.price = product.price !== null && parseFloat(product.price) > 0 ? product.price : null;
-                webProduct.brand = product.Brand_On_Website;
+                webProduct.brand = product.Brand_On_Website !== null ? cheerio.load(product.Brand_On_Website).text() : null;
                 this.products.push(webProduct);
             });
 

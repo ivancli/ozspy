@@ -85,8 +85,8 @@ class Scraper {
                             let newProduct = {};
                             newProduct.retailer_product_id = product.ProductID;
                             newProduct.sku = product.SKU;
-                            newProduct.name = product.DisplayName;
-                            newProduct.brand = product.Brand;
+                            newProduct.name = cheerio.load(product.DisplayName).text();
+                            newProduct.brand = product.Brand !== null ? cheerio.load(product.Brand).text() : null;
                             newProduct.price = product.PlacedPrice;
                             newProduct.url = this.productLinks[product.ProductID];
                             this.products.push(newProduct);
