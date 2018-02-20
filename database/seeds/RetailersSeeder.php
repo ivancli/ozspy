@@ -107,5 +107,13 @@ class RetailersSeeder extends Seeder
             'logo' => NULL,
             'priority' => 1,
         ])->save();
+        $applianceWarehouse = \OzSpy\Models\Base\Retailer::create([
+            'name' => 'Appliance Warehouse',
+            'abbreviation' => 'aw',
+            'domain' => 'https://www.appliancewarehouse.com.au',
+            'ecommerce_url' => 'https://www.appliancewarehouse.com.au/',
+            'logo' => NULL,
+            'priority' => 6,
+        ])->save();
     }
 }
